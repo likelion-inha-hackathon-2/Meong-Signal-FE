@@ -1,0 +1,49 @@
+@font-face {
+  font-family: "pretendardB";
+  src: url("../src/assets/fonts/Pretendard-Bold.woff");
+}
+@font-face {
+  font-family: "pretendardL";
+  src: url("../src/assets/fonts/Pretendard-Light.woff");
+}
+@font-face {
+  font-family: "pretendardM";
+  src: url("../src/assets/fonts/Pretendard-Medium.woff");
+}
+@font-face {
+  font-family: "pretendardR";
+  src: url("../src/assets/fonts/Pretendard-Regular.woff");
+}
+@font-face {
+  font-family: "pretendardS";
+  src: url("../src/assets/fonts/Pretendard-SemiBold.woff");
+}
+
+:root {
+  /* 옐로우 계열 */
+  --yellow-color1: #ffe8ad;
+  --yellow-color2: #ffb800;
+
+  /* 회색 계열 */
+  --white-color: #fff;
+  --gray-color1: #f4f4f4;
+  --gray-color2: #e8e8e8;
+  --gray-color3: #bebebe;
+
+  /* 흑백계열 */
+  --white-color: #ffffff;
+  --blackgray-color: #2d2d2d;
+  --black-color: #000000;
+
+  /* 기타 색조 */
+  --pink-color1: #ffe1da;
+  --pink-color2: #ffc1b4;
+  --pink-color3: #d17460;
+  --green-color: #87e38b;
+  --blue-color: #5c6dff;
+}
+
+body {
+  font-size: 14px;
+  font-family: "pretendardR";
+}
