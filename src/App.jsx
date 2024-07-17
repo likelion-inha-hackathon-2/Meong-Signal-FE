@@ -1,8 +1,21 @@
+import React from "react";
 import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout/Layout";
+import Home from "./pages/Home";
 
 function App() {
-  // eslint-disable-next-line react/react-in-jsx-scope
-  return <div>hello</div>;
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
 }
 
 export default App;
