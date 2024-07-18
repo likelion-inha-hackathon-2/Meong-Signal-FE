@@ -9,6 +9,8 @@ import SignUp1 from "./pages/SignUp/SignUp1";
 import SignUp2 from "./pages/SignUp/SignUp2";
 import MapInfo from "./pages/Map/MapInfo";
 import MapStatus from "./pages/Map/MapStatus";
+import ReviewReceived from "./pages/MyInfo/ReviewReceived";
+import ReviewWritten from "./pages/MyInfo/ReviewWritten";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
             <Route path="/signup2" element={<SignUp2 />} />
             <Route path="/map-info" element={<MapInfo />} />
             <Route path="/map-status" element={<MapStatus />} />
+            <Route path="/reviews/received" element={<ReviewReceived />} />
+            <Route path="/reviews/written" element={<ReviewWritten />} />
           </Route>
         </Routes>
       </BrowserRouter>

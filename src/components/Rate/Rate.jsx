@@ -19,7 +19,7 @@ const StyledRate = styled.div`
     height: 24px;
     background-size: contain;
     background-repeat: no-repeat;
-    cursor: pointer;
+    cursor: ${(props) => (props.readOnly ? "default" : "pointer")};
   }
 
   // 회색 별점(안 칠해진 별)
@@ -33,10 +33,12 @@ const StyledRate = styled.div`
   }
 `;
 
-const Rate = ({ value = 1, onChange = null }) => {
+const Rate = ({ value = 1, onChange = null, readOnly = false }) => {
   const [rating, setRating] = useState(value);
 
   const handleClick = (index) => {
+    if (readOnly) return;
+
     const newRating = index + 1;
     setRating(newRating);
     if (onChange) {
@@ -46,7 +48,7 @@ const Rate = ({ value = 1, onChange = null }) => {
 
   return (
     <StyledRateContainer>
-      <StyledRate>
+      <StyledRate readOnly={readOnly}>
         {Array(5)
           .fill(0)
           .map((_, index) => (
@@ -64,6 +66,13 @@ const Rate = ({ value = 1, onChange = null }) => {
 Rate.propTypes = {
   value: PropTypes.number.isRequired,
   onChange: PropTypes.func,
+  readOnly: PropTypes.bool,
+};
+
+// 리뷰 페이지에서는 불러만 와야하므로 리드온리 속성 추가
+Rate.defaultProps = {
+  onChange: null,
+  readOnly: false,
 };
 
 export default Rate;
