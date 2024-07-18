@@ -1,27 +1,49 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
-const StyledImage = styled.img`
-    width: ${(props) => props.width || "60px"};   // 기본 크기 넓이 60px, 높이 60px 고정
-    height: ${(props) => props.height || "60px"};
-    border-radius: ${(props) => props.borderRadius || "50%"};  // 이미지 기본 border 상태 원으로 고정
-    object-fit: cover;
-    cursor: pointer;
-    filter: brightness(1.0);
-    transition: filter 0.5s ease;
+const StyledButton = styled.button`
+  width: 100%;
+  height: 40px;
+  background-color: ${(props) =>
+    props.backgroundColor || "var(--yellow-color1)"}; // 기본 버튼 색
+  color: var(--white-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: ${(props) => props.fontFamily || "pretendard"};
+  cursor: pointer;
+  &:hover {
+    background-color: ${(props) =>
+      props.hoverBackgroundColor || "var(--yellow-color2)"}; // hover 버튼 색
+  }
 `;
 
-const Image = ({ src, width, height, borderRadius, onClick, ...rest }) => {
-    return (
-        <StyledImage
-        src={src}
-        width={width}
-        height={height}
-        borderRadius={borderRadius}
-        onClick={onClick}
-        {...rest}
-        />
-    );
+const Button = ({
+  text,
+  backgroundColor,
+  hoverBackgroundColor,
+  onClick,
+  ...rest
+}) => {
+  return (
+    <StyledButton
+      backgroundColor={backgroundColor}
+      hoverBackgroundColor={hoverBackgroundColor}
+      onClick={onClick}
+      {...rest}
+    >
+      {text}
+    </StyledButton>
+  );
 };
 
-export default Image;
+// eslint 유효성 검사 추가
+Button.propTypes = {
+  text: PropTypes.string.isRequired,
+  backgroundColor: PropTypes.string,
+  hoverBackgroundColor: PropTypes.string,
+  onClick: PropTypes.func,
+};
+
+export default Button;
