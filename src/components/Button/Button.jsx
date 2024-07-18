@@ -6,16 +6,16 @@ const StyledButton = styled.button`
   width: 100%;
   height: 40px;
   background-color: ${(props) =>
-    props.backgroundColor || "var(--yellow-color1)"}; // 기본 버튼 색
+    props.backgroundColor || "var(--yellow-color2)"}; // 기본 버튼 색
   color: var(--white-color);
   border: none;
   border-radius: 4px;
   font-size: 16px;
-  font-family: ${(props) => props.fontFamily || "pretendard"};
+  font-family: ${(props) => props.fontFamily || "pretendardS"};
   cursor: pointer;
   &:hover {
     background-color: ${(props) =>
-      props.hoverBackgroundColor || "var(--yellow-color2)"}; // hover 버튼 색
+      props.hoverBackgroundColor || "var(--yellow-color3)"}; // hover 버튼 색
   }
 `;
 
