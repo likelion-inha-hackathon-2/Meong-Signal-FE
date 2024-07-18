@@ -11,7 +11,7 @@ const InputField = styled.input`
   font-size: 14px;
   background-color: var(--yellow-color1);
   color: var(--black-color);
-  font-family: ${(props) => props.fontFamily || "pretendard"};
+  font-family: ${(props) => props.fontFamily || "pretendardR"};
   &::placeholder {
     color: var(--gray-color3);
   }
