@@ -8,7 +8,7 @@ const LayoutWrapper = styled.div`
   justify-content: center;
   align-items: center;
   margin: 0 auto;
-  height: 100vh;
+  min-height: 100vh; // 최소 높이를 100vh로 설정하여 화면 전체를 채움
   width: 100vw;
   padding: 56px auto;
 
@@ -36,11 +36,21 @@ const LayoutContainer = styled.div`
   justify-content: center;
   min-width: 375px; // 최소너비 아이폰se
   max-width: 450px; // 최대너비 모바일 기본
-  min-height: 667px; // 최소높이 아이폰se
+  min-height: 100vh; // 최소높이를 100vh로 설정
   height: auto; // 컨텐츠에 따라 자동 맞추기
   background-color: var(--white-color);
-  padding: 0 10px;
   margin: 0 auto; // 중앙정렬
+  padding: 50px 10px; // 기본 여백 - 컨텐츠 잘림 방지
+
+  // 모바일 디바이스 여백
+  @media (max-width: 768px) {
+    padding: 50px 10px;
+  }
+
+  // 데스크탑 여백
+  @media (min-width: 1024px) {
+    padding: 100px 10px; // 데스크탑 여백이 더 커야함..
+  }
 `;
 
 const Layout = () => {
