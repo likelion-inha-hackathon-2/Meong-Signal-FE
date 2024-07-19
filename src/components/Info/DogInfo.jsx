@@ -14,12 +14,17 @@ import statusChange from "../../assets/images/status-change.png";
 const DogInfoContainer = styled.div`
   display: flex;
   align-items: center;
-  width: 300px;
+  width: 310px;
   height: 107px;
   padding: 10px;
   border-radius: 8px;
   margin-bottom: 10px;
   background-color: var(--yellow-color1);
+`;
+
+const DogImage = styled(Image)`
+  width: 80px;
+  height: auto;
 `;
 
 const DogInfoWrapper = styled.div`
@@ -83,7 +88,7 @@ const DogInfo = ({ id, name, gender, age, introduction, status, image }) => {
 
   return (
     <DogInfoContainer>
-      <Image src={image} alt={`${name}`} />
+      <DogImage src={image} alt={`${name}`} />
       <DogInfoWrapper>
         <div>이름: {name}</div>
         <div>나이: {age}</div>
@@ -105,15 +110,12 @@ const DogInfo = ({ id, name, gender, age, introduction, status, image }) => {
         >
           <div onClick={() => handleStatusChange("R")}>
             <img src={statusImages.R} alt="쉬는 중" width="50" height="50" />
-            <div>쉬는 중</div>
           </div>
           <div onClick={() => handleStatusChange("B")}>
             <img src={statusImages.B} alt="심심함" width="50" height="50" />
-            <div>심심함</div>
           </div>
           <div onClick={() => handleStatusChange("W")}>
             <img src={statusImages.W} alt="산책 중" width="50" height="50" />
-            <div>산책 중</div>
           </div>
         </StatusTooltip>
       </DogStatusWrapper>
