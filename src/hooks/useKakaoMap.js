@@ -47,9 +47,11 @@ const useKakaoMap = (appKey, initialLocation) => {
             currentLocation.latitude,
             currentLocation.longitude,
           );
+
+          // 현재 위치를 나타내는 마커, 카카오에서 가져옴
           const markerImage = new window.kakao.maps.MarkerImage(
-            "https://i1.daumcdn.net/dmaps/apis/n_local_blit_04.png",
-            new window.kakao.maps.Size(31, 35),
+            "https://t1.daumcdn.net/localimg/localimages/07/2018/pc/img/marker_spot.png",
+            new window.kakao.maps.Size(30, 40),
           );
 
           const markerInstance = new window.kakao.maps.Marker({
@@ -91,8 +93,8 @@ const useKakaoMap = (appKey, initialLocation) => {
             longitude,
           );
           const dogMarkerImage = new window.kakao.maps.MarkerImage(
-            dog.image, // 강아지 이미지 URL
-            new window.kakao.maps.Size(31, 35),
+            dog.image,
+            new window.kakao.maps.Size(20, 20),
           );
 
           const dogMarker = new window.kakao.maps.Marker({
@@ -102,31 +104,38 @@ const useKakaoMap = (appKey, initialLocation) => {
 
           dogMarker.setMap(map);
 
-          const content = `
-            <div style="padding:5px;">
-              <img src="${dog.image}" style="width:50px;height:50px;" alt="${dog.name}">
-              <div>${dog.name}</div>
-              <div>${dog.distance} km</div>
+          // 커스텀 오버레이를 사용한 강아지 마커(html 문법으로 써야 함)
+          const overlayContent = document.createElement("div");
+          overlayContent.innerHTML = `
+            <div id="overlay-${dog.id}" style="display: flex; align-items: center; justify-content: center; padding: 4px; background-color: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); cursor: pointer; font-family: 'PretendardR';" >
+              <img src="${dog.image}" style="width: 70px; height: auto; border-radius: 50%;" alt="${dog.name}">
+              <div >
+                <div style="font-weight: bold;">${dog.name}</div>
+                <div style="color: black;">${dog.distance}km</div>
+              </div>
             </div>
           `;
+          overlayContent
+            .querySelector(`#overlay-${dog.id}`)
+            .addEventListener("click", () => {
+              window.location.href = `/dog/${dog.id}`;
+            });
 
           const overlay = new window.kakao.maps.CustomOverlay({
-            content,
+            content: overlayContent,
             map,
             position: markerPosition,
           });
 
-          // 마커에 클릭 이벤트 추가
           window.kakao.maps.event.addListener(dogMarker, "click", () => {
+            // 해당하는 dog_id를 가진 새 페이지로 이동! 아직 미구현..
             window.location.href = `/dog/${dog.id}`;
           });
 
-          // 마커에 마우스 오버 이벤트 추가 (오버레이 표시)
           window.kakao.maps.event.addListener(dogMarker, "mouseover", () => {
             overlay.setMap(map);
           });
 
-          // 마커에 마우스 아웃 이벤트 추가 (오버레이 숨김)
           window.kakao.maps.event.addListener(dogMarker, "mouseout", () => {
             overlay.setMap(null);
           });
