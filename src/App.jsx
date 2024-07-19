@@ -12,6 +12,7 @@ import MapStatus from "./pages/Map/MapStatus";
 import ReviewReceived from "./pages/MyInfo/ReviewReceived";
 import ReviewWritten from "./pages/MyInfo/ReviewWritten";
 import MyInfoMain from "./pages/MyInfo/MyInfoMain";
+import MyInfoEdit from "./pages/MyInfo/MyInfoEdit";
 import RegisterDog from "./pages/MyInfo/RegisterDog";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path="/reviews/received" element={<ReviewReceived />} />
             <Route path="/reviews/written" element={<ReviewWritten />} />
             <Route path="/myinfo-main" element={<MyInfoMain />} />
+            <Route path="/myinfo-edit" element={<MyInfoEdit />} />
             <Route path="/dogs/new" element={<RegisterDog />} />
           </Route>
         </Routes>

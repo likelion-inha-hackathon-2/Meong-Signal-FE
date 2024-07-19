@@ -7,15 +7,16 @@ import authApi from "../../apis/authApi";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import AddDogImage from "../../assets/images/add-dog.png";
+import { useNavigate } from "react-router-dom";
 
-// 모든 요소 묶는 전체 컨ㄴ테이너
+// 모든 요소 묶는 전체 컨테이너
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  width: 300px;
+  width: 350px;
 `;
 
 const ImageUpload = styled.div`
@@ -29,8 +30,8 @@ const ImageUpload = styled.div`
 
 const Row = styled.div`
   display: flex;
-  justify-content: space-between;
-  gap: 15px;
+  justify-content: flex-start;
+  gap: 20px;
   width: 100%;
   margin-bottom: 10px;
 `;
@@ -107,6 +108,7 @@ const RegisterDog = () => {
   });
   const [selectedTags, setSelectedTags] = useState([]);
   const [image, setImage] = useState(null);
+  const navigate = useNavigate();
 
   const handleRegisterDog = async () => {
     const dog = {
@@ -128,7 +130,7 @@ const RegisterDog = () => {
       setSelectedTags([]);
       setImage(null);
       alert("강아지가 등록되었습니다.");
-      window.location.href = "/myinfo-main"; // 등록 성공 후 MyInfoMain 페이지로 이동
+      navigate("/myinfo-main"); // 등록 성공 후 MyInfoMain 페이지로 이동
     } catch (error) {
       console.error("Failed to register dog:", error); // 실패 시 콘솔에 오류 메시지 출력
     }
@@ -188,7 +190,7 @@ const RegisterDog = () => {
             placeholder="1"
             min="1"
             max="20"
-            style={{ width: "58%" }}
+            style={{ width: "50%" }}
           />
           <Input
             label="성별"
@@ -198,7 +200,6 @@ const RegisterDog = () => {
             onChange={handleChange}
             style={{
               padding: "8px",
-              borderRadius: "4px",
             }}
           >
             <option value="M">남자</option>
