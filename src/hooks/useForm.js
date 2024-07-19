@@ -1,4 +1,3 @@
-//hooks 안
 import { useState } from "react";
 
 const useForm = (initialValues) => {
@@ -12,9 +11,15 @@ const useForm = (initialValues) => {
     });
   };
 
+  // 리셋 함수 추가
+  const reset = () => {
+    setValues(initialValues);
+  };
+
   return {
     values,
     handleChange,
+    reset,
   };
 };
 

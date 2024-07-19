@@ -3,7 +3,6 @@ import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
 import useForm from "../hooks/useForm";
 import { useNavigate } from "react-router-dom";
-import { login } from "../apis/authApi";
 import authApi from "../apis/authApi";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
@@ -24,9 +23,16 @@ const Login = () => {
     });
 
     try {
-      const response = await login(values.email, values.password);
-      console.log(response);
-      if (response && response.status === "200") {
+      const response = await authApi.post("/users/login", {
+        email: values.email,
+        password: values.password,
+      });
+      if (response.data && response.data.status === "200") {
+        const { access_token, refresh_token } = response.data;
+        localStorage.setItem("accessToken", access_token);
+        localStorage.setItem("refreshToken", refresh_token);
+        authApi.defaults.headers.common["Authorization"] =
+          `Bearer ${access_token}`;
         navigate("/home");
       } else {
         alert(response.message || "로그인에 실패했습니다.");

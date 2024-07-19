@@ -11,6 +11,8 @@ import MapInfo from "./pages/Map/MapInfo";
 import MapStatus from "./pages/Map/MapStatus";
 import ReviewReceived from "./pages/MyInfo/ReviewReceived";
 import ReviewWritten from "./pages/MyInfo/ReviewWritten";
+import MyInfoMain from "./pages/MyInfo/MyInfoMain";
+import RegisterDog from "./pages/MyInfo/RegisterDog";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
             <Route path="/map-status" element={<MapStatus />} />
             <Route path="/reviews/received" element={<ReviewReceived />} />
             <Route path="/reviews/written" element={<ReviewWritten />} />
+            <Route path="/myinfo-main" element={<MyInfoMain />} />
+            <Route path="/dogs/new" element={<RegisterDog />} />
           </Route>
         </Routes>
       </BrowserRouter>
