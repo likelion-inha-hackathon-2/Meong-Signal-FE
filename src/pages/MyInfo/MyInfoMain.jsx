@@ -139,6 +139,7 @@ const MyInfoMain = () => {
         dogs.map((dog) => (
           <DogInfo
             key={dog.id}
+            id={dog.id}
             name={dog.name}
             gender={dog.gender}
             age={dog.age}
