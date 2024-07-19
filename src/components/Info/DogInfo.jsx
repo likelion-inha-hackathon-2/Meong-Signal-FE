@@ -6,17 +6,26 @@ import Image from "../Image/Image";
 const DogInfoContainer = styled.div`
   display: flex;
   align-items: center;
+  width: 270px;
+  height: 107px;
   padding: 10px;
-  border: 1px solid #ddd;
   border-radius: 8px;
   margin-bottom: 10px;
+  background-color: var(--yellow-color1);
 `;
 
 const DogInfoWrapper = styled.div`
   flex: 1;
+  font-family: "PretendardM";
+  font-size: 12px;
+  font-style: normal;
+  line-height: 150%; /* 18px */
+  letter-spacing: -0.132px;
 `;
 
-const DogStatus = styled.div``;
+const DogStatus = styled.div`
+  // 상태 변경 추가 필요
+`;
 
 const DogInfo = ({ name, gender, age, introduction, status, image }) => {
   return (

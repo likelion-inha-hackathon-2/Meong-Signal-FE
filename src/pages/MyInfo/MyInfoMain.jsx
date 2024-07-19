@@ -6,7 +6,7 @@ import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import Image from "../../components/Image/Image";
 import { getUserInfo } from "../../apis/authApi";
-import axios from "axios";
+import authApi from "../../apis/authApi";
 import DogInfo from "../../components/Info/DogInfo";
 
 const MyInfoButtonContainer = styled.div`
@@ -20,12 +20,13 @@ const SectionTitle = styled.h3`
   margin-top: 20px;
   margin-bottom: 10px;
   font-size: 20px;
+  font-family: "PretendardS";
   text-align: left;
 `;
 
 const UserInfo = styled.div`
   padding: 20px;
-  font-family: "pretendardR";
+  font-family: "pretendardS";
   font-size: 14px;
 `;
 
@@ -33,17 +34,34 @@ const MyDogInfoContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 50px; // 강아지 등록 사이 간격
+  gap: 90px; // 강아지 등록 사이 간격
   margin-bottom: 10px;
   font-family: "pretendardR";
 `;
 
-// 링크 스타일
 const StyledLink = styled(Link)`
   font-family: "pretendardR";
   color: var(--gray-color3);
   font-size: 14px;
   text-decoration: none;
+  border: 2px solid var(--gray-color2);
+  border-radius: 8px;
+  padding: 4px;
+
+  &:hover {
+    background-color: var(--gray-color1);
+  }
+`;
+
+const StyledMyInfoButton = styled(Button)`
+  display: flex;
+  width: 120px;
+  height: 32px;
+  gap: 10px;
+  background-color: var(--yellow-color1);
+  color: var(--black-color);
+  font-size: 12px;
+  font-style: normal;
 `;
 
 const MyInfoMain = () => {
@@ -70,16 +88,17 @@ const MyInfoMain = () => {
           total_distance: data.total_distance,
           total_kilocalories: data.total_kilocalories,
         });
+        // console.log("User info fetched:", data); // 유저 데이터 테스트
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
     };
 
-    // 강아지 정보 가져오기
     const fetchDogs = async () => {
       try {
-        const response = await axios.get("/dogs/all");
+        const response = await authApi.get("/dogs/all");
         setDogs(response.data.dogs);
+        // console.log("Dogs fetched:", response.data.dogs); // 강아지들
       } catch (error) {
         console.error("Failed to fetch dogs:", error);
       }
@@ -104,17 +123,16 @@ const MyInfoMain = () => {
       <StyledLink to="/myinfo-edit">+ 내 정보 수정</StyledLink>
 
       <MyInfoButtonContainer>
-        <Button text="내 산책현황" />
-        <Button text="칭호관리" />
-        <Button text="내가남긴 리뷰" />
-        <Button text="내가 받은 리뷰" />
+        <StyledMyInfoButton text="내 산책현황" />
+        <StyledMyInfoButton text="칭호관리" />
+        <StyledMyInfoButton text="내가남긴 리뷰" />
+        <StyledMyInfoButton text="내가 받은 리뷰" />
       </MyInfoButtonContainer>
 
       <MyDogInfoContainer>
         <p>내가 등록한 강아지</p>
-        <StyledLink to="/RegisterDog">+ 강아지 등록</StyledLink>
+        <StyledLink to="/dogs/new">+ 강아지 등록</StyledLink>
       </MyDogInfoContainer>
-
       {dogs.length === 0 ? (
         <p>등록된 강아지가 없습니다.</p>
       ) : (
