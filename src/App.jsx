@@ -11,6 +11,7 @@ import MapInfo from "./pages/Map/MapInfo";
 import MapStatus from "./pages/Map/MapStatus";
 import ReviewReceived from "./pages/MyInfo/ReviewReceived";
 import ReviewWritten from "./pages/MyInfo/ReviewWritten";
+import MyInfoMain from "./pages/MyInfo/MyInfoMain";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/map-status" element={<MapStatus />} />
             <Route path="/reviews/received" element={<ReviewReceived />} />
             <Route path="/reviews/written" element={<ReviewWritten />} />
+            <Route path="/myinfo-main" element={<MyInfoMain />} />
           </Route>
         </Routes>
       </BrowserRouter>

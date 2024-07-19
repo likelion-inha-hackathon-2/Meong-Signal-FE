@@ -5,6 +5,7 @@ import iconChat from "../../assets/icons/icon-chat.png";
 import iconMain from "../../assets/icons/icon-main.png";
 import iconWalk from "../../assets/icons/icon-walk.png";
 import iconUser from "../../assets/icons/icon-user.png";
+import { useNavigate } from "react-router-dom";
 
 const FooterWrapper = styled.div`
   display: flex;
@@ -33,18 +34,28 @@ const Icon = styled.img`
 `;
 
 const icons = [
-  { src: iconMap },
-  { src: iconChat },
-  { src: iconMain },
-  { src: iconWalk },
-  { src: iconUser },
+  { src: iconMap, path: "/map-info" },
+  { src: iconChat, path: "/chat" },
+  { src: iconMain, path: "/home" },
+  { src: iconWalk, path: "/walk" },
+  { src: iconUser, path: "/myinfo-main" },
 ];
 
 const Footer = () => {
+  const navigate = useNavigate();
+
+  const handleIconClick = (path) => {
+    navigate(path);
+  };
+
   return (
     <FooterWrapper>
       {icons.map((icon, index) => (
-        <Icon key={index} src={icon.src} />
+        <Icon
+          key={index}
+          src={icon.src}
+          onClick={() => handleIconClick(icon.path)}
+        />
       ))}
     </FooterWrapper>
   );
