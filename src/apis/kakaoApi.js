@@ -9,6 +9,21 @@ const kakaoApi = axios.create({
   },
 });
 
+/*
+kakaoApi.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("accessToken"); // 로컬 스토리지에서 토큰 가져오기
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+*/
+
 // 집 주소를 보내면 위도, 경도와 함께 변환
 export const getCoordinates = async (roadAddress) => {
   try {
@@ -29,23 +44,6 @@ export const getCoordinates = async (roadAddress) => {
     }
   } catch (error) {
     console.error("Error fetching coordinates:", error);
-    throw error;
-  }
-};
-
-// 심심한 상태의 강아지를 조회
-export const getBoringDogs = async () => {
-  try {
-    const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/dogs/boring`,
-    );
-    console.log("심심한 강아지 목록:", response.data); // 테스트 로그
-    return response.data.dogs;
-  } catch (error) {
-    console.error(
-      "Error fetching boring dogs:",
-      error.response ? error.response.data : error.message,
-    );
     throw error;
   }
 };

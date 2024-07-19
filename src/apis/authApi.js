@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const authApi = axios.create({
-  baseURL: "http://meong-signal-back.p-e.kr",
+  baseURL: process.env.REACT_APP_BACKEND_URL,
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
