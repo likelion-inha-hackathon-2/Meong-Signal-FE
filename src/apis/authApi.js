@@ -45,4 +45,15 @@ export const login = async (email, password) => {
   }
 };
 
+// 사용자 정보 가져오기 (MyInfoMain)
+export const getUserInfo = async () => {
+  try {
+    const response = await authApi.get("/users/me");
+    return response.data;
+  } catch (error) {
+    console.error("Get user info error:", error);
+    throw error;
+  }
+};
+
 export default authApi;
