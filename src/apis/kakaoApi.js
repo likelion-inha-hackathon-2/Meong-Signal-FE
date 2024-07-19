@@ -9,25 +9,18 @@ const kakaoApi = axios.create({
   },
 });
 
-/*
-export const getAddressToCoordinate = async (address) => {
-  if (!address) {
-    throw new Error("주소가 비어있습니다.");
-  }
+// 집 주소를 보내면 위도, 경도와 함께 변환
+export const getCoordinates = async (roadAddress) => {
   try {
-    const response = await kakaoApi.get("/search/address.json", {
-      params: {
-        query: address,
-      },
+    const response = await axios.post("/walks/coordinate", {
+      road_address: roadAddress,
     });
-    console.log("getAddressToCoordinate response:", response.data);
-    const { x, y } = response.data.documents[0].address;
-    return { latitude: y, longitude: x };
+    const { latitude, longitude } = response.data;
+    return { latitude: parseFloat(latitude), longitude: parseFloat(longitude) };
   } catch (error) {
-    console.error("Error fetching coordinates from address:", error);
+    console.error("Error fetching coordinates:", error);
     throw error;
   }
 };
-*/
 
 export default kakaoApi;
