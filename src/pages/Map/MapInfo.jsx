@@ -6,10 +6,10 @@ import { getCoordinates } from "../../apis/kakaoApi";
 
 const MapInfo = () => {
   const [initialLocation, setInitialLocation] = useState({
+    // 초기 위치 인하대. 어차피 현 위치로 바뀜!
     latitude: 37.4482020408321,
     longitude: 126.651415033662,
-  }); // 초기 좌표 인하대
-  const [currentLocation, setCurrentLocation] = useState(initialLocation);
+  });
 
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -24,16 +24,12 @@ const MapInfo = () => {
     fetchCoordinates();
   }, []);
 
-  useEffect(() => {
-    setCurrentLocation(initialLocation);
-  }, [initialLocation]);
-
   return (
     <>
       <Header />
       <Map
-        latitude={currentLocation.latitude}
-        longitude={currentLocation.longitude}
+        latitude={initialLocation.latitude}
+        longitude={initialLocation.longitude}
       />
       <Footer />
     </>

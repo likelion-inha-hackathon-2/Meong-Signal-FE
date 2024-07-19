@@ -35,7 +35,7 @@ const useKakaoMap = (appKey, initialLocation) => {
               currentLocation.latitude,
               currentLocation.longitude,
             ),
-            level: 5,
+            level: 6,
           };
           const mapInstance = new window.kakao.maps.Map(
             mapContainer.current,
@@ -90,28 +90,45 @@ const useKakaoMap = (appKey, initialLocation) => {
             latitude,
             longitude,
           );
+          const dogMarkerImage = new window.kakao.maps.MarkerImage(
+            dog.image, // 강아지 이미지 URL
+            new window.kakao.maps.Size(31, 35),
+          );
+
           const dogMarker = new window.kakao.maps.Marker({
             position: markerPosition,
-            image: new window.kakao.maps.MarkerImage(
-              dog.image,
-              new window.kakao.maps.Size(31, 35),
-            ),
+            image: dogMarkerImage,
           });
 
           dogMarker.setMap(map);
 
           const content = `
             <div style="padding:5px;">
-              <img src="${dog.image}" style="width:30px;height:30px;" alt="${dog.name}">
+              <img src="${dog.image}" style="width:50px;height:50px;" alt="${dog.name}">
               <div>${dog.name}</div>
               <div>${dog.distance} km</div>
             </div>
           `;
 
-          new window.kakao.maps.CustomOverlay({
+          const overlay = new window.kakao.maps.CustomOverlay({
             content,
             map,
             position: markerPosition,
+          });
+
+          // 마커에 클릭 이벤트 추가
+          window.kakao.maps.event.addListener(dogMarker, "click", () => {
+            window.location.href = `/dog/${dog.id}`;
+          });
+
+          // 마커에 마우스 오버 이벤트 추가 (오버레이 표시)
+          window.kakao.maps.event.addListener(dogMarker, "mouseover", () => {
+            overlay.setMap(map);
+          });
+
+          // 마커에 마우스 아웃 이벤트 추가 (오버레이 숨김)
+          window.kakao.maps.event.addListener(dogMarker, "mouseout", () => {
+            overlay.setMap(null);
           });
         } catch (error) {
           console.error("Error adding dog marker and overlay:", error);
