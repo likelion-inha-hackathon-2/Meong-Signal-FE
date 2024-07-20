@@ -37,6 +37,7 @@ const ImageUpload = styled.div`
   position: relative;
 `;
 
+// 사진 파일 업로드 버튼
 const UploadButton = styled.label`
   font-family: "PretendardM";
   font-size: 14px;
@@ -61,18 +62,31 @@ const FileInput = styled.input`
   display: none;
 `;
 
-const AddressButton = styled(Button)`
-  margin-top: 10px;
-  background-color: var(--yellow-color1);
-  color: var(--black-color);
+// 도로명 주소 검색 컨테이너 추가
+const AddressContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   margin-bottom: 10px;
-  width: 200px;
 `;
 
+// 도로명 주소 찾기를 위한 검색용 버튼
+const AddressButton = styled(Button)`
+  background-color: var(--yellow-color1);
+  color: var(--black-color);
+  width: 225px;
+`;
+
+// 변경 저장하기 버튼
 const SaveButton = styled(Button)`
   width: 100%;
   background-color: var(--yellow-color2);
   color: var(--black-color);
+  margin-bottom: 10px;
+`;
+
+const StyledInput = styled(Input)`
+  margin-bottom: 10px;
 `;
 
 const MyInfoEdit = () => {
@@ -149,7 +163,7 @@ const MyInfoEdit = () => {
           </UploadButton>
         </ImageUpload>
 
-        <Input
+        <StyledInput
           label="닉네임"
           id="nickname"
           type="text"
@@ -157,20 +171,22 @@ const MyInfoEdit = () => {
           placeholder="변경할 닉네임을 입력하세요."
           value={values.nickname}
           onChange={handleChange}
-          style={{ marginBottom: "10px" }}
         />
 
-        <Input
-          label="도로명 주소"
-          id="roadAddress"
-          type="text"
-          name="road_address"
-          value={values.road_address}
-          readOnly
-          placeholder="도로명 주소를 검색하세요."
-        />
-        <AddressButton text="도로명 주소 찾기" onClick={openPostcode} />
-        <Input
+        <AddressContainer>
+          <StyledInput
+            label="도로명 주소"
+            id="roadAddress"
+            type="text"
+            name="road_address"
+            value={values.road_address}
+            readOnly
+            placeholder="도로명 주소를 검색하세요."
+          />
+          <AddressButton text="도로명 주소 찾기" onClick={openPostcode} />
+        </AddressContainer>
+
+        <StyledInput
           label="상세 주소"
           id="detailAddress"
           type="text"
@@ -178,7 +194,6 @@ const MyInfoEdit = () => {
           placeholder="상세 주소를 입력하세요."
           value={values.detail_address}
           onChange={handleChange}
-          style={{ marginBottom: "10px" }}
         />
 
         <SaveButton text="변경 저장하기" onClick={handleSave} />
