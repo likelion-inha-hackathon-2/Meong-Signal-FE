@@ -9,6 +9,12 @@ import { getUserInfo } from "../../apis/authApi";
 import authApi from "../../apis/authApi";
 import DogInfo from "../../components/Info/DogInfo";
 
+const StyledImage = styled(Image)`
+  width: 100px;
+  height: 100px;
+  pointer-events: none; // nonclick
+`;
+
 const MyInfoButtonContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -28,13 +34,15 @@ const UserInfo = styled.div`
   padding: 20px;
   font-family: "pretendardS";
   font-size: 14px;
+  justify-content: center;
+  align-items: center;
 `;
 
 const MyDogInfoContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 90px; // 강아지 등록 사이 간격
+  gap: 90px;
   margin-bottom: 10px;
   font-family: "pretendardR";
 `;
@@ -55,7 +63,7 @@ const StyledLink = styled(Link)`
 
 const StyledMyInfoButton = styled(Button)`
   display: flex;
-  width: 120px;
+  width: 140px;
   height: 32px;
   gap: 10px;
   background-color: var(--yellow-color1);
@@ -88,7 +96,6 @@ const MyInfoMain = () => {
           total_distance: data.total_distance,
           total_kilocalories: data.total_kilocalories,
         });
-        // console.log("User info fetched:", data); // 유저 데이터 테스트
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
@@ -98,14 +105,19 @@ const MyInfoMain = () => {
       try {
         const response = await authApi.get("/dogs/all");
         setDogs(response.data.dogs);
-        // console.log("Dogs fetched:", response.data.dogs); // 강아지들
       } catch (error) {
         console.error("Failed to fetch dogs:", error);
       }
     };
 
+    const fetchLocalDogs = () => {
+      const localDogs = JSON.parse(localStorage.getItem("dogs")) || [];
+      setDogs(localDogs);
+    };
+
     const fetchData = async () => {
       await Promise.all([fetchUserInfo(), fetchDogs()]);
+      fetchLocalDogs();
     };
 
     fetchData();
@@ -115,7 +127,7 @@ const MyInfoMain = () => {
     <>
       <Header />
       <UserInfo>
-        <Image src={userInfo.profile_image} alt="Profile" />
+        <StyledImage src={userInfo.profile_image} alt="Profile" />
         <SectionTitle>{userInfo.nickname}님, 안녕하세요!</SectionTitle>
         지금까지 총 {userInfo.total_distance}km 산책하고{" "}
         {userInfo.total_kilocalories}kcal를 소비했네요.
