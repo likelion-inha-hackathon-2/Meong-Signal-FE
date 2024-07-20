@@ -37,6 +37,7 @@ const ImageUpload = styled.div`
   position: relative;
 `;
 
+// 사진 파일 업로드 버튼
 const UploadButton = styled.label`
   font-family: "PretendardM";
   font-size: 14px;
@@ -61,30 +62,48 @@ const FileInput = styled.input`
   display: none;
 `;
 
-const AddressButton = styled(Button)`
-  margin-top: 10px;
-  background-color: var(--yellow-color1);
-  color: var(--black-color);
+// 도로명 주소 검색 컨테이너 추가
+const AddressContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   margin-bottom: 10px;
 `;
 
+// 도로명 주소 찾기를 위한 검색용 버튼
+const AddressButton = styled(Button)`
+  background-color: var(--yellow-color1);
+  color: var(--black-color);
+  width: 225px;
+`;
+
+// 변경 저장하기 버튼
 const SaveButton = styled(Button)`
   width: 100%;
   background-color: var(--yellow-color2);
   color: var(--black-color);
+  margin-bottom: 10px;
+`;
+
+const StyledInput = styled(Input)`
+  margin-bottom: 10px;
 `;
 
 const MyInfoEdit = () => {
   const { values, handleChange, reset } = useForm({
     nickname: "",
     road_address: "",
+    detail_address: "", // 상세주소 필드 추가
+    profile_image: "", // 프로필 사진 이미지 필드 추가
   });
   const [profileImage, setProfileImage] = useState(null);
   const navigate = useNavigate();
 
+  // 사진은 파일 형태로 업로드
   const handleProfileImageChange = (event) => {
     const file = event.target.files[0];
     setProfileImage(file);
+    handleChange({ target: { name: "profile_image", value: file } });
   };
 
   const handlePostcodeComplete = (data) => {
@@ -99,14 +118,20 @@ const MyInfoEdit = () => {
 
   const handleSave = async () => {
     try {
+      // 프로필 사진을 무조건 업로드하도록 하기
+      if (!profileImage) {
+        alert("프로필 이미지를 업로드해주세요.");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("nickname", values.nickname);
       formData.append("road_address", values.road_address);
+      formData.append("detail_address", values.detail_address);
       formData.append("profile_image", profileImage);
 
-      await authApi.put("/users", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await authApi.put("/users/", formData); // PUT!!
+
       alert("정보가 성공적으로 변경되었습니다.");
       reset();
       setProfileImage(null);
@@ -138,7 +163,7 @@ const MyInfoEdit = () => {
           </UploadButton>
         </ImageUpload>
 
-        <Input
+        <StyledInput
           label="닉네임"
           id="nickname"
           type="text"
@@ -146,19 +171,31 @@ const MyInfoEdit = () => {
           placeholder="변경할 닉네임을 입력하세요."
           value={values.nickname}
           onChange={handleChange}
-          style={{ marginBottom: "10px" }}
         />
 
-        <Input
-          label="도로명 주소"
-          id="roadAddress"
+        <AddressContainer>
+          <StyledInput
+            label="도로명 주소"
+            id="roadAddress"
+            type="text"
+            name="road_address"
+            value={values.road_address}
+            readOnly
+            placeholder="도로명 주소를 검색하세요."
+          />
+          <AddressButton text="도로명 주소 찾기" onClick={openPostcode} />
+        </AddressContainer>
+
+        <StyledInput
+          label="상세 주소"
+          id="detailAddress"
           type="text"
-          name="road_address"
-          value={values.road_address}
-          readOnly
-          placeholder="도로명 주소를 검색하세요."
+          name="detail_address"
+          placeholder="상세 주소를 입력하세요."
+          value={values.detail_address}
+          onChange={handleChange}
         />
-        <AddressButton text="도로명 주소 찾기" onClick={openPostcode} />
+
         <SaveButton text="변경 저장하기" onClick={handleSave} />
       </MyInfoEditContainer>
       <Footer />
