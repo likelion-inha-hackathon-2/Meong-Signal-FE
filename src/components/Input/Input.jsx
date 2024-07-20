@@ -12,7 +12,7 @@ const InputContainer = styled.div`
 
 const Label = styled.label`
   display: block;
-  width: 90px;
+  width: 120px;
   justify-content: center;
   align-items: center;
   margin-bottom: 5px;
