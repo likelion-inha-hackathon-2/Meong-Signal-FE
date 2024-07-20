@@ -7,7 +7,6 @@ import useForm from "../../assets/hooks/useForm";
 import authApi from "../../assets/apis/authApi";
 import mainImage from "../../assets/icons/icon-main-image.png";
 
-
 const SignupForm = styled.div`
   width: 100%;
   max-width: 400px;
@@ -36,8 +35,6 @@ const RoadButton = styled(Button)`
   margin-right: 78px;
 `;
 
-
-
 const StyledButton = styled(Button)`
   width: 100%;
   height: 40px;
@@ -52,8 +49,6 @@ const MainImage = styled.img`
   height: auto;
   margin-bottom: 20px;
 `;
-
-
 
 const Signup2 = () => {
   const navigate = useNavigate();
@@ -76,7 +71,7 @@ const Signup2 = () => {
     new window.daum.Postcode({
       oncomplete: function (data) {
         handleAddressChange(data);
-      }
+      },
     }).open();
   };
 
@@ -129,11 +124,8 @@ const Signup2 = () => {
       <SignupForm>
         <MainImage src={mainImage} alt="메인 이미지" />
 
-        <RoadButton
-          text="도로명 찾기"
-          onClick={openAddressPopup}
-        />
-        
+        <RoadButton text="도로명 찾기" onClick={openAddressPopup} />
+
         <StyledInput
           label="집 주소"
           name="road_address"
@@ -141,7 +133,7 @@ const Signup2 = () => {
           value={values.road_address}
           onChange={handleChange}
         />
-        
+
         <StyledInput
           label="상세주소"
           name="detail_address"
@@ -150,10 +142,7 @@ const Signup2 = () => {
           onChange={handleChange}
         />
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <StyledButton
-          text="회원가입 완료하기"
-          onClick={handleSignup}
-        />
+        <StyledButton text="회원가입 완료하기" onClick={handleSignup} />
       </SignupForm>
     </>
   );

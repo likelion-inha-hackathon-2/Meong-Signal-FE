@@ -7,7 +7,6 @@ import useForm from "../../assets/hooks/useForm";
 import cameraIcon from "../../assets/icons/icon-camera.png";
 import userIcon from "../../assets/icons/icon-user-image.png";
 
-
 const ProfileImageWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -41,7 +40,7 @@ const SignupForm = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 `;
 
 const StyledInput = styled(Input)`
@@ -83,7 +82,12 @@ const Signup1 = () => {
           <ProfileImage src={profileImage || userIcon} alt="프로필 이미지" />
           <label>
             <CameraIcon src={cameraIcon} alt="카메라 아이콘" />
-            <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{ display: "none" }}
+            />
           </label>
         </ProfileImageWrapper>
         <StyledInput
