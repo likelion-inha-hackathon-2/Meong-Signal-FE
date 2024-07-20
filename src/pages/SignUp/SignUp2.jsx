@@ -102,7 +102,7 @@ const Signup2 = () => {
       if (response.status === 201) {
         alert("회원가입에 성공했습니다.");
         localStorage.setItem("token", response.data.token); // 인증 토큰 저장
-        navigate("/login");
+        navigate("/");
       } else {
         setError(response.data.message || "회원가입에 실패했습니다.");
       }
