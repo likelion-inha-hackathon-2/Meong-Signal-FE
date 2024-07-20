@@ -55,9 +55,11 @@ const Tag = styled.span`
 `;
 
 const StyledImage = styled.img`
-  width: 140px;
-  height: 140px;
-  border-radius: 0px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  object-fit: cover;
+  padding: 20px;
 `;
 
 // 사진 업로드용 버튼
@@ -86,7 +88,15 @@ const FileInput = styled.input`
   display: none;
 `;
 
-// 태그 임의로 네이밍
+const StyledInput = styled(Input)`
+  margin-bottom: 10px;
+  resize: none;
+`;
+
+const StyledButton = styled(Button)`
+  margin-top: 10px;
+`;
+
 const tagsData = [
   { id: 1, label: "활발한", emoji: "😁" },
   { id: 2, label: "잘 달리는", emoji: "🐶" },
@@ -95,7 +105,7 @@ const tagsData = [
   { id: 5, label: "순딩이", emoji: "😇" },
   { id: 6, label: "소심해요", emoji: "😢" },
   { id: 7, label: "조용해요", emoji: "😌" },
-  { id: 8, label: "시크쟁이", emoji: "🫤" },
+  { id: 8, label: "시크쟁이", emoji: "😶" },
   { id: 9, label: "친화력", emoji: "😊" },
 ];
 
@@ -105,34 +115,51 @@ const RegisterDog = () => {
     gender: "M",
     age: "1",
     introduction: "",
+    image: "",
   });
   const [selectedTags, setSelectedTags] = useState([]);
-  const [image, setImage] = useState(null);
+  const [dogImage, setDogImage] = useState(null);
   const navigate = useNavigate();
 
   const handleRegisterDog = async () => {
-    const dog = {
-      name: values.name,
-      gender: values.gender,
-      age: values.age,
-      introduction: values.introduction,
-      image: image ? URL.createObjectURL(image) : null, // 이미지가 없으면 null로 설정
-    };
-
-    const tags = selectedTags.map((tag) => ({ number: tag.id }));
-    const payload = { dog, tags };
-
     try {
-      await authApi.post("/dogs/new", payload, {
-        headers: { "Content-Type": "application/json" },
+      if (!dogImage) {
+        alert("강아지 이미지를 업로드해주세요.");
+        return;
+      }
+
+      // 태그를 1개 이상 선택해야 넘어가도록 하기?
+      if (selectedTags.length < 1) {
+        alert("태그를 최소 1개 선택해주세요.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("dog[name]", values.name);
+      formData.append("dog[gender]", values.gender);
+      formData.append("dog[age]", values.age);
+      formData.append("dog[introduction]", values.introduction);
+      formData.append("dog[image]", dogImage);
+
+      /*
+      selectedTags.forEach((tag) => {
+        formData.append("tags[]number", tag.id);
+      });*/
+
+      selectedTags.forEach((tag, index) => {
+        formData.append(`tags[${index}][number]`, tag.id);
       });
+
+      await authApi.post("/dogs/new", formData);
+
+      alert("강아지가 등록되었습니다.");
       reset();
       setSelectedTags([]);
-      setImage(null);
-      alert("강아지가 등록되었습니다.");
-      navigate("/myinfo-main"); // 등록 성공 후 MyInfoMain 페이지로 이동
+      setDogImage(null);
+      navigate("/myinfo-main");
     } catch (error) {
-      console.error("Failed to register dog:", error); // 실패 시 콘솔에 오류 메시지 출력
+      console.error("Failed to register dog:", error.response.data);
+      alert("강아지 등록에 실패했습니다.");
     }
   };
 
@@ -147,8 +174,10 @@ const RegisterDog = () => {
     [selectedTags],
   );
 
-  const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+  const handleDogImageChange = (e) => {
+    const file = e.target.files[0];
+    setDogImage(file);
+    handleChange({ target: { name: "image", value: file } });
   };
 
   return (
@@ -157,31 +186,28 @@ const RegisterDog = () => {
       <Container>
         <ImageUpload>
           <StyledImage
-            src={image ? URL.createObjectURL(image) : AddDogImage}
+            src={dogImage ? URL.createObjectURL(dogImage) : AddDogImage}
             alt="Dog"
           />
           <FileInput
             id="imageUpload"
             type="file"
             accept="image/*"
-            onChange={handleImageChange}
+            onChange={handleDogImageChange}
           />
-          <UploadButton htmlFor="imageUpload" style={{ marginBottom: "10px" }}>
-            사진 업로드
-          </UploadButton>
+          <UploadButton htmlFor="imageUpload">사진 업로드</UploadButton>
         </ImageUpload>
 
-        <Input
+        <StyledInput
           label="이름"
           type="text"
           name="name"
           value={values.name}
           onChange={handleChange}
           placeholder="강아지 이름을 입력하세요"
-          style={{ marginBottom: "10px" }}
         />
         <Row>
-          <Input
+          <StyledInput
             label="나이"
             type="number"
             name="age"
@@ -206,14 +232,13 @@ const RegisterDog = () => {
             <option value="F">여자</option>
           </Input>
         </Row>
-        <Input
+        <StyledInput
           label="소개"
           type="textarea"
           name="introduction"
           value={values.introduction}
           onChange={handleChange}
           placeholder="간단히 소개해주세요."
-          style={{ marginBottom: "10px", resize: "none" }}
         />
         <div>
           {tagsData.map((tag) => (
@@ -226,11 +251,7 @@ const RegisterDog = () => {
             </Tag>
           ))}
         </div>
-        <Button
-          text="강아지 등록"
-          onClick={handleRegisterDog}
-          style={{ marginTop: "10px" }}
-        />
+        <StyledButton text="강아지 등록하기" onClick={handleRegisterDog} />
       </Container>
       <Footer />
     </>
