@@ -49,40 +49,8 @@ const Login = () => {
     }
   };
 
-  const handleSignup = async () => {
-    const signupData = {
-      // 이 부분에 회원가입할 데이터 집어넣고 테스트!
-      email: "",
-      password: "",
-      nickname: "",
-      road_address: "인하로 100",
-      detail_address: "상세주소",
-    };
-
-    console.log("Signup data being sent:", signupData);
-
-    try {
-      const response = await authApi.post("/users/signup", signupData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(response.data);
-      if (response.data && response.data.status === "200") {
-        alert("회원가입에 성공했습니다.");
-      } else {
-        alert(response.data.message || "회원가입에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Signup error:", error);
-      if (error.response) {
-        alert(`${error.response.status})`);
-      } else if (error.request) {
-        alert("서버와의 통신에 실패했습니다.");
-      } else {
-        alert("회원가입에 실패했습니다.");
-      }
-    }
+  const handleSignupNavigate = () => {
+    navigate("/signup1");
   };
 
   return (
@@ -111,7 +79,7 @@ const Login = () => {
       </form>
       <Button
         text="회원가입"
-        onClick={handleSignup}
+        onClick={handleSignupNavigate}
         style={{ width: "100%", marginTop: "10px" }}
       />
       <Footer />
