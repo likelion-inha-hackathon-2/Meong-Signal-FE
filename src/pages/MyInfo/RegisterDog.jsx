@@ -125,29 +125,28 @@ const RegisterDog = () => {
     try {
       const formData = new FormData();
       if (values.name) {
-        formData.append("dog[name]", values.name);
+        formData.append("name", values.name);
       }
       if (values.gender) {
-        formData.append("dog[gender]", values.gender);
+        formData.append("gender", values.gender);
       }
       if (values.age) {
-        formData.append("dog[age]", values.age);
+        formData.append("age", values.age);
       }
       if (values.introduction) {
-        formData.append("dog[introduction]", values.introduction);
+        formData.append("introduction", values.introduction);
       }
-
       if (dogImage) {
         formData.append("image", dogImage);
       }
 
       selectedTags.forEach((tag, index) => {
-        formData.append(`tags[${index}][number]`, tag.id);
+        formData.append(`tags[${index}].number`, tag.id);
       });
 
       const response = await authApi.post("/dogs/new", formData);
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         alert("강아지가 등록되었습니다.");
         reset();
         setSelectedTags([]);
