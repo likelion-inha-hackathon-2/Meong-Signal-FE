@@ -14,6 +14,8 @@ import ReviewWritten from "./pages/MyInfo/ReviewWritten";
 import MyInfoMain from "./pages/MyInfo/MyInfoMain";
 import MyInfoEdit from "./pages/MyInfo/MyInfoEdit";
 import RegisterDog from "./pages/MyInfo/RegisterDog";
+import WalkDetail from "./pages/Walk/WalkDetail";
+import ChatList from "./pages/Chat/ChatList";
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
             <Route path="/myinfo-main" element={<MyInfoMain />} />
             <Route path="/myinfo-edit" element={<MyInfoEdit />} />
             <Route path="/dogs/new" element={<RegisterDog />} />
+            <Route path="/walk" element={<WalkDetail />} />
+            <Route path="/chat" element={<ChatList />} />
           </Route>
         </Routes>
       </BrowserRouter>
