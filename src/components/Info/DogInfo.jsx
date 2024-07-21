@@ -14,7 +14,7 @@ import statusChange from "../../assets/images/status-change.png";
 const DogInfoContainer = styled.div`
   display: flex;
   align-items: center;
-  width: 310px;
+  width: 300px;
   height: 107px;
   padding: 10px;
   border-radius: 8px;
@@ -24,7 +24,8 @@ const DogInfoContainer = styled.div`
 
 const DogImage = styled(Image)`
   width: 80px;
-  height: auto;
+  height: 80px;
+  margin-right: 10px;
 `;
 
 const DogInfoWrapper = styled.div`
