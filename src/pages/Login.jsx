@@ -1,11 +1,34 @@
 import React from "react";
 import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
+import Image from "../components/Image/Image";
 import useForm from "../hooks/useForm";
 import { useNavigate } from "react-router-dom";
 import authApi from "../apis/authApi";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
+import LogoImage from "../assets/images/logo.png";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+
+const StyledImage = styled(Image)`
+  width: 299px;
+  height: 273px;
+  flex-shrink: 0;
+  pointer-events: none;
+`;
+
+const StyledLink = styled(Link)`
+  font-family: "pretendardS";
+  font-size: 16px;
+  padding: 4px;
+  text-decoration: none;
+  margin-top: 10px;
+  color: var(--black-color);
+  font-style: normal;
+  font-weight: 700;
+  line-height: 28px;
+`;
 
 const Login = () => {
   const { values, handleChange } = useForm({
@@ -49,45 +72,14 @@ const Login = () => {
     }
   };
 
-  const handleSignup = async () => {
-    const signupData = {
-      // 이 부분에 회원가입할 데이터 집어넣고 테스트!
-      email: "",
-      password: "",
-      nickname: "",
-      road_address: "인하로 100",
-      detail_address: "상세주소",
-    };
-
-    console.log("Signup data being sent:", signupData);
-
-    try {
-      const response = await authApi.post("/users/signup", signupData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(response.data);
-      if (response.data && response.data.status === "200") {
-        alert("회원가입에 성공했습니다.");
-      } else {
-        alert(response.data.message || "회원가입에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Signup error:", error);
-      if (error.response) {
-        alert(`${error.response.status})`);
-      } else if (error.request) {
-        alert("서버와의 통신에 실패했습니다.");
-      } else {
-        alert("회원가입에 실패했습니다.");
-      }
-    }
+  const handleSignupNavigate = () => {
+    navigate("/signup1");
   };
 
   return (
     <>
       <Header />
+      <StyledImage src={LogoImage} />
       <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: "400px" }}>
         <Input
           label="이메일"
@@ -109,11 +101,9 @@ const Login = () => {
         />
         <Button text="로그인" type="submit" style={{ width: "100%" }} />
       </form>
-      <Button
-        text="회원가입"
-        onClick={handleSignup}
-        style={{ width: "100%", marginTop: "10px" }}
-      />
+      <StyledLink to="/signup1" onClick={handleSignupNavigate}>
+        회원가입
+      </StyledLink>
       <Footer />
     </>
   );

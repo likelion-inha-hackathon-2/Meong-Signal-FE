@@ -23,9 +23,11 @@ const SectionTitle = styled.h3`
 `;
 
 const StyledImage = styled.img`
-  width: 140px;
-  height: 140px;
-  border-radius: 0px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  object-fit: cover;
+  padding: 20px;
 `;
 
 const ImageUpload = styled.div`
@@ -67,14 +69,17 @@ const AddressContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  margin-bottom: 10px;
 `;
 
 // 도로명 주소 찾기를 위한 검색용 버튼
 const AddressButton = styled(Button)`
-  background-color: var(--yellow-color1);
-  color: var(--black-color);
-  width: 225px;
+  background-color: var(--yellow-color2);
+  color: var(--white-color);
+  width: 150px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  font-family: "PretendardM";
+  font-size: 14px;
 `;
 
 // 변경 저장하기 버튼
@@ -82,7 +87,7 @@ const SaveButton = styled(Button)`
   width: 100%;
   background-color: var(--yellow-color2);
   color: var(--black-color);
-  margin-bottom: 10px;
+  margin-top: 10px;
 `;
 
 const StyledInput = styled(Input)`
@@ -118,17 +123,20 @@ const MyInfoEdit = () => {
 
   const handleSave = async () => {
     try {
-      // 프로필 사진을 무조건 업로드하도록 하기
-      if (!profileImage) {
-        alert("프로필 이미지를 업로드해주세요.");
-        return;
-      }
-
+      // 폼 데이터 객체
       const formData = new FormData();
-      formData.append("nickname", values.nickname);
-      formData.append("road_address", values.road_address);
-      formData.append("detail_address", values.detail_address);
-      formData.append("profile_image", profileImage);
+      if (profileImage) {
+        formData.append("profile_image", profileImage);
+      }
+      if (values.nickname) {
+        formData.append("nickname", values.nickname);
+      }
+      if (values.road_address) {
+        formData.append("road_address", values.road_address);
+      }
+      if (values.detail_address) {
+        formData.append("detail_address", values.detail_address);
+      }
 
       await authApi.put("/users/", formData); // PUT!!
 
@@ -174,6 +182,7 @@ const MyInfoEdit = () => {
         />
 
         <AddressContainer>
+          <AddressButton text="도로명 주소 찾기" onClick={openPostcode} />
           <StyledInput
             label="도로명 주소"
             id="roadAddress"
@@ -183,7 +192,6 @@ const MyInfoEdit = () => {
             readOnly
             placeholder="도로명 주소를 검색하세요."
           />
-          <AddressButton text="도로명 주소 찾기" onClick={openPostcode} />
         </AddressContainer>
 
         <StyledInput

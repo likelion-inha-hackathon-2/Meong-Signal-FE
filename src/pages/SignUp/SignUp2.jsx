@@ -4,9 +4,8 @@ import styled from "styled-components";
 import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
 import useForm from "../../assets/hooks/useForm";
-import authApi from "../../assets/apis/authApi";
+import authApi from "../../apis/authApi";
 import mainImage from "../../assets/icons/icon-main-image.png";
-
 
 const SignupForm = styled.div`
   width: 100%;
@@ -36,8 +35,6 @@ const RoadButton = styled(Button)`
   margin-right: 78px;
 `;
 
-
-
 const StyledButton = styled(Button)`
   width: 100%;
   height: 40px;
@@ -52,8 +49,6 @@ const MainImage = styled.img`
   height: auto;
   margin-bottom: 20px;
 `;
-
-
 
 const Signup2 = () => {
   const navigate = useNavigate();
@@ -76,26 +71,21 @@ const Signup2 = () => {
     new window.daum.Postcode({
       oncomplete: function (data) {
         handleAddressChange(data);
-      }
+      },
     }).open();
   };
 
   const handleSignup = async () => {
-    const signupData = {
-      email: values.email,
-      password: values.password,
-      nickname: values.nickname,
-      road_address: values.road_address,
-      detail_address: values.detail_address,
-    };
-    console.log("Signup data being sent:", signupData);
+    const formData = new FormData();
+    formData.append("email", values.email);
+    formData.append("password", values.password);
+    formData.append("nickname", values.nickname);
+    formData.append("profile_image", values.profile_image);
+    formData.append("road_address", values.road_address);
+    formData.append("detail_address", values.detail_address);
 
     try {
-      const response = await authApi.post("/users/signup", signupData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await authApi.post("/users/signup", formData);
 
       console.log(response.data);
 
@@ -129,11 +119,8 @@ const Signup2 = () => {
       <SignupForm>
         <MainImage src={mainImage} alt="메인 이미지" />
 
-        <RoadButton
-          text="도로명 찾기"
-          onClick={openAddressPopup}
-        />
-        
+        <RoadButton text="도로명 찾기" onClick={openAddressPopup} />
+
         <StyledInput
           label="집 주소"
           name="road_address"
@@ -141,7 +128,7 @@ const Signup2 = () => {
           value={values.road_address}
           onChange={handleChange}
         />
-        
+
         <StyledInput
           label="상세주소"
           name="detail_address"
@@ -150,10 +137,7 @@ const Signup2 = () => {
           onChange={handleChange}
         />
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <StyledButton
-          text="회원가입 완료하기"
-          onClick={handleSignup}
-        />
+        <StyledButton text="회원가입 완료하기" onClick={handleSignup} />
       </SignupForm>
     </>
   );
