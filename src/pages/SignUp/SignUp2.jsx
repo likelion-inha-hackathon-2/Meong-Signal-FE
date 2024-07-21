@@ -76,17 +76,16 @@ const Signup2 = () => {
   };
 
   const handleSignup = async () => {
-    const signupData = {
-      email: values.email,
-      password: values.password,
-      nickname: values.nickname,
-      road_address: values.road_address,
-      detail_address: values.detail_address,
-    };
-    console.log("Signup data being sent:", signupData);
+    const formData = new FormData();
+    formData.append("email", values.email);
+    formData.append("password", values.password);
+    formData.append("nickname", values.nickname);
+    formData.append("profile_image", values.profile_image);
+    formData.append("road_address", values.road_address);
+    formData.append("detail_address", values.detail_address);
 
     try {
-      const response = await authApi.post("/users/signup", signupData);
+      const response = await authApi.post("/users/signup", formData);
 
       console.log(response.data);
 
