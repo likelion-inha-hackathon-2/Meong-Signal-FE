@@ -26,7 +26,7 @@ const SectionTitle = styled.h3`
   margin-top: 20px;
   margin-bottom: 10px;
   font-size: 20px;
-  font-family: "PretendardS";
+  font-family: "PretendardB";
   text-align: left;
 `;
 
@@ -110,14 +110,8 @@ const MyInfoMain = () => {
       }
     };
 
-    const fetchLocalDogs = () => {
-      const localDogs = JSON.parse(localStorage.getItem("dogs")) || [];
-      setDogs(localDogs);
-    };
-
     const fetchData = async () => {
       await Promise.all([fetchUserInfo(), fetchDogs()]);
-      fetchLocalDogs();
     };
 
     fetchData();
