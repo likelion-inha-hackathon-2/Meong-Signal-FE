@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
 import useForm from "../../assets/hooks/useForm";
-import authApi from "../../assets/apis/authApi";
+import authApi from "../../apis/authApi";
 import mainImage from "../../assets/icons/icon-main-image.png";
 
 const SignupForm = styled.div`
@@ -86,11 +86,7 @@ const Signup2 = () => {
     console.log("Signup data being sent:", signupData);
 
     try {
-      const response = await authApi.post("/users/signup", signupData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await authApi.post("/users/signup", signupData);
 
       console.log(response.data);
 
