@@ -123,17 +123,20 @@ const MyInfoEdit = () => {
 
   const handleSave = async () => {
     try {
-      // 프로필 사진을 무조건 업로드하도록 하기
-      if (!profileImage) {
-        alert("프로필 이미지를 업로드해주세요.");
-        return;
-      }
-
+      // 폼 데이터 객체
       const formData = new FormData();
-      formData.append("nickname", values.nickname);
-      formData.append("road_address", values.road_address);
-      formData.append("detail_address", values.detail_address);
-      formData.append("profile_image", profileImage);
+      if (profileImage) {
+        formData.append("profile_image", profileImage);
+      }
+      if (values.nickname) {
+        formData.append("nickname", values.nickname);
+      }
+      if (values.road_address) {
+        formData.append("road_address", values.road_address);
+      }
+      if (values.detail_address) {
+        formData.append("detail_address", values.detail_address);
+      }
 
       await authApi.put("/users/", formData); // PUT!!
 
