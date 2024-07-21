@@ -123,42 +123,42 @@ const RegisterDog = () => {
 
   const handleRegisterDog = async () => {
     try {
-      if (!dogImage) {
-        alert("강아지 이미지를 업로드해주세요.");
-        return;
-      }
-
-      // 태그를 1개 이상 선택해야 넘어가도록 하기?
-      if (selectedTags.length < 1) {
-        alert("태그를 최소 1개 선택해주세요.");
-        return;
-      }
-
       const formData = new FormData();
-      formData.append("dog[name]", values.name);
-      formData.append("dog[gender]", values.gender);
-      formData.append("dog[age]", values.age);
-      formData.append("dog[introduction]", values.introduction);
-      formData.append("dog[image]", dogImage);
+      if (values.name) {
+        formData.append("dog[name]", values.name);
+      }
+      if (values.gender) {
+        formData.append("dog[gender]", values.gender);
+      }
+      if (values.age) {
+        formData.append("dog[age]", values.age);
+      }
+      if (values.introduction) {
+        formData.append("dog[introduction]", values.introduction);
+      }
 
-      /*
-      selectedTags.forEach((tag) => {
-        formData.append("tags[]number", tag.id);
-      });*/
+      if (dogImage) {
+        formData.append("image", dogImage);
+      }
 
       selectedTags.forEach((tag, index) => {
         formData.append(`tags[${index}][number]`, tag.id);
       });
 
-      await authApi.post("/dogs/new", formData);
+      const response = await authApi.post("/dogs/new", formData);
 
-      alert("강아지가 등록되었습니다.");
-      reset();
-      setSelectedTags([]);
-      setDogImage(null);
-      navigate("/myinfo-main");
+      if (response.status === 201) {
+        alert("강아지가 등록되었습니다.");
+        reset();
+        setSelectedTags([]);
+        setDogImage(null);
+        navigate("/myinfo-main");
+      } else {
+        console.error("Failed to register dog:", response.data);
+        alert("강아지 등록에 실패했습니다.");
+      }
     } catch (error) {
-      console.error("Failed to register dog:", error.response.data);
+      console.error("Failed to register dog:", error);
       alert("강아지 등록에 실패했습니다.");
     }
   };
