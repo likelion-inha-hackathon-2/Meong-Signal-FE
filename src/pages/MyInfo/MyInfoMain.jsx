@@ -5,14 +5,12 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import Image from "../../components/Image/Image";
+import DogInfo from "../../components/Dog/DogInfo";
 import { getUserInfo } from "../../apis/getUserInfo"; // 모듈화된 함수 import
 import authApi from "../../apis/authApi";
-import DogInfo from "../../components/Info/DogInfo";
 
 const StyledImage = styled(Image)`
-  width: 100px;
-  height: 100px;
-  pointer-events: none; // nonclick
+  pointer-events: none; // 클릭 비활성화
 `;
 
 const MyInfoButtonContainer = styled.div`
@@ -134,7 +132,7 @@ const MyInfoMain = () => {
     <>
       <Header />
       <UserInfo>
-        <StyledImage src={userInfo.profile_image} alt="Profile" />
+        <StyledImage src={userInfo.profile_image} alt="Profile" width="150px" />
         <SectionTitle>{userInfo.nickname}님, 안녕하세요!</SectionTitle>
         지금까지 총 {userInfo.total_distance}km 산책하고{" "}
         {userInfo.total_kilocalories}kcal를 소비했네요.
