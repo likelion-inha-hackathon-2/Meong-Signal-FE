@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { getCoordinates } from "../apis/kakaoApi";
+import { getCoordinates } from "../apis/geolocation";
 import { getBoringDogs } from "../apis/getBoringDogs";
 
 const useKakaoMap = (appKey, initialLocation) => {

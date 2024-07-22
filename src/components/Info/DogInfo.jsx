@@ -4,8 +4,6 @@ import styled from "styled-components";
 import authApi from "../../apis/authApi";
 import Image from "../Image/Image";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-
-// 이미지 임포트
 import statusR from "../../assets/images/status-r.png";
 import statusB from "../../assets/images/status-b.png";
 import statusW from "../../assets/images/status-w.png";
@@ -69,7 +67,6 @@ const statusImages = {
   W: statusW,
   change: statusChange,
 };
-
 const DogInfo = ({ id, name, gender, age, introduction, status, image }) => {
   const [currentStatus, setCurrentStatus] = useState(status);
   const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -77,10 +74,9 @@ const DogInfo = ({ id, name, gender, age, introduction, status, image }) => {
   const handleStatusChange = async (newStatus) => {
     try {
       console.log(`Changing status to ${newStatus} for dog ID: ${id}`);
-      const response = await authApi.patch(`/dogs/status/${id}`, {
+      await authApi.patch(`/dogs/status/${id}`, {
         status: newStatus,
       });
-      console.log("Status change response:", response);
       setCurrentStatus(newStatus);
       setTooltipVisible(false);
     } catch (error) {
@@ -88,8 +84,14 @@ const DogInfo = ({ id, name, gender, age, introduction, status, image }) => {
     }
   };
 
+  // 툴팁 토글 이벤트 객체
+  const toggleTooltip = (e) => {
+    e.stopPropagation();
+    setTooltipVisible((prev) => !prev);
+  };
+
   return (
-    <DogInfoContainer>
+    <DogInfoContainer onClick={() => setTooltipVisible(false)}>
       <DogImage src={image} alt={`${name}`} />
       <DogInfoWrapper>
         <div>이름: {name}</div>
@@ -101,25 +103,42 @@ const DogInfo = ({ id, name, gender, age, introduction, status, image }) => {
         <StatusButton
           data-tooltip-id={`tooltip-${id}`}
           data-tooltip-place="top"
-          onClick={() => setTooltipVisible(!tooltipVisible)}
+          onClick={toggleTooltip}
         >
           <img src={statusImages[currentStatus]} alt="상태 변경" />
         </StatusButton>
-        <StatusTooltip
-          id={`tooltip-${id}`}
-          clickable={true}
-          isOpen={tooltipVisible}
-        >
-          <div onClick={() => handleStatusChange("R")}>
-            <img src={statusImages.R} alt="쉬는 중" width="50" height="50" />
-          </div>
-          <div onClick={() => handleStatusChange("B")}>
-            <img src={statusImages.B} alt="심심함" width="50" height="50" />
-          </div>
-          <div onClick={() => handleStatusChange("W")}>
-            <img src={statusImages.W} alt="산책 중" width="50" height="50" />
-          </div>
-        </StatusTooltip>
+        {tooltipVisible && (
+          <StatusTooltip
+            id={`tooltip-${id}`}
+            clickable={true}
+            isOpen={tooltipVisible}
+          >
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                handleStatusChange("R");
+              }}
+            >
+              <img src={statusImages.R} alt="쉬는 중" width="50" height="50" />
+            </div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                handleStatusChange("B");
+              }}
+            >
+              <img src={statusImages.B} alt="심심함" width="50" height="50" />
+            </div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                handleStatusChange("W");
+              }}
+            >
+              <img src={statusImages.W} alt="산책 중" width="50" height="50" />
+            </div>
+          </StatusTooltip>
+        )}
       </DogStatusWrapper>
     </DogInfoContainer>
   );
