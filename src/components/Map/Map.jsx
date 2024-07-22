@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import useKakaoMap from "../../hooks/useKakaoMap";
 import MapInfoButton from "../Button/MapInfoButton";
 import MapStatusButton from "../Button/MapStatusButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import TagFilteringButton from "../Button/TagFilteringButton";
 
 const StyledMap = styled.div`
@@ -24,6 +24,7 @@ const Map = ({ latitude, longitude, width, height }) => {
   );
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const onClickMapInfo = () => {
     navigate("/map-info");
@@ -41,7 +42,10 @@ const Map = ({ latitude, longitude, width, height }) => {
     <StyledMap ref={mapContainer} width={width} height={height}>
       <MapInfoButton onClick={onClickMapInfo} />
       <MapStatusButton onClick={onClickMapStatus} />
-      <TagFilteringButton onClick={onClickTageFilteringIcon} />
+      {location.pathname === "/map-info" && (
+        // 태그 필터링 버튼은 조건부 렌더링
+        <TagFilteringButton onClick={onClickTageFilteringIcon} />
+      )}
     </StyledMap>
   );
 };
