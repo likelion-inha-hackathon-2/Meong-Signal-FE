@@ -2,6 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import useKakaoMap from "../../hooks/useKakaoMap";
+import MapInfoButton from "../Button/MapInfoButton";
+import MapStatusButton from "../Button/MapStatusButton";
+import { useNavigate } from "react-router-dom";
 
 const StyledMap = styled.div`
   width: ${(props) => props.width || "375px"}; // 아이폰 se 기준
@@ -18,8 +21,21 @@ const Map = ({ latitude, longitude, width, height }) => {
     initialLocation,
   );
 
+  const navigate = useNavigate();
+
+  const onClickMapInfo = () => {
+    navigate("/map-info");
+  };
+
+  const onClickMapStatus = () => {
+    navigate("/map-status");
+  };
+
   return (
-    <StyledMap ref={mapContainer} width={width} height={height}></StyledMap>
+    <StyledMap ref={mapContainer} width={width} height={height}>
+      <MapInfoButton onClick={onClickMapInfo} />
+      <MapStatusButton onClick={onClickMapStatus} />
+    </StyledMap>
   );
 };
 
