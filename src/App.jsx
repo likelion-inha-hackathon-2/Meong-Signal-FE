@@ -36,7 +36,7 @@ function App() {
             <Route path="/reviews/written" element={<ReviewWritten />} />
             <Route path="/myinfo-main" element={<MyInfoMain />} />
             <Route path="/myinfo-edit" element={<MyInfoEdit />} />
-            <Route path="/dogs/new" element={<RegisterDog />} />
+            <Route path="/dogs-new" element={<RegisterDog />} />
             <Route path="/walk" element={<WalkDetail />} />
             <Route path="/chat" element={<ChatList />} />
           </Route>

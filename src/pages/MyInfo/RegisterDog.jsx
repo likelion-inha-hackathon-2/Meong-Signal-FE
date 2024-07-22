@@ -6,6 +6,7 @@ import Button from "../../components/Button/Button";
 import authApi from "../../apis/authApi";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import Tag from "../../components/Tag/Tag";
 import AddDogImage from "../../assets/images/add-dog.png";
 import { useNavigate } from "react-router-dom";
 
@@ -36,30 +37,13 @@ const Row = styled.div`
   margin-bottom: 10px;
 `;
 
-const Tag = styled.span`
-  display: inline-block;
-  padding: 8px;
-  margin: 4px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  // 클릭할때마다 상태 변경
-  background-color: ${(props) =>
-    props.selected ? "var(--yellow-color2)" : "var(--white-color)"};
-  font-family: "PretendardR";
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%;
-  letter-spacing: -0.11px;
-`;
-
 const StyledImage = styled.img`
   width: 170px;
   height: 170px;
   border-radius: 50%;
   object-fit: cover;
   padding: 20px;
+  pointer-events: none;
 `;
 
 // 사진 업로드용 버튼
@@ -96,18 +80,6 @@ const StyledInput = styled(Input)`
 const StyledButton = styled(Button)`
   margin-top: 10px;
 `;
-
-const tagsData = [
-  { id: 1, label: "활발한", emoji: "😁" },
-  { id: 2, label: "잘 달리는", emoji: "🐶" },
-  { id: 3, label: "애교쟁이", emoji: "😘" },
-  { id: 4, label: "장난쟁이", emoji: "😜" },
-  { id: 5, label: "순딩이", emoji: "😇" },
-  { id: 6, label: "소심해요", emoji: "😢" },
-  { id: 7, label: "조용해요", emoji: "😌" },
-  { id: 8, label: "시크쟁이", emoji: "😶" },
-  { id: 9, label: "친화력", emoji: "😊" },
-];
 
 const RegisterDog = () => {
   const { values, handleChange, reset } = useForm({
@@ -239,17 +211,7 @@ const RegisterDog = () => {
           onChange={handleChange}
           placeholder="간단히 소개해주세요."
         />
-        <div>
-          {tagsData.map((tag) => (
-            <Tag
-              key={tag.id}
-              selected={selectedTags.includes(tag)}
-              onClick={() => handleTagClick(tag)}
-            >
-              #{tag.label} {tag.emoji}
-            </Tag>
-          ))}
-        </div>
+        <Tag selectedTags={selectedTags} handleTagClick={handleTagClick} />
         <StyledButton text="강아지 등록하기" onClick={handleRegisterDog} />
       </Container>
       <Footer />
