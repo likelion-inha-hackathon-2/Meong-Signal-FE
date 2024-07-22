@@ -1,11 +1,10 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Tag from "../../components/Tag/Tag";
 import authApi from "../../apis/authApi";
-import { getCurrentPosition } from "../../apis/geolocation";
-// import { useNavigate } from "react-router-dom";
+import { getCoordinates } from "../../apis/geolocation";
 
 // 강아지 여러마리 컨테이너
 const DogList = styled.div`
@@ -49,17 +48,32 @@ const DogAddress = styled.div`
   font-family: "PretendardR";
 `;
 
+const TitleWrapper = styled.h1`
+  font-size: 20px;
+  font-family: "PretendardB";
+  font-weight: 700;
+`;
+
+const TestWrapper = styled.div`
+  font-size: 16px;
+  font-family: "PretendardM";
+
+  margin: 20px;
+  color: var(--gray-color3);
+`;
+
 const TagFiltering = () => {
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [dogs, setDogs] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]); // 선택한 태그
+  const [dogs, setDogs] = useState([]); // 해당하는 태그에 대한 강아지만
+  const [allDogs, setAllDogs] = useState([]); // 모든 강아지 데이터 저장
   const [location, setLocation] = useState(null);
-  // const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLocation = async () => {
       try {
-        const position = await getCurrentPosition();
-        setLocation(position);
+        const coordinates = await getCoordinates();
+        console.log("Current coordinates:", coordinates);
+        setLocation(coordinates);
       } catch (error) {
         console.error("Failed to get current position:", error);
       }
@@ -67,49 +81,60 @@ const TagFiltering = () => {
     fetchLocation();
   }, []);
 
-  const handleTagClick = useCallback(
-    async (tag) => {
-      let newSelectedTags;
-      if (selectedTags.includes(tag)) {
-        newSelectedTags = selectedTags.filter((t) => t !== tag);
-      } else if (selectedTags.length < 3) {
-        newSelectedTags = [...selectedTags, tag];
-      } else {
-        return; // 태그 최대 3개까지만 선택 가능하도록
-      }
-
-      setSelectedTags(newSelectedTags);
-
-      if (newSelectedTags.length > 0 && location) {
+  useEffect(() => {
+    const fetchDogs = async () => {
+      if (location) {
         try {
-          const tagNumber = newSelectedTags[0].id; // 선택된 태그의 ID 사용하도록 수정하기
-          const response = await authApi.post(
-            `/dogs/search-by-tag/${tagNumber}`,
-            {
-              latitude: location.latitude,
-              longitude: location.longitude,
-            },
-          );
+          const response = await authApi.post("/dogs/all-status", {
+            latitude: location.latitude,
+            longitude: location.longitude,
+          });
 
           if (response.status === 200) {
+            console.log("Fetched dogs:", response.data.dogs);
             setDogs(response.data.dogs);
+            setAllDogs(response.data.dogs); // 모든 강아지 데이터를 저장
           } else {
             console.error("Failed to fetch dogs:", response.data);
           }
         } catch (error) {
           console.error("Failed to fetch dogs:", error);
         }
-      } else {
-        setDogs([]);
       }
-    },
-    [selectedTags, location],
-  );
+    };
+
+    fetchDogs();
+  }, [location]);
+
+  useEffect(() => {
+    if (selectedTags.length > 0) {
+      const filteredDogs = allDogs.filter((dog) =>
+        selectedTags.some((tag) => dog.status === tag.id),
+      );
+      setDogs(filteredDogs);
+    } else {
+      setDogs(allDogs); // 선택된 태그가 없으면 모든 강아지를 보여줌
+    }
+  }, [selectedTags, allDogs]);
+
+  const handleTagClick = (tag) => {
+    let newSelectedTags;
+    if (selectedTags.includes(tag)) {
+      newSelectedTags = selectedTags.filter((t) => t !== tag);
+    } else if (selectedTags.length < 3) {
+      newSelectedTags = [...selectedTags, tag];
+    } else {
+      return;
+    }
+
+    setSelectedTags(newSelectedTags);
+  };
 
   return (
     <>
       <Header />
-      <h1>태그 필터링 페이지 수정중..</h1>
+      <TitleWrapper>함께 산책하고 싶은 강아지를 만나보세요!</TitleWrapper>
+      <TestWrapper>최대 3개의 태그까지 선택하여 검색할 수 있어요.</TestWrapper>
       <Tag selectedTags={selectedTags} handleTagClick={handleTagClick} />
       <DogList>
         {dogs.map((dog) => (

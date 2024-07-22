@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Map from "../../components/Map/Map";
-import { getCoordinates } from "../../apis/kakaoApi";
+import { getCoordinates } from "../../apis/geolocation";
 
 const MapStatus = () => {
   const [initialLocation, setInitialLocation] = useState({
