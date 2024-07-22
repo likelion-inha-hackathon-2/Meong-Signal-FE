@@ -1,15 +1,25 @@
 import React from "react";
 import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
-import Image from "../components/Image/Image";
 import useForm from "../hooks/useForm";
 import { useNavigate } from "react-router-dom";
 import authApi from "../apis/authApi";
-import Header from "../components/Header/Header";
-import Footer from "../components/Footer/Footer";
 import LogoImage from "../assets/images/logo.png";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import Image from "../components/Image/Image";
+import KaKaoIcon from "../assets/icons/social-login/icon-kakao.png";
+import NaverIcon from "../assets/icons/social-login/icon-naver.png";
+import GoogleIcon from "../assets/icons/social-login/icon-google.png";
+
+const TitleSection = styled.h1`
+  text-align: center;
+  font-family: "PretendardB";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 28px;
+`;
 
 const StyledImage = styled(Image)`
   width: 299px;
@@ -28,6 +38,22 @@ const StyledLink = styled(Link)`
   font-style: normal;
   font-weight: 700;
   line-height: 28px;
+`;
+
+const IconImage = styled(Image)`
+  width: 30px;
+  height: 30px;
+`;
+
+const SocialLoginIconContainer = styled.div`
+  display: inline-flex;
+  padding: var(--sds-size-space-0);
+  justify-content: center;
+  align-items: flex-end;
+  gap: 25px;
+  width: 138px;
+  height: 30px;
+  margin-top: 30px;
 `;
 
 const Login = () => {
@@ -78,7 +104,7 @@ const Login = () => {
 
   return (
     <>
-      <Header />
+      <TitleSection>멍멍! 같이 산책해요!</TitleSection>
       <StyledImage src={LogoImage} />
       <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: "400px" }}>
         <Input
@@ -104,7 +130,11 @@ const Login = () => {
       <StyledLink to="/signup1" onClick={handleSignupNavigate}>
         회원가입
       </StyledLink>
-      <Footer />
+      <SocialLoginIconContainer>
+        <IconImage src={KaKaoIcon} />
+        <IconImage src={NaverIcon} />
+        <IconImage src={GoogleIcon} />
+      </SocialLoginIconContainer>
     </>
   );
 };
