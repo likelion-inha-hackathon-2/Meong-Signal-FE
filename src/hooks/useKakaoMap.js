@@ -108,7 +108,7 @@ const useKakaoMap = (appKey, initialLocation) => {
           const overlayContent = document.createElement("div");
           overlayContent.innerHTML = `
             <div id="overlay-${dog.id}" style="display: flex; align-items: center; justify-content: center; padding: 4px; background-color: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); cursor: pointer; font-family: 'PretendardR';" >
-              <img src="${dog.image}" style="width: 70px; height: auto; border-radius: 50%;" alt="${dog.name}">
+              <img src="${dog.image}" style="width: 60px; height: 60px; border-radius: 50%;" alt="${dog.name}">
               <div >
                 <div style="font-weight: bold;">${dog.name}</div>
                 <div style="color: black;">${dog.distance}km</div>
