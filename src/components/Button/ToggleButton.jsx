@@ -61,7 +61,7 @@ const ToggleButton = ({ onToggle }) => {
   return (
     <ToggleContainer onClick={handleClick}>
       <ToggleLabel>{toggled ? "심심한 강아지" : "모든 강아지"}</ToggleLabel>
-      <ToggleSwitch toggled={toggled} />
+      <ToggleSwitch toggled={toggled ? true : undefined} />
     </ToggleContainer>
   );
 };
