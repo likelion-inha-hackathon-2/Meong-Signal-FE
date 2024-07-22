@@ -1,111 +1,97 @@
 import React from "react";
-import Input from "../components/Input/Input";
-import Button from "../components/Button/Button";
-import Image from "../components/Image/Image";
-import useForm from "../hooks/useForm";
 import { useNavigate } from "react-router-dom";
-import authApi from "../apis/authApi";
-import Header from "../components/Header/Header";
-import Footer from "../components/Footer/Footer";
-import LogoImage from "../assets/images/logo.png";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import Button from "../components/Button/Button";
+import Logo from "../assets/images/orangelogo.png";
 
-const StyledImage = styled(Image)`
-  width: 299px;
-  height: 273px;
-  flex-shrink: 0;
-  pointer-events: none;
+const InputField = styled.input`
+  width: 173px;
+  height: 40px;
+  padding: 6px 7px 6px 10px;
+  border-radius: 8px;
+  border: none;
+  background-color: #ffe8ad;
+  font-family: Pretendard;
+  font-size: 14px;
 `;
 
-const StyledLink = styled(Link)`
-  font-family: "pretendardS";
-  font-size: 16px;
-  padding: 4px;
-  text-decoration: none;
-  margin-top: 10px;
-  color: var(--black-color);
-  font-style: normal;
+const Welcome = styled.span`
+  font-family: "pretendardB";
+  font-size: 20px;
   font-weight: 700;
   line-height: 28px;
+  text-align: center;
+  color: #8b8b8b;
+  display: block;
+  margin-bottom: 20px;
+`;
+
+const InformationText = styled.span`
+  font-family: "pretendardB";
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 28px;
+  text-align: center;
+  white-space: nowrap;
+  margin-right: 40px;
+  width: 100px; /* 추가: 고정 너비로 통일 */
+`;
+
+const SignUp = styled.span`
+  font-family: Pretendard;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  display: block;
+  margin-top: 30px;
+  cursor: pointer;
+  text-decoration: underline;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+`;
+
+const InputGroup = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 300px; /* 추가: 고정 너비로 통일 */
 `;
 
 const Login = () => {
-  const { values, handleChange } = useForm({
-    email: "",
-    password: "",
-  });
-
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    console.log("Login data being sent:", {
-      email: values.email,
-      password: values.password,
-    });
-
-    try {
-      const response = await authApi.post("/users/login", {
-        email: values.email,
-        password: values.password,
-      });
-      if (response.data && response.data.status === "200") {
-        const { access_token, refresh_token } = response.data;
-        localStorage.setItem("accessToken", access_token);
-        localStorage.setItem("refreshToken", refresh_token);
-        authApi.defaults.headers.common["Authorization"] =
-          `Bearer ${access_token}`;
-        navigate("/home");
-      } else {
-        alert(response.message || "로그인에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      if (error.response) {
-        alert(error.response.data.message || "로그인에 실패했습니다.");
-      } else if (error.request) {
-        alert("서버와의 통신에 실패했습니다.");
-      } else {
-        alert("로그인에 실패했습니다.");
-      }
-    }
-  };
-
-  const handleSignupNavigate = () => {
-    navigate("/signup1");
+  const handleSignUpClick = () => {
+    navigate("/signup"); // 회원가입 페이지 경로로 이동
   };
 
   return (
-    <>
-      <Header />
-      <StyledImage src={LogoImage} />
-      <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: "400px" }}>
-        <Input
-          label="이메일"
-          type="text"
-          name="email"
-          value={values.email}
-          onChange={handleChange}
-          placeholder="이메일을 입력하세요"
-          style={{ marginBottom: "10px" }}
-        />
-        <Input
-          label="비밀번호"
-          type="password"
-          name="password"
-          value={values.password}
-          onChange={handleChange}
-          placeholder="비밀번호를 입력하세요"
-          style={{ marginBottom: "10px" }}
-        />
-        <Button text="로그인" type="submit" style={{ width: "100%" }} />
-      </form>
-      <StyledLink to="/signup1" onClick={handleSignupNavigate}>
-        회원가입
-      </StyledLink>
-      <Footer />
-    </>
+    <Container>
+      <Welcome>멍멍! 같이 산책해요!</Welcome>
+      <img
+        src={Logo}
+        alt="Logo"
+        width="299px"
+        height="273px"
+        style={{ marginBottom: "20px" }}
+      />
+      <InputGroup>
+        <InformationText>이메일</InformationText>
+        <InputField placeholder="이메일을 입력하세요." />
+      </InputGroup>
+      <InputGroup>
+        <InformationText>비밀번호</InformationText>
+        <InputField type="password" placeholder="비밀번호를 입력하세요." />
+      </InputGroup>
+      <Button text="로그인" />
+      <SignUp onClick={handleSignUpClick}>회원가입</SignUp>
+    </Container>
   );
 };
 
