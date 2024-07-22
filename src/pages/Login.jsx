@@ -21,13 +21,6 @@ const TitleSection = styled.h1`
   line-height: 28px;
 `;
 
-const StyledImage = styled(Image)`
-  width: 299px;
-  height: 273px;
-  flex-shrink: 0;
-  pointer-events: none;
-`;
-
 const StyledLink = styled(Link)`
   font-family: "pretendardS";
   font-size: 16px;
@@ -105,8 +98,8 @@ const Login = () => {
   return (
     <>
       <TitleSection>멍멍! 같이 산책해요!</TitleSection>
-      <StyledImage src={LogoImage} />
-      <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: "400px" }}>
+      <img src={LogoImage} alt="로고 이미지" />
+      <form onSubmit={handleLogin}>
         <Input
           label="이메일"
           type="text"
@@ -125,7 +118,7 @@ const Login = () => {
           placeholder="비밀번호를 입력하세요"
           style={{ marginBottom: "10px" }}
         />
-        <Button text="로그인" type="submit" style={{ width: "100%" }} />
+        <Button text="로그인" type="submit" />
       </form>
       <StyledLink to="/signup1" onClick={handleSignupNavigate}>
         회원가입
