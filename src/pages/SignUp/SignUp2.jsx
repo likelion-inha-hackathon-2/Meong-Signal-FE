@@ -77,6 +77,7 @@ const Signup2 = () => {
 
   const handleSignup = async () => {
     const formData = new FormData();
+    formData.append("social_id", values.social_id);
     formData.append("email", values.email);
     formData.append("password", values.password);
     formData.append("nickname", values.nickname);

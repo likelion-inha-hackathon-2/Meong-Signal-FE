@@ -17,6 +17,7 @@ import MyInfoEdit from "./pages/MyInfo/MyInfoEdit";
 import RegisterDog from "./pages/MyInfo/RegisterDog";
 import WalkDetail from "./pages/Walk/WalkDetail";
 import ChatList from "./pages/Chat/ChatList";
+import Auth from "./pages/Auth";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="/dogs-new" element={<RegisterDog />} />
             <Route path="/walk" element={<WalkDetail />} />
             <Route path="/chat" element={<ChatList />} />
+            <Route path="/auth" element={<Auth />} />
           </Route>
         </Routes>
       </BrowserRouter>
