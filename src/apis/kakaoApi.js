@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getCurrentPosition } from "./geolocation";
 
 const kakaoApi = axios.create({
   baseURL: "https://dapi.kakao.com/v2/local",
@@ -9,41 +10,30 @@ const kakaoApi = axios.create({
   },
 });
 
-/*
-kakaoApi.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("accessToken"); // 로컬 스토리지에서 토큰 가져오기
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
-*/
-
-// 집 주소를 보내면 위도, 경도와 함께 변환
-export const getCoordinates = async (roadAddress) => {
+// 현재 위치를 보내서 위도, 경도로 변환
+export const getCoordinates = async () => {
   try {
-    const response = await kakaoApi.get("/search/address.json", {
+    const position = await getCurrentPosition();
+    const { latitude, longitude } = position;
+
+    const response = await kakaoApi.get("/geo/coord2address.json", {
       params: {
-        query: roadAddress,
+        x: longitude,
+        y: latitude,
       },
     });
+
     const { documents } = response.data;
     if (documents.length > 0) {
-      const { y: latitude, x: longitude } = documents[0].address;
       return {
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
       };
     } else {
-      throw new Error("No coordinates found.");
+      throw new Error("No address found.");
     }
   } catch (error) {
-    console.error("Error fetching coordinates:", error);
+    console.error("Error fetching address:", error);
     throw error;
   }
 };
