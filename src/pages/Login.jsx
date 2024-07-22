@@ -98,7 +98,7 @@ const Login = () => {
   return (
     <>
       <TitleSection>멍멍! 같이 산책해요!</TitleSection>
-      <img src={LogoImage} alt="로고 이미지"/>
+      <img src={LogoImage} alt="로고 이미지" />
       <form onSubmit={handleLogin}>
         <Input
           label="이메일"
