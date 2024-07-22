@@ -3,81 +3,80 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
+import Button from "../components/Button/Button";
+import Image from "../components/Image/Image";
 import Walking from "../assets/images/walking.png";
+
+const HomeContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
 
 const BoldText = styled.div`
   font-family: "pretendardB";
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   line-height: 28px;
-  margin: 20px auto; /* 센터 정렬을 위해 margin 사용 */
   opacity: 1;
   white-space: nowrap;
-`;
-
-const WalkingButton = styled.div`
-  width: 174px;
-  height: 43px;
-  margin: 20px auto;
-  padding: 9px 45px;
-  border-radius: 8px;
-  background-color: #ff9b86;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  bottom: 60px; /* 화면 아래에서 60px 위로 위치 */
-  left: 50%; /* 수평 가운데 정렬 */
-  transform: translateX(-50%); /* 수평 가운데 정렬 보정 */
-  cursor: pointer;
+  margin-bottom: 10px;
 `;
 
 const NormalText = styled.div`
-  ffont-family: "pretendardR";
-  font-size: 16px;
+  font-family: "pretendardR";
+  font-size: 18px;
   font-weight: 400;
   line-height: 28px;
   text-align: center;
   width: 260px;
   height: 56px;
-  margin: 10px auto; /* 센터 정렬을 위해 margin 사용 */
-  opacity: 1;
 `;
 
-const WalkingImage = styled.img`
-  width: 321px;
-  height: 338px;
+const WalkingImage = styled(Image)`
+  width: 375px;
+  height: 455px;
+  border-radius: 0px;
+  pointer-events: none;
 `;
 
-const ButtonText = styled.span`
-  font-family: Pretendard;
-  font-size: 16px;
-  font-weight: 700;
-  white-space: nowrap;
-  color: white;
-  font-family: "pretendardB";
+const WalkingButton = styled(Button)`
+  position: absolute;
+  bottom: 100px;
+  z-index: 99;
+  width: 174px;
+  height: 43px;
+  margin: 20px auto;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background-color: var(--pink-color2);
+  &:hover {
+    background-color: var(--pink-color3);
+  }
 `;
 
 const Home = () => {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    navigate("/map-info"); // 이동할 경로를 설정
+    navigate("/map-info");
   };
 
   return (
     <>
       <Header />
-      <BoldText>같이 산책해요!</BoldText>
-      <NormalText>
-        지금 주변의 12마리의 강아지들이 사용자님을 기다리고 있어요.
-      </NormalText>
-
-      <WalkingImage src={Walking} alt="Walking" />
-
-      <WalkingButton onClick={handleButtonClick}>
-        <ButtonText>산책하러 가기</ButtonText>
-      </WalkingButton>
+      <HomeContainer>
+        <BoldText>같이 산책해요!</BoldText>
+        <NormalText>
+          <p>지금 주변의 {"??"}마리의 강아지들이</p>
+          <p>사용자님을 기다리고 있어요.</p>
+        </NormalText>
+        <WalkingImage src={Walking} alt="Walking" />
+        <WalkingButton text="산책하러 가기" onClick={handleButtonClick} />
+      </HomeContainer>
       <Footer />
     </>
   );

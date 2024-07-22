@@ -1,7 +1,12 @@
+// src/components/Map/Map.js
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import useKakaoMap from "../../hooks/useKakaoMap";
+import MapInfoButton from "../Button/MapInfoButton";
+import MapStatusButton from "../Button/MapStatusButton";
+import { useNavigate, useLocation } from "react-router-dom";
+import TagFilteringButton from "../Button/TagFilteringButton";
 
 const StyledMap = styled.div`
   width: ${(props) => props.width || "375px"}; // 아이폰 se 기준
@@ -18,12 +23,33 @@ const Map = ({ latitude, longitude, width, height }) => {
     initialLocation,
   );
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const onClickMapInfo = () => {
+    navigate("/map-info");
+  };
+
+  const onClickMapStatus = () => {
+    navigate("/map-status");
+  };
+
+  const onClickTageFilteringIcon = () => {
+    navigate("/map-tag");
+  };
+
   return (
-    <StyledMap ref={mapContainer} width={width} height={height}></StyledMap>
+    <StyledMap ref={mapContainer} width={width} height={height}>
+      <MapInfoButton onClick={onClickMapInfo} />
+      <MapStatusButton onClick={onClickMapStatus} />
+      {location.pathname === "/map-info" && (
+        // 태그 필터링 버튼은 조건부 렌더링
+        <TagFilteringButton onClick={onClickTageFilteringIcon} />
+      )}
+    </StyledMap>
   );
 };
 
-// eslint props 에러 안뜨게 수정
 Map.propTypes = {
   latitude: PropTypes.number.isRequired,
   longitude: PropTypes.number.isRequired,

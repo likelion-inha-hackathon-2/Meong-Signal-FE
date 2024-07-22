@@ -9,6 +9,7 @@ import SignUp1 from "./pages/SignUp/SignUp1";
 import SignUp2 from "./pages/SignUp/SignUp2";
 import MapInfo from "./pages/Map/MapInfo";
 import MapStatus from "./pages/Map/MapStatus";
+import TagFiltering from "./pages/Map/TagFiltering";
 import ReviewReceived from "./pages/MyInfo/ReviewReceived";
 import ReviewWritten from "./pages/MyInfo/ReviewWritten";
 import MyInfoMain from "./pages/MyInfo/MyInfoMain";
@@ -30,11 +31,12 @@ function App() {
             <Route path="/signup2" element={<SignUp2 />} />
             <Route path="/map-info" element={<MapInfo />} />
             <Route path="/map-status" element={<MapStatus />} />
+            <Route path="/map-tag" element={<TagFiltering />} />
             <Route path="/reviews/received" element={<ReviewReceived />} />
             <Route path="/reviews/written" element={<ReviewWritten />} />
             <Route path="/myinfo-main" element={<MyInfoMain />} />
             <Route path="/myinfo-edit" element={<MyInfoEdit />} />
-            <Route path="/dogs/new" element={<RegisterDog />} />
+            <Route path="/dogs-new" element={<RegisterDog />} />
             <Route path="/walk" element={<WalkDetail />} />
             <Route path="/chat" element={<ChatList />} />
           </Route>

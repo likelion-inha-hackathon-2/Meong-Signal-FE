@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
-import Icon from "../assets/icons/icon-dogfootprint.png";
+import FootPrintIcon from "../assets/icons/icon-dogfootprint.png";
 
-const Mine = styled.span`
-  font-family: PretendardR;
-  font-size: 14px;
+const TitleSection = styled.span`
+  font-family: "PretendardB";
+  font-size: 20px;
   font-weight: 700;
   line-height: 28px;
   text-align: center;
@@ -18,16 +18,16 @@ const Info = styled.span`
   height: 28px;
   gap: 0px;
   opacity: 0px;
-  font-family: PretendardR;
-  font-size: 10px;
+  font-family: "PretendardR";
+  font-size: 12px;
   font-weight: 600;
   line-height: 28px;
   text-align: center;
-  color: #868686;
+  color: var(--gray-color3);
 `;
 
 const Number = styled.span`
-  font-family: PretendardB;
+  font-family: "PretendardB";
   font-size: 24px;
   font-weight: 700;
   line-height: 28px;
@@ -88,14 +88,14 @@ const Container = styled.div`
   border-radius: 8px;
   margin-bottom: 15px;
   background-color: #ffffff; /* 내부 배경색을 흰색으로 설정 */
-  border: 6px solid #ffe8ad; /* 테두리를 지정된 색상으로 설정하고 두께를 6px로 설정 */
+  border: 6px solid var(--yellow-color1);
   color: #000000; /* 텍스트 색상 설정 */
 `;
 
 const TopContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin: 10px;
 `;
 
 const IconStyled = styled.img`
@@ -121,37 +121,36 @@ const TopUp = () => {
   return (
     <>
       <Header />
-      <Mine>보유멍</Mine>
+      <TitleSection>보유멍</TitleSection>
       <TopContainer>
         <Number>300</Number>
-        <IconStyled src={Icon} alt="Dog Footprint Icon" />
+        <IconStyled src={FootPrintIcon} alt="Dog Footprint Icon" />
       </TopContainer>
-
       <Info>지금 바로 멍을 충전하여 다양한 기능을 이용해보세요!</Info>
       <Container>
         <BoxNumber>10</BoxNumber>
-        <SmallIconStyled src={Icon} />
+        <SmallIconStyled src={FootPrintIcon} />
         <Box onClick={() => handleBoxClick("/path1")}>
           <BoxPrice>1,000원</BoxPrice>
         </Box>
       </Container>
       <Container>
         <BoxNumber>50</BoxNumber>
-        <SmallIconStyled src={Icon} />
+        <SmallIconStyled src={FootPrintIcon} />
         <Box onClick={() => handleBoxClick("/path2")}>
           <BoxPrice>5,000원</BoxPrice>
         </Box>
       </Container>
       <Container>
         <BoxNumber style={{ marginLeft: "12px" }}>100</BoxNumber>
-        <SmallIconStyled src={Icon} style={{ marginLeft: "15px" }} />
+        <SmallIconStyled src={FootPrintIcon} style={{ marginLeft: "15px" }} />
         <Box onClick={() => handleBoxClick("/path3")}>
           <BoxPrice>9,000원</BoxPrice>
         </Box>
       </Container>
       <Container>
         <BoxNumber style={{ marginLeft: "12px" }}>300</BoxNumber>
-        <SmallIconStyled src={Icon} style={{ marginLeft: "16px" }} />
+        <SmallIconStyled src={FootPrintIcon} style={{ marginLeft: "16px" }} />
         <Box onClick={() => handleBoxClick("/path4")}>
           <BoxPrice>25,000원</BoxPrice>
         </Box>
