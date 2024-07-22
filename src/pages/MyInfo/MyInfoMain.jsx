@@ -38,6 +38,11 @@ const UserInfo = styled.div`
   align-items: center;
 `;
 
+const MyDogInfoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const MyDogInfoContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -135,26 +140,29 @@ const MyInfoMain = () => {
         <StyledMyInfoButton text="내가 받은 리뷰" />
       </MyInfoButtonContainer>
 
-      <MyDogInfoContainer>
-        <p>내가 등록한 강아지</p>
-        <StyledLink to="/dogs/new">+ 강아지 등록</StyledLink>
-      </MyDogInfoContainer>
-      {dogs.length === 0 ? (
-        <p>등록된 강아지가 없습니다.</p>
-      ) : (
-        dogs.map((dog) => (
-          <DogInfo
-            key={dog.id}
-            id={dog.id}
-            name={dog.name}
-            gender={dog.gender}
-            age={dog.age}
-            introduction={dog.introduction}
-            status={dog.status}
-            image={dog.image}
-          />
-        ))
-      )}
+      <MyDogInfoWrapper>
+        <MyDogInfoContainer>
+          <p>내가 등록한 강아지</p>
+          <StyledLink to="/dogs-new">+ 강아지 등록</StyledLink>
+        </MyDogInfoContainer>
+        {dogs.length === 0 ? (
+          <p>등록된 강아지가 없습니다.</p>
+        ) : (
+          dogs.map((dog) => (
+            <DogInfo
+              key={dog.id}
+              id={dog.id}
+              name={dog.name}
+              gender={dog.gender}
+              age={dog.age}
+              introduction={dog.introduction}
+              status={dog.status}
+              image={dog.image}
+            />
+          ))
+        )}
+      </MyDogInfoWrapper>
+
       <Footer />
     </>
   );

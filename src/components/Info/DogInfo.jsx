@@ -26,6 +26,7 @@ const DogImage = styled(Image)`
   width: 80px;
   height: 80px;
   margin-right: 10px;
+  pointer-events: none; // nonclick
 `;
 
 const DogInfoWrapper = styled.div`
