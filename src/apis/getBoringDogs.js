@@ -9,7 +9,6 @@ export const getBoringDogs = async () => {
       latitude: position.latitude,
       longitude: position.longitude,
     });
-    console.log(response);
     // console.log("심심한 강아지 목록:", response.data); // 테스트 로그
     return response.data.dogs;
   } catch (error) {
