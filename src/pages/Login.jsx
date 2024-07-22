@@ -101,12 +101,8 @@ const Login = () => {
   const handleKakaoLogin = async (e) => {
     e.preventDefault();
     try {
-      // window.location.href = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${process.env.KAKAO_CLIENT_ID}&redirect_uri=${process.env.KAKAO_REDIRECT_URL}`;
-      // window.location.href =
-      //   "https://kauth.kakao.com/oauth/authorize?client_id=0d7a9bca6ede07a2e10b1ed3c0d8fc29&redirect_uri=http://localhost:8000/users/login/kakao/callback&response_type=code";
-
-      window.location.href =
-        "https://kauth.kakao.com/oauth/authorize?client_id=0d7a9bca6ede07a2e10b1ed3c0d8fc29&redirect_uri=http://localhost:3000/auth&response_type=code";
+      const url = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URL}&response_type=code`;
+      window.location.href = url;
     } catch (error) {
       console.error("Login error:", error);
       if (error.response) {
