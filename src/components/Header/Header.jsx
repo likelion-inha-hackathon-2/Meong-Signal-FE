@@ -14,7 +14,6 @@ const ButtonWrapper = styled.div`
   height: 39px;
   top: 11px;
   left: 192px;
-  margin:0
   gap: 8px;
   border-radius: 16px;
   background-color: #ffffff;
@@ -26,13 +25,13 @@ const HeaderWrapper = styled.div`
   align-items: center;
   width: 100%;
   height: 56px;
-  background-color: #ffe8ad;
+  background-color: var(--yellow-color1);
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
   position: fixed;
   top: 0;
   z-index: 100;
-  padding: 0 16px; /* 좌우 패딩 추가 */
+  padding: 0 16px;
 `;
 
 const IconWrapper = styled.div`
@@ -45,6 +44,7 @@ const IconImage = styled(Image)`
   width: 17px;
   height: 17px;
 `;
+
 const ArrowImage = styled.img`
   width: 30px;
   height: 30px;
@@ -52,7 +52,7 @@ const ArrowImage = styled.img`
 
 const NumberText = styled.span`
   font-size: 16px;
-  margin: 0 8px; /* 좌우 간격을 주어 아이콘과 텍스트 사이를 벌림 */
+  margin: 0 3px;
   font-family: "pretendardB";
 `;
 
@@ -60,15 +60,15 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    navigate(-1); // 뒤로 가기
+    navigate(-1);
   };
 
   const handleNumberClick = () => {
-    navigate("/number-page"); // 숫자 클릭 시 이동할 페이지 경로
+    navigate("/number-page");
   };
 
   const handlePluscoinClick = () => {
-    navigate("/topup"); // 오른쪽 아이콘 클릭 시 이동할 페이지 경로
+    navigate("/topup");
   };
 
   return (
