@@ -21,9 +21,8 @@ const DogInfoContainer = styled.div`
 `;
 
 const DogImage = styled(Image)`
-  width: 80px;
-  height: 80px;
   margin-right: 10px;
+  border-radius: 50%;
   pointer-events: none; // nonclick
 `;
 
@@ -92,7 +91,7 @@ const DogInfo = ({ id, name, gender, age, introduction, status, image }) => {
 
   return (
     <DogInfoContainer onClick={() => setTooltipVisible(false)}>
-      <DogImage src={image} alt={`${name}`} />
+      <DogImage src={image} alt={`${name}`} width="80px" height=" 80px" />
       <DogInfoWrapper>
         <div>이름: {name}</div>
         <div>나이: {age}</div>
