@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // useNavigate 사용
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import Image from "../../components/Image/Image";
-import { getUserInfo } from "../../apis/authApi";
+import { getUserInfo } from "../../apis/getUserInfo"; // 모듈화된 함수 import
 import authApi from "../../apis/authApi";
 import DogInfo from "../../components/Info/DogInfo";
 
@@ -52,20 +52,6 @@ const MyDogInfoContainer = styled.div`
   font-family: "pretendardR";
 `;
 
-const StyledLink = styled(Link)`
-  font-family: "pretendardR";
-  color: var(--gray-color3);
-  font-size: 14px;
-  text-decoration: none;
-  border: 2px solid var(--gray-color2);
-  border-radius: 8px;
-  padding: 4px;
-
-  &:hover {
-    background-color: var(--gray-color1);
-  }
-`;
-
 const StyledMyInfoButton = styled(Button)`
   display: flex;
   width: 140px;
@@ -77,7 +63,29 @@ const StyledMyInfoButton = styled(Button)`
   font-style: normal;
 `;
 
+// 내정보 수정, 강아지등록
+const StyledLinkButton = styled(Button)`
+  font-family: "pretendardR";
+  color: var(--gray-color3);
+  font-size: 14px;
+  text-decoration: none;
+  border: 2px solid var(--gray-color2);
+  width: 100px;
+  height: 30px;
+  border-radius: 4px;
+  padding: 4px;
+  display: inline-block;
+  text-align: center;
+  background-color: var(--gray-color1);
+  color: var(--black-color);
+
+  &:hover {
+    background-color: var(--gray-color2);
+  }
+`;
+
 const MyInfoMain = () => {
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState({
     nickname: "",
     road_address: "",
@@ -120,7 +128,7 @@ const MyInfoMain = () => {
     };
 
     fetchData();
-  }, []);
+  }, []); // 컴포넌트 마운트 시에만 호출되도록 변경
 
   return (
     <>
@@ -131,7 +139,10 @@ const MyInfoMain = () => {
         지금까지 총 {userInfo.total_distance}km 산책하고{" "}
         {userInfo.total_kilocalories}kcal를 소비했네요.
       </UserInfo>
-      <StyledLink to="/myinfo-edit">+ 내 정보 수정</StyledLink>
+      <StyledLinkButton
+        text="+ 내 정보 수정"
+        onClick={() => navigate("/myinfo-edit")}
+      ></StyledLinkButton>
 
       <MyInfoButtonContainer>
         <StyledMyInfoButton text="내 산책현황" />
@@ -143,7 +154,10 @@ const MyInfoMain = () => {
       <MyDogInfoWrapper>
         <MyDogInfoContainer>
           <p>내가 등록한 강아지</p>
-          <StyledLink to="/dogs-new">+ 강아지 등록</StyledLink>
+          <StyledLinkButton
+            text="+ 강아지 등록"
+            onClick={() => navigate("/dogs-new")}
+          ></StyledLinkButton>
         </MyDogInfoContainer>
         {dogs.length === 0 ? (
           <p>등록된 강아지가 없습니다.</p>

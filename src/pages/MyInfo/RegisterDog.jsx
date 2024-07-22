@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import useForm from "../../hooks/useForm";
 import Input from "../../components/Input/Input";
@@ -134,22 +134,15 @@ const RegisterDog = () => {
     }
   };
 
-  const handleTagClick = useCallback(
-    (tag) => {
-      if (selectedTags.includes(tag)) {
-        setSelectedTags(selectedTags.filter((t) => t !== tag));
-      } else if (selectedTags.length < 3) {
-        setSelectedTags([...selectedTags, tag]);
-      }
-    },
-    [selectedTags],
-  );
-
   const handleDogImageChange = (e) => {
     const file = e.target.files[0];
     setDogImage(file);
     handleChange({ target: { name: "image", value: file } });
   };
+
+  useEffect(() => {
+    // 상태가 변경될 때 필요한 함수가 있다면.. 여긴 없는듯
+  }, [dogImage, selectedTags, values]);
 
   return (
     <>
@@ -211,7 +204,19 @@ const RegisterDog = () => {
           onChange={handleChange}
           placeholder="간단히 소개해주세요."
         />
-        <Tag selectedTags={selectedTags} handleTagClick={handleTagClick} />
+        <Tag
+          selectedTags={selectedTags}
+          handleTagClick={(tag) =>
+            setSelectedTags((prevTags) => {
+              if (prevTags.includes(tag)) {
+                return prevTags.filter((t) => t !== tag);
+              } else if (prevTags.length < 3) {
+                return [...prevTags, tag];
+              }
+              return prevTags;
+            })
+          }
+        />
         <StyledButton text="강아지 등록하기" onClick={handleRegisterDog} />
       </Container>
       <Footer />
