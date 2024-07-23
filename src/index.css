@@ -1,21 +1,21 @@
 @font-face {
-  font-family: "pretendardB";
+  font-family: "PretendardB";
   src: url("../src/assets/fonts/Pretendard-Bold.woff");
 }
 @font-face {
-  font-family: "pretendardL";
+  font-family: "PretendardL";
   src: url("../src/assets/fonts/Pretendard-Light.woff");
 }
 @font-face {
-  font-family: "pretendardM";
+  font-family: "PretendardM";
   src: url("../src/assets/fonts/Pretendard-Medium.woff");
 }
 @font-face {
-  font-family: "pretendardR";
+  font-family: "PretendardR";
   src: url("../src/assets/fonts/Pretendard-Regular.woff");
 }
 @font-face {
-  font-family: "pretendardS";
+  font-family: "PretendardS";
   src: url("../src/assets/fonts/Pretendard-SemiBold.woff");
 }
 
@@ -46,5 +46,5 @@
 
 body {
   font-size: 14px;
-  font-family: "pretendardR";
+  font-family: "PretendardR";
 }

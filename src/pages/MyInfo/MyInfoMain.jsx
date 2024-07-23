@@ -131,12 +131,23 @@ const MyInfoMain = () => {
   const onClickMyWalk = () => {
     navigate("/myinfo-walk-record");
   };
+  const onClickReviewReceived = () => {
+    navigate("/reviews/received");
+  };
+  const onClickReviewWritten = () => {
+    navigate("/reviews/written");
+  };
 
   return (
     <>
       <Header />
       <UserInfo>
-        <StyledImage src={userInfo.profile_image} alt="Profile" width="150px" />
+        <StyledImage
+          src={userInfo.profile_image}
+          alt="Profile"
+          width="150px"
+          height="150px"
+        />
         <SectionTitle>{userInfo.nickname}님, 안녕하세요!</SectionTitle>
         지금까지 총 {userInfo.total_distance}km 산책하고{" "}
         {userInfo.total_kilocalories}kcal를 소비했네요.
@@ -149,8 +160,14 @@ const MyInfoMain = () => {
       <MyInfoButtonContainer>
         <StyledMyInfoButton text="내 산책현황" onClick={onClickMyWalk} />
         <StyledMyInfoButton text="칭호관리" />
-        <StyledMyInfoButton text="내가남긴 리뷰" />
-        <StyledMyInfoButton text="내가 받은 리뷰" />
+        <StyledMyInfoButton
+          text="내가 남긴 리뷰"
+          onClick={onClickReviewWritten}
+        />
+        <StyledMyInfoButton
+          text="내가 받은 리뷰"
+          onClick={onClickReviewReceived}
+        />
       </MyInfoButtonContainer>
 
       <MyDogInfoWrapper>
