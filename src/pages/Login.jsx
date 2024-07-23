@@ -116,10 +116,21 @@ const Login = () => {
     }
   };
 
+  // 네이버 로그인에 필요한 상태 토큰을 만드는 함수
+  const generateState = () => {
+    const array = new Uint32Array(5);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, (dec) => dec.toString(32)).join("");
+  };
+
   const handleNaverLogin = async (e) => {
     e.preventDefault();
     try {
-      console.log("handleNaverLogin");
+      console.log("naver 로그인");
+      const status_token = generateState();
+      console.log("Status_token = ", status_token);
+      const url = `https://nid.naver.com/oauth2.0/authorize?client_id=${process.env.REACT_APP_NAVER_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_NAVER_REDIRECT_URL}&status=${status_token}&response_type=code`;
+      window.location.href = url;
     } catch (error) {
       console.error("Login error:", error);
       if (error.response) {
