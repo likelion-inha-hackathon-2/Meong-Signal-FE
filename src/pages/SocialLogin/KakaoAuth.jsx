@@ -20,7 +20,7 @@ const KakaoAuth = () => {
       .then((response) => {
         console.log(response);
 
-        if (response.is_user == 0) {
+        if (response.is_user === 0) {
           navigate("/signup2", {
             state: {
               social_id: response.social_id,
