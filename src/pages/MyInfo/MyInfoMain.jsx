@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom"; // useNavigate 사용
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import Image from "../../components/Image/Image";
 import DogInfo from "../../components/Dog/DogInfo";
-import { getUserInfo } from "../../apis/getUserInfo"; // 모듈화된 함수 import
+import { getUserInfo } from "../../apis/getUserInfo";
 import authApi from "../../apis/authApi";
+import { useNavigate } from "react-router-dom";
 
 const StyledImage = styled(Image)`
   pointer-events: none; // 클릭 비활성화
@@ -63,11 +63,11 @@ const StyledMyInfoButton = styled(Button)`
 
 // 내정보 수정, 강아지등록
 const StyledLinkButton = styled(Button)`
-  font-family: "pretendardR";
-  color: var(--gray-color3);
+  font-family: "PretendardR";
+  color: var(--gray-color1);
   font-size: 14px;
   text-decoration: none;
-  border: 2px solid var(--gray-color2);
+  border: 1px solid var(--gray-color2);
   width: 100px;
   height: 30px;
   border-radius: 4px;
@@ -128,11 +128,26 @@ const MyInfoMain = () => {
     fetchData();
   }, []); // 컴포넌트 마운트 시에만 호출되도록 변경
 
+  const onClickMyWalk = () => {
+    navigate("/walk-my-record");
+  };
+  const onClickReviewReceived = () => {
+    navigate("/reviews/received");
+  };
+  const onClickReviewWritten = () => {
+    navigate("/reviews/written");
+  };
+
   return (
     <>
       <Header />
       <UserInfo>
-        <StyledImage src={userInfo.profile_image} alt="Profile" width="150px" />
+        <StyledImage
+          src={userInfo.profile_image}
+          alt="Profile"
+          width="150px"
+          height="150px"
+        />
         <SectionTitle>{userInfo.nickname}님, 안녕하세요!</SectionTitle>
         지금까지 총 {userInfo.total_distance}km 산책하고{" "}
         {userInfo.total_kilocalories}kcal를 소비했네요.
@@ -143,10 +158,16 @@ const MyInfoMain = () => {
       ></StyledLinkButton>
 
       <MyInfoButtonContainer>
-        <StyledMyInfoButton text="내 산책현황" />
+        <StyledMyInfoButton text="내 산책현황" onClick={onClickMyWalk} />
         <StyledMyInfoButton text="칭호관리" />
-        <StyledMyInfoButton text="내가남긴 리뷰" />
-        <StyledMyInfoButton text="내가 받은 리뷰" />
+        <StyledMyInfoButton
+          text="내가 남긴 리뷰"
+          onClick={onClickReviewWritten}
+        />
+        <StyledMyInfoButton
+          text="내가 받은 리뷰"
+          onClick={onClickReviewReceived}
+        />
       </MyInfoButtonContainer>
 
       <MyDogInfoWrapper>

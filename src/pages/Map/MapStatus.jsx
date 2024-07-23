@@ -14,19 +14,16 @@ const MapStatus = () => {
   useEffect(() => {
     const fetchCoordinates = async () => {
       try {
-        const coordinates = await getCoordinates(currentLocation);
+        const coordinates = await getCoordinates(initialLocation);
         setInitialLocation(coordinates);
+        setCurrentLocation(coordinates);
       } catch (error) {
         console.error("Error fetching coordinates:", error);
       }
     };
 
     fetchCoordinates();
-  }, []);
-
-  useEffect(() => {
-    setCurrentLocation(initialLocation);
-  }, [initialLocation]);
+  }, [initialLocation]); // 의존성 배열 수정
 
   return (
     <>

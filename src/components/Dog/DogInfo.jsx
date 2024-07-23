@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import authApi from "../../apis/authApi";
-import Image from "../Image/Image";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import statusR from "../../assets/images/status-r.png";
 import statusB from "../../assets/images/status-b.png";
@@ -20,10 +19,10 @@ const DogInfoContainer = styled.div`
   background-color: var(--yellow-color1);
 `;
 
-const DogImage = styled(Image)`
+const DogImage = styled.img`
   margin-right: 10px;
   border-radius: 50%;
-  pointer-events: none; // nonclick
+  pointer-events: none;
 `;
 
 const DogInfoWrapper = styled.div`

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Tag from "../../components/Tag/Tag";
-import authApi from "../../apis/authApi";
+import { getAllDogs } from "../../apis/getAllDogs";
 import { getCoordinates } from "../../apis/geolocation";
 
 // 강아지 여러마리 컨테이너
@@ -85,17 +85,13 @@ const TagFiltering = () => {
     const fetchDogs = async () => {
       if (location) {
         try {
-          const response = await authApi.post("/dogs/all-status", {
-            latitude: location.latitude,
-            longitude: location.longitude,
-          });
-
-          if (response.status === 200) {
-            console.log("Fetched dogs:", response.data.dogs);
-            setDogs(response.data.dogs);
-            setAllDogs(response.data.dogs); // 모든 강아지 데이터를 저장
+          const response = await getAllDogs();
+          if (response) {
+            console.log("Fetched dogs:", response);
+            setDogs(response);
+            setAllDogs(response); // 모든 강아지 데이터를 저장
           } else {
-            console.error("Failed to fetch dogs:", response.data);
+            console.error("Failed to fetch dogs:", response);
           }
         } catch (error) {
           console.error("Failed to fetch dogs:", error);

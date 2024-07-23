@@ -24,7 +24,7 @@ const NaverAuth = () => {
       .then((response) => {
         console.log(response);
 
-        if (response.is_user == 0) {
+        if (response.is_user === 0) {
           navigate("/signup2", {
             state: {
               social_id: response.social_id,
@@ -48,9 +48,9 @@ const NaverAuth = () => {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [code, navigate]);
+  }, [code, state_token, navigate]); // state_token을 의존성 배열에 포함
 
-  return;
+  return null;
 };
 
 export default NaverAuth;
