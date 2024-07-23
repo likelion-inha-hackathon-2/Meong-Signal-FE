@@ -3,9 +3,11 @@ import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { getWalksRecord } from "../../apis/walk";
+import { fetchMyDogs } from "../../apis/myDogs";
 import Graph from "../../components/Graph/Graph";
+import DogInfoWalkRecord from "../../components/Dog/DogInfoWalkRecord";
+import { useNavigate } from "react-router-dom";
 
-// 전체 박스를 묶는 컨테이너
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -37,18 +39,42 @@ const MyWalk = () => {
     recent_walks: [],
   });
 
+  const [dogs, setDogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchWalkData = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getWalksRecord();
-        setWalkData(data);
+        const [walkDataResponse, dogsDataResponse] = await Promise.all([
+          getWalksRecord(),
+          fetchMyDogs(),
+        ]);
+        setWalkData(walkDataResponse);
+        setDogs(dogsDataResponse.dogs);
       } catch (error) {
-        console.error("Error fetching walk data:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchWalkData();
+    fetchData();
   }, []);
+
+  const handleDogClick = (id) => {
+    navigate("/walk-dog-record", { state: { id } });
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <Container>로딩 중...</Container>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -60,11 +86,21 @@ const MyWalk = () => {
           <Graph recentWalks={walkData.recent_walks} />
           <p>총 거리: {walkData.total_distance} km</p>
           <p>총 칼로리 소모: {walkData.total_kilocalories} kcal</p>
-          <p></p>
         </WalkRecordBox>
         <WalkRecordBox>
-          <WalkTitle>산책 기록 모아보기</WalkTitle>
-          추가 필요...
+          <WalkTitle>내 산책 기록 모아보기</WalkTitle>
+          {dogs.map((dog) => (
+            <DogInfoWalkRecord
+              key={dog.id}
+              id={dog.id}
+              name={dog.name}
+              gender={dog.gender}
+              age={dog.age}
+              introduction={dog.introduction}
+              image={dog.image}
+              onClick={() => handleDogClick(dog.id)}
+            />
+          ))}
         </WalkRecordBox>
       </Container>
       <Footer />

@@ -129,7 +129,7 @@ const MyInfoMain = () => {
   }, []); // 컴포넌트 마운트 시에만 호출되도록 변경
 
   const onClickMyWalk = () => {
-    navigate("/myinfo-walk-record");
+    navigate("/walk-my-record");
   };
   const onClickReviewReceived = () => {
     navigate("/reviews/received");
