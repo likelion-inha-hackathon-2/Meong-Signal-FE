@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { getCoordinates } from "../apis/geolocation";
+import { getAllDogs } from "../apis/getAllDogs";
 import { getBoringDogs } from "../apis/getBoringDogs";
 
-const useKakaoMap = (appKey, initialLocation) => {
+const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(initialLocation); // 현재 위치
@@ -22,11 +23,16 @@ const useKakaoMap = (appKey, initialLocation) => {
       }
     };
 
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${appKey}&libraries=services,clusterer,drawing&autoload=false`;
-    document.head.appendChild(script);
-    script.onload = () => {
+    const createScript = () => {
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${appKey}&libraries=services,clusterer,drawing&autoload=false`;
+      document.head.appendChild(script);
+      script.onload = initializeMap;
+      return script;
+    };
+
+    const initializeMap = () => {
       window.kakao.maps.load(() => {
         loadKakaoMap();
         if (mapContainer.current) {
@@ -35,40 +41,24 @@ const useKakaoMap = (appKey, initialLocation) => {
               currentLocation.latitude,
               currentLocation.longitude,
             ),
-            level: 6,
+            level: 7,
           };
           const mapInstance = new window.kakao.maps.Map(
             mapContainer.current,
             options,
           );
           setMap(mapInstance);
-
-          const markerPosition = new window.kakao.maps.LatLng(
-            currentLocation.latitude,
-            currentLocation.longitude,
-          );
-
-          // 현재 위치를 나타내는 마커, 카카오에서 가져옴
-          const markerImage = new window.kakao.maps.MarkerImage(
-            "https://t1.daumcdn.net/localimg/localimages/07/2018/pc/img/marker_spot.png",
-            new window.kakao.maps.Size(30, 40),
-          );
-
-          const markerInstance = new window.kakao.maps.Marker({
-            position: markerPosition,
-            image: markerImage,
-          });
-
-          markerInstance.setMap(mapInstance);
-          setMarker(markerInstance);
+          createMarker(mapInstance, currentLocation);
         }
       });
     };
 
+    const script = createScript();
+
     return () => {
       document.head.removeChild(script);
     };
-  }, [appKey, currentLocation.latitude, currentLocation.longitude]);
+  }, [appKey]);
 
   useEffect(() => {
     if (marker && map) {
@@ -82,9 +72,12 @@ const useKakaoMap = (appKey, initialLocation) => {
   }, [currentLocation, marker, map]);
 
   useEffect(() => {
-    const addDogMarkersAndOverlays = async (dogs) => {
-      for (const dog of dogs) {
-        try {
+    // 토글에 따라 달라져야함!
+    const fetchDogs = isBoring ? getBoringDogs : getAllDogs;
+    const addDogMarkersAndOverlays = async () => {
+      try {
+        const dogs = await fetchDogs();
+        for (const dog of dogs) {
           const { latitude, longitude } = await getCoordinates(
             dog.road_address,
           );
@@ -104,7 +97,6 @@ const useKakaoMap = (appKey, initialLocation) => {
 
           dogMarker.setMap(map);
 
-          // 커스텀 오버레이를 사용한 강아지 마커(html 문법으로 써야 함)
           const overlayContent = document.createElement("div");
           overlayContent.innerHTML = `
             <div id="overlay-${dog.id}" style="display: flex; align-items: center; justify-content: center; padding: 4px; background-color: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); cursor: pointer; font-family: 'PretendardR';" >
@@ -128,7 +120,6 @@ const useKakaoMap = (appKey, initialLocation) => {
           });
 
           window.kakao.maps.event.addListener(dogMarker, "click", () => {
-            // 해당하는 dog_id를 가진 새 페이지로 이동! 아직 미구현..
             window.location.href = `/dog/${dog.id}`;
           });
 
@@ -139,14 +130,33 @@ const useKakaoMap = (appKey, initialLocation) => {
           window.kakao.maps.event.addListener(dogMarker, "mouseout", () => {
             overlay.setMap(null);
           });
-        } catch (error) {
-          console.error("Error adding dog marker and overlay:", error);
         }
+      } catch (error) {
+        console.error("Error adding dog markers and overlays:", error);
       }
     };
 
-    getBoringDogs().then(addDogMarkersAndOverlays).catch(console.error);
-  }, [map]);
+    if (map) {
+      addDogMarkersAndOverlays();
+    }
+  }, [map, isBoring]);
+
+  const createMarker = (mapInstance, location) => {
+    const markerPosition = new window.kakao.maps.LatLng(
+      location.latitude,
+      location.longitude,
+    );
+    const markerImage = new window.kakao.maps.MarkerImage(
+      "https://t1.daumcdn.net/localimg/localimages/07/2018/pc/img/marker_spot.png",
+      new window.kakao.maps.Size(30, 40),
+    );
+    const markerInstance = new window.kakao.maps.Marker({
+      position: markerPosition,
+      image: markerImage,
+    });
+    markerInstance.setMap(mapInstance);
+    setMarker(markerInstance);
+  };
 
   return { mapContainer, map, currentLocation };
 };

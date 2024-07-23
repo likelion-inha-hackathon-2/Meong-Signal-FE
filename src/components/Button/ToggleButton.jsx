@@ -31,7 +31,7 @@ const ToggleSwitch = styled.div`
   height: 20px;
   border-radius: 10px;
   background-color: ${(props) =>
-    props.toggled ? "#f3bebe" : "var(--white-color)"};
+    props.$toggled === "true" ? "#f3bebe" : "var(--white-color)"};
   position: relative;
   transition: background-color 0.3s;
 
@@ -39,7 +39,7 @@ const ToggleSwitch = styled.div`
     content: "";
     position: absolute;
     top: 2px;
-    left: ${(props) => (props.toggled ? "22px" : "2px")};
+    left: ${(props) => (props.$toggled === "true" ? "22px" : "2px")};
     width: 16px;
     height: 16px;
     border-radius: 50%;
@@ -61,7 +61,7 @@ const ToggleButton = ({ onToggle }) => {
   return (
     <ToggleContainer onClick={handleClick}>
       <ToggleLabel>{toggled ? "심심한 강아지" : "모든 강아지"}</ToggleLabel>
-      <ToggleSwitch toggled={toggled ? true : undefined} />
+      <ToggleSwitch $toggled={toggled.toString()} />
     </ToggleContainer>
   );
 };

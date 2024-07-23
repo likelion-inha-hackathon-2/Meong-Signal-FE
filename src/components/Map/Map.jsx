@@ -3,19 +3,30 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import useKakaoMap from "../../hooks/useKakaoMap";
 import ToggleButton from "../Button/ToggleButton";
-import MapStatusButton from "../Button/MapStatusButton";
+import MapInfoButton from "../Button/MapInfoButton";
 import { useNavigate, useLocation } from "react-router-dom";
-import TagFilteringButton from "../Button/TagFilteringButton";
-import { getAllDogs } from "../../apis/getAllDogs"; // 기본 상태는 모든 강아지를 보여줌
-import { getBoringDogs } from "../../apis/getBoringDogs"; // 심심한 강아지 목록 가져오기
+import { getAllDogs } from "../../apis/getAllDogs";
+import { getBoringDogs } from "../../apis/getBoringDogs";
 import DogMoreInfo from "../Dog/DogMoreInfo";
+import IconTagFiltering from "../../assets/icons/icon-tag-filtering.png";
 
 const StyledMap = styled.div`
-  width: ${(props) => props.width || "375px"}; // 아이폰 se 기준
-  height: ${(props) =>
-    props.height ||
-    "555px"}; // 기본 높이 (아이폰 se에서 헤더와 푸터 높이를 빼기)
+  position: relative;
+  width: ${(props) => props.width || "375px"};
+  height: ${(props) => props.height || "555px"};
   flex-shrink: 0;
+`;
+
+const StyledTagFilteringIcon = styled.div`
+  width: 31px;
+  height: 32px;
+  position: absolute;
+  right: 15px;
+  bottom: 20px;
+  z-index: 100;
+  cursor: pointer;
+  background-image: url(${IconTagFiltering});
+  background-size: cover;
 `;
 
 const Map = ({ latitude, longitude, width, height }) => {
@@ -29,6 +40,7 @@ const Map = ({ latitude, longitude, width, height }) => {
   const location = useLocation();
   const [dogs, setDogs] = useState([]);
   const [selectedDogId, setSelectedDogId] = useState(null);
+  const [isMapInfo, setIsMapInfo] = useState(location.pathname === "/map-info");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,28 +121,24 @@ const Map = ({ latitude, longitude, width, height }) => {
     }
   };
 
-  const onClickMapStatus = () => {
-    navigate("/map-status");
+  const onClickTagFilteringIcon = () => {
+    navigate("/map-tag");
   };
 
-  const onClickTageFilteringIcon = () => {
-    navigate("/map-tag");
+  const handleMapInfoClick = () => {
+    setIsMapInfo(!isMapInfo);
   };
 
   return (
     <StyledMap ref={mapContainer} width={width} height={height}>
       <ToggleButton onToggle={handleToggle} />
-      <MapStatusButton onClick={onClickMapStatus} />
-      {location.pathname === "/map-info" && (
-        <>
-          <TagFilteringButton onClick={onClickTageFilteringIcon} />
-          {selectedDogId && (
-            <DogMoreInfo
-              dogId={selectedDogId}
-              onClose={() => setSelectedDogId(null)}
-            />
-          )}
-        </>
+      <MapInfoButton isMapInfo={isMapInfo} onClick={handleMapInfoClick} />
+      <StyledTagFilteringIcon onClick={onClickTagFilteringIcon} />
+      {selectedDogId && (
+        <DogMoreInfo
+          dogId={selectedDogId}
+          onClose={() => setSelectedDogId(null)}
+        />
       )}
     </StyledMap>
   );
