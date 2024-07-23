@@ -91,6 +91,78 @@ const Login = () => {
     }
   };
 
+  const handleKakaoLogin = async (e) => {
+    e.preventDefault();
+    console.log("handleKakaoLogin");
+    try {
+      const url = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URL}&response_type=code`;
+      window.location.href = url;
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error.response) {
+        alert(error.response.data.message || "로그인에 실패했습니다.");
+      } else if (error.request) {
+        alert("서버와의 통신에 실패했습니다.");
+      } else {
+        alert("로그인에 실패했습니다.");
+      }
+    }
+  };
+
+  // 네이버 로그인에 필요한 상태 토큰을 만드는 함수
+  const generateState = () => {
+    const array = new Uint32Array(5);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, (dec) => dec.toString(32)).join("");
+  };
+
+  const handleNaverLogin = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("naver 로그인");
+      const status_token = generateState();
+      console.log("Status_token = ", status_token);
+      const url = `https://nid.naver.com/oauth2.0/authorize?client_id=${process.env.REACT_APP_NAVER_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_NAVER_REDIRECT_URL}&status=${status_token}&response_type=code`;
+      window.location.href = url;
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error.response) {
+        alert(error.response.data.message || "로그인에 실패했습니다.");
+      } else if (error.request) {
+        alert("서버와의 통신에 실패했습니다.");
+      } else {
+        alert("로그인에 실패했습니다.");
+      }
+    }
+  };
+
+  const handleGoogleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("google 로그인");
+      console.log(
+        "process.env.REACT_APP_GOOGLE_CLIENT_ID:",
+        process.env.REACT_APP_GOOGLE_CLIENT_ID,
+      );
+      console.log(
+        "process.env.REACT_APP_GOOGLE_REDIRECT_URL:",
+        process.env.REACT_APP_GOOGLE_REDIRECT_URL,
+      );
+      const url = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.REACT_APP_GOOGLE_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_GOOGLE_REDIRECT_URL}&response_type=code&scope=email profile`;
+      window.location.href = url;
+      console.log("url:", url);
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error.response) {
+        alert(error.response.data.message || "로그인에 실패했습니다.");
+      } else if (error.request) {
+        alert("서버와의 통신에 실패했습니다.");
+      } else {
+        alert("로그인에 실패했습니다.");
+      }
+    }
+  };
+
   const handleSignupNavigate = () => {
     navigate("/signup1");
   };
@@ -124,9 +196,9 @@ const Login = () => {
         회원가입
       </StyledLink>
       <SocialLoginIconContainer>
-        <IconImage src={KaKaoIcon} />
-        <IconImage src={NaverIcon} />
-        <IconImage src={GoogleIcon} />
+        <IconImage src={KaKaoIcon} onClick={handleKakaoLogin} />
+        <IconImage src={NaverIcon} onClick={handleNaverLogin} />
+        <IconImage src={GoogleIcon} onClick={handleGoogleLogin} />
       </SocialLoginIconContainer>
     </>
   );
