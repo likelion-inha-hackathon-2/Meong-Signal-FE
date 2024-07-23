@@ -143,6 +143,33 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("google 로그인");
+      console.log(
+        "process.env.REACT_APP_GOOGLE_CLIENT_ID:",
+        process.env.REACT_APP_GOOGLE_CLIENT_ID,
+      );
+      console.log(
+        "process.env.REACT_APP_GOOGLE_REDIRECT_URL:",
+        process.env.REACT_APP_GOOGLE_REDIRECT_URL,
+      );
+      const url = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.REACT_APP_GOOGLE_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_GOOGLE_REDIRECT_URL}&response_type=code&scope=email profile`;
+      window.location.href = url;
+      console.log("url:", url);
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error.response) {
+        alert(error.response.data.message || "로그인에 실패했습니다.");
+      } else if (error.request) {
+        alert("서버와의 통신에 실패했습니다.");
+      } else {
+        alert("로그인에 실패했습니다.");
+      }
+    }
+  };
+
   const handleSignupNavigate = () => {
     navigate("/signup1");
   };
@@ -178,7 +205,7 @@ const Login = () => {
       <SocialLoginIconContainer>
         <IconImage src={KaKaoIcon} onClick={handleKakaoLogin} />
         <IconImage src={NaverIcon} onClick={handleNaverLogin} />
-        <IconImage src={GoogleIcon} />
+        <IconImage src={GoogleIcon} onClick={handleGoogleLogin} />
       </SocialLoginIconContainer>
     </>
   );
