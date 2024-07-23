@@ -17,7 +17,9 @@ import MyInfoEdit from "./pages/MyInfo/MyInfoEdit";
 import RegisterDog from "./pages/MyInfo/RegisterDog";
 import WalkDetail from "./pages/Walk/WalkDetail";
 import ChatList from "./pages/Chat/ChatList";
-import Auth from "./pages/Auth";
+import KakaoAuth from "./pages/SocialLogin/KakaoAuth";
+import NaverAuth from "./pages/SocialLogin/NaverAuth";
+import GoogleAuth from "./pages/SocialLogin/GoogleAuth";
 
 function App() {
   return (
@@ -40,7 +42,9 @@ function App() {
             <Route path="/dogs-new" element={<RegisterDog />} />
             <Route path="/walk" element={<WalkDetail />} />
             <Route path="/chat" element={<ChatList />} />
-            <Route path="/auth" element={<Auth />} />
+            <Route path="/kakao/auth" element={<KakaoAuth />} />
+            <Route path="/naver/auth" element={<NaverAuth />} />
+            <Route path="/google/auth" element={<GoogleAuth />} />
           </Route>
         </Routes>
       </BrowserRouter>

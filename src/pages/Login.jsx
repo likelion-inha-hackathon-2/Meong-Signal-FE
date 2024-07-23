@@ -100,9 +100,26 @@ const Login = () => {
 
   const handleKakaoLogin = async (e) => {
     e.preventDefault();
+    console.log("handleKakaoLogin");
     try {
       const url = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URL}&response_type=code`;
       window.location.href = url;
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error.response) {
+        alert(error.response.data.message || "로그인에 실패했습니다.");
+      } else if (error.request) {
+        alert("서버와의 통신에 실패했습니다.");
+      } else {
+        alert("로그인에 실패했습니다.");
+      }
+    }
+  };
+
+  const handleNaverLogin = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("handleNaverLogin");
     } catch (error) {
       console.error("Login error:", error);
       if (error.response) {
@@ -149,7 +166,7 @@ const Login = () => {
       </StyledLink>
       <SocialLoginIconContainer>
         <IconImage src={KaKaoIcon} onClick={handleKakaoLogin} />
-        <IconImage src={NaverIcon} />
+        <IconImage src={NaverIcon} onClick={handleNaverLogin} />
         <IconImage src={GoogleIcon} />
       </SocialLoginIconContainer>
     </>
