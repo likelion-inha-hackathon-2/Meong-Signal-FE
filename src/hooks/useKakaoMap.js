@@ -58,6 +58,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     return () => {
       document.head.removeChild(script);
     };
+    // eslint-disable-next-line
   }, [appKey]);
 
   useEffect(() => {
