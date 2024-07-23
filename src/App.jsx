@@ -20,6 +20,7 @@ import ChatList from "./pages/Chat/ChatList";
 import KakaoAuth from "./pages/SocialLogin/KakaoAuth";
 import NaverAuth from "./pages/SocialLogin/NaverAuth";
 import GoogleAuth from "./pages/SocialLogin/GoogleAuth";
+import MyWalk from "./pages/MyInfo/MyWalk";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
             <Route path="/myinfo-main" element={<MyInfoMain />} />
             <Route path="/myinfo-edit" element={<MyInfoEdit />} />
             <Route path="/dogs-new" element={<RegisterDog />} />
+            <Route path="/myinfo-walk-record" element={<MyWalk />} />
             <Route path="/walk" element={<WalkDetail />} />
             <Route path="/chat" element={<ChatList />} />
             <Route path="/kakao/auth" element={<KakaoAuth />} />
