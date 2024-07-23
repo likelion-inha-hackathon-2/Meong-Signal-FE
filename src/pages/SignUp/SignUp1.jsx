@@ -65,6 +65,7 @@ const FileInput = styled.input`
 const Signup1 = () => {
   const navigate = useNavigate();
   const { values, handleChange } = useForm({
+    social_id: "No",
     email: "",
     password: "",
     nickname: "",
