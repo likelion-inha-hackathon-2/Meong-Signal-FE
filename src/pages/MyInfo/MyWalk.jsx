@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import { getWalksRecord } from "../../apis/walks/getWalksRecord";
+import { getWalksRecord } from "../../apis/walk";
+import Graph from "../../components/Graph/Graph";
 
+// 전체 박스를 묶는 컨테이너
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
   padding: 20px;
+  font-family: "PretendardR";
 `;
 
-const WalkInfo = styled.div`
+const WalkRecordBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -21,22 +24,10 @@ const WalkInfo = styled.div`
   background-color: var(--yellow-color1);
 `;
 
-const WalkItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid var(--gray-color2);
-`;
-
 const WalkTitle = styled.h2`
   font-size: 20px;
   font-family: "PretendardB";
   font-weight: 700;
-`;
-
-const WalkData = styled.div`
-  font-size: 16px;
-  font-family: "PretendardR";
 `;
 
 const MyWalk = () => {
@@ -63,27 +54,18 @@ const MyWalk = () => {
     <>
       <Header />
       <Container>
-        <WalkInfo>
-          <WalkTitle>산책 기록</WalkTitle>
-          <WalkData>총 거리: {walkData.total_distance} km</WalkData>
-          <WalkData>
-            총 칼로리 소모: {walkData.total_kilocalories} kcal
-          </WalkData>
-        </WalkInfo>
-        <WalkInfo>
+        <WalkRecordBox>
           <WalkTitle>최근 산책 기록</WalkTitle>
-          {walkData.recent_walks.length > 0 ? (
-            walkData.recent_walks.map((walk, index) => (
-              <WalkItem key={index}>
-                <div>날짜: {new Date(walk.date).toLocaleDateString()}</div>
-                <div>거리: {walk.distance} km</div>
-                <div>칼로리: {walk.kilocalories} kcal</div>
-              </WalkItem>
-            ))
-          ) : (
-            <WalkData>최근 산책 기록이 없습니다.</WalkData>
-          )}
-        </WalkInfo>
+          최근 한달간 {walkData.recent_walks.length} 번의 산책을 하셨습니다.
+          <Graph recentWalks={walkData.recent_walks} />
+          <p>총 거리: {walkData.total_distance} km</p>
+          <p>총 칼로리 소모: {walkData.total_kilocalories} kcal</p>
+          <p></p>
+        </WalkRecordBox>
+        <WalkRecordBox>
+          <WalkTitle>산책 기록 모아보기</WalkTitle>
+          추가 필요...
+        </WalkRecordBox>
       </Container>
       <Footer />
     </>
