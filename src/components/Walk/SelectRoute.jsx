@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import { getMarkedTrails } from "../../apis/trail";
 import { saveWalkData } from "../../apis/walk";
@@ -16,15 +16,7 @@ const SelectRoute = ({ dog_id, dog_name }) => {
   const [previousPosition, setPreviousPosition] = useState(null);
   const [selectedRoute, setSelectedRoute] = useState(null);
 
-  useEffect(() => {
-    if (status === "walking") {
-      startTracking();
-    } else {
-      stopTracking();
-    }
-  }, [status]);
-
-  const startTracking = () => {
+  const startTracking = useCallback(() => {
     const startTime = Date.now();
     const watchId = navigator.geolocation.watchPosition(
       async (position) => {
@@ -48,14 +40,22 @@ const SelectRoute = ({ dog_id, dog_name }) => {
       { enableHighAccuracy: true },
     );
     setWatchId(watchId);
-  };
+  }, [previousPosition]);
 
-  const stopTracking = () => {
+  const stopTracking = useCallback(() => {
     if (watchId) {
       navigator.geolocation.clearWatch(watchId);
       setWatchId(null);
     }
-  };
+  }, [watchId]);
+
+  useEffect(() => {
+    if (status === "walking") {
+      startTracking();
+    } else {
+      stopTracking();
+    }
+  }, [status, startTracking, stopTracking]);
 
   const handleStartWalk = (route = null) => {
     setSelectedRoute(route);

@@ -30,17 +30,20 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     [map],
   );
 
-  const setLinePathArr = (position) => {
-    const moveLatLon = new window.kakao.maps.LatLng(
-      position.coords.latitude,
-      position.coords.longitude,
-    );
-    const newPosition = positionArr.concat(moveLatLon);
-    setPositionArr(newPosition);
+  const setLinePathArr = useCallback(
+    (position) => {
+      const moveLatLon = new window.kakao.maps.LatLng(
+        position.coords.latitude,
+        position.coords.longitude,
+      );
+      const newPosition = positionArr.concat(moveLatLon);
+      setPositionArr(newPosition);
 
-    // 라인을 그리는 함수
-    makeLine(newPosition);
-  };
+      // 라인을 그리는 함수
+      makeLine(newPosition);
+    },
+    [positionArr, makeLine],
+  );
 
   useEffect(() => {
     const loadKakaoMap = () => {
@@ -91,8 +94,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     return () => {
       document.head.removeChild(script);
     };
-    // eslint-disable-next-line
-  }, [appKey]);
+  }, [appKey, currentLocation]);
 
   useEffect(() => {
     if (marker && map) {
@@ -184,7 +186,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     if (map) {
       addDogMarkersAndOverlays();
     }
-  }, [map, isBoring]);
+  }, [map, isBoring, dogMarkers]);
 
   useEffect(() => {
     if (map) {
@@ -196,7 +198,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
         clearInterval(interval);
       };
     }
-  }, [map]);
+  }, [map, setLinePathArr]);
 
   const createMarker = (mapInstance, location) => {
     const markerPosition = new window.kakao.maps.LatLng(
