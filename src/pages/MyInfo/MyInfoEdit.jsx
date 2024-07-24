@@ -14,10 +14,11 @@ const MyInfoEditContainer = styled.div`
   width: 350px;
 `;
 
-const SectionTitle = styled.h3`
-  margin-top: 20px;
+const SectionTitle = styled.div`
+  margin-top: 10px;
   margin-bottom: 10px;
-  font-size: 20px;
+  font-size: 24px;
+  font-weight: 700;
   font-family: "PretendardB";
   text-align: left;
 `;
@@ -28,6 +29,7 @@ const StyledImage = styled.img`
   border-radius: 50%;
   object-fit: cover;
   padding: 20px;
+  pointer-events: none;
 `;
 
 const ImageUpload = styled.div`
@@ -154,7 +156,7 @@ const MyInfoEdit = () => {
     <>
       <Header />
       <MyInfoEditContainer>
-        <SectionTitle>내 정보 수정</SectionTitle>
+        <SectionTitle>🔧내 정보 수정</SectionTitle>
         <ImageUpload>
           <StyledImage
             src={profileImage ? URL.createObjectURL(profileImage) : AddDogImage}
@@ -166,11 +168,8 @@ const MyInfoEdit = () => {
             accept="image/*"
             onChange={handleProfileImageChange}
           />
-          <UploadButton htmlFor="imageUpload" style={{ marginBottom: "10px" }}>
-            사진 업로드
-          </UploadButton>
+          <UploadButton htmlFor="imageUpload">사진 업로드</UploadButton>
         </ImageUpload>
-
         <StyledInput
           label="닉네임"
           id="nickname"
@@ -180,7 +179,6 @@ const MyInfoEdit = () => {
           value={values.nickname}
           onChange={handleChange}
         />
-
         <AddressContainer>
           <AddressButton text="도로명 주소 찾기" onClick={openPostcode} />
           <StyledInput
@@ -191,9 +189,9 @@ const MyInfoEdit = () => {
             value={values.road_address}
             readOnly
             placeholder="도로명 주소를 검색하세요."
+            onChange={handleChange}
           />
         </AddressContainer>
-
         <StyledInput
           label="상세 주소"
           id="detailAddress"
@@ -203,7 +201,6 @@ const MyInfoEdit = () => {
           value={values.detail_address}
           onChange={handleChange}
         />
-
         <SaveButton text="변경 저장하기" onClick={handleSave} />
       </MyInfoEditContainer>
       <Footer />
