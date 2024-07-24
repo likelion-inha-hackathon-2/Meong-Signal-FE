@@ -1,18 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import authApi from "../../apis/authApi";
+import Chat from "../../components/Chat/Chat";
 
-const Test = styled.div`
+// 채팅방 컴포넌트 리스트
+const ChatRoomList = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Loading = styled.div`
+  font-family: "PretendardS";
+`;
+
+const EmptyMessage = styled.div`
   font-family: "PretendardM";
 `;
 
 const ChatList = () => {
+  const [chatRooms, setChatRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchChatRooms = async () => {
+      try {
+        const response = await authApi.get("/chat/rooms");
+        setChatRooms(response.data);
+      } catch (error) {
+        console.error("Error fetching chat rooms:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChatRooms();
+  }, []);
+
   return (
     <>
       <Header />
-      <Test>채팅방 리스트를 보여주는 페이지!</Test>
-
+      {loading ? (
+        <Loading>로딩 중...</Loading>
+      ) : chatRooms.length === 0 ? (
+        <EmptyMessage>채팅방 목록이 비어있어요.</EmptyMessage>
+      ) : (
+        <ChatRoomList>
+          {chatRooms.map((room, index) => (
+            <Chat key={index} room={room} />
+          ))}
+        </ChatRoomList>
+      )}
       <Footer />
     </>
   );

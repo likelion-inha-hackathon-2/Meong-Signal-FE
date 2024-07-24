@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { getCoordinates } from "../apis/geolocation";
 import { getAllDogs } from "../apis/getAllDogs";
 import { getBoringDogs } from "../apis/getBoringDogs";
@@ -10,6 +10,41 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
   const [marker, setMarker] = useState(null);
   const [dogMarkers, setDogMarkers] = useState([]); // 강아지 마커들 상태 추가
   const [selectedDog, setSelectedDog] = useState(null); // 선택된 강아지 상태 추가
+  // eslint-disable-next-line no-unused-vars
+  const [positionArr, setPositionArr] = useState([]); // 위치 배열 상태 추가
+
+  const makeLine = useCallback(
+    (position) => {
+      let linePath = position;
+
+      var polyline = new window.kakao.maps.Polyline({
+        path: linePath,
+        strokeWeight: 5,
+        strokeColor: "#FFAE00",
+        strokeOpacity: 0.7,
+        strokeStyle: "solid",
+      });
+
+      // 지도에 선을 표시합니다
+      polyline.setMap(map);
+    },
+    [map],
+  );
+
+  const setLinePathArr = useCallback(
+    (position) => {
+      const moveLatLon = new window.kakao.maps.LatLng(
+        position.coords.latitude,
+        position.coords.longitude,
+      );
+      setPositionArr((prevArr) => {
+        const newPosition = [...prevArr, moveLatLon];
+        makeLine(newPosition);
+        return newPosition;
+      });
+    },
+    [makeLine],
+  );
 
   useEffect(() => {
     const loadKakaoMap = () => {
@@ -60,7 +95,6 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     return () => {
       document.head.removeChild(script);
     };
-    // eslint-disable-next-line
   }, [appKey]);
 
   useEffect(() => {
@@ -154,6 +188,18 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
       addDogMarkersAndOverlays();
     }
   }, [map, isBoring]);
+
+  useEffect(() => {
+    if (map) {
+      const interval = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(setLinePathArr);
+      }, 5000);
+
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [map, setLinePathArr]);
 
   const createMarker = (mapInstance, location) => {
     const markerPosition = new window.kakao.maps.LatLng(
