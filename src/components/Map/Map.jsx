@@ -37,27 +37,28 @@ const Map = ({ latitude, longitude, width, height }) => {
     isBoring,
   );
 
+  // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]); // 위치 배열
 
   const navigate = useNavigate();
   const location = useLocation();
   const [isMapInfo, setIsMapInfo] = useState(location.pathname === "/map-info");
 
-  const handleToggle = (newToggled) => {
+  const handleToggle = useCallback((newToggled) => {
     setIsBoring(newToggled);
-  };
+  }, []);
 
-  const onClickTagFilteringIcon = () => {
+  const onClickTagFilteringIcon = useCallback(() => {
     navigate("/map-tag");
-  };
+  }, [navigate]);
 
-  const handleMapInfoClick = () => {
-    setIsMapInfo(!isMapInfo);
-  };
+  const handleMapInfoClick = useCallback(() => {
+    setIsMapInfo((prev) => !prev);
+  }, []);
 
-  const handleCloseTooltip = () => {
+  const handleCloseTooltip = useCallback(() => {
     setSelectedDog(null);
-  };
+  }, [setSelectedDog]);
 
   // 라인을 그리는 함수
   const makeLine = useCallback(
@@ -85,19 +86,18 @@ const Map = ({ latitude, longitude, width, height }) => {
         position.coords.latitude,
         position.coords.longitude,
       );
-      const newPosition = positionArr.concat(moveLatLon);
-      setPositionArr(newPosition);
-
-      // 라인을 그리는 함수
-      makeLine(newPosition);
+      setPositionArr((prevArr) => {
+        const newPosition = [...prevArr, moveLatLon];
+        makeLine(newPosition);
+        return newPosition;
+      });
     },
-    [positionArr, makeLine],
+    [makeLine],
   );
 
   useEffect(() => {
-    // map이 변경될 시 확인하고 map이 존재하면 5초마다 현재 위치를 가져오는 함수를 실행
     if (map) {
-      let interval = setInterval(() => {
+      const interval = setInterval(() => {
         navigator.geolocation.getCurrentPosition(setLinePathArr);
       }, 5000);
 
@@ -113,9 +113,7 @@ const Map = ({ latitude, longitude, width, height }) => {
       <MapInfoButton isMapInfo={isMapInfo} onClick={handleMapInfoClick} />
       <StyledTagFilteringIcon onClick={onClickTagFilteringIcon} />
       {selectedDog && (
-        <>
-          <DogMoreInfo dogId={selectedDog.id} onClose={handleCloseTooltip} />
-        </>
+        <DogMoreInfo dogId={selectedDog.id} onClose={handleCloseTooltip} />
       )}
     </StyledMap>
   );

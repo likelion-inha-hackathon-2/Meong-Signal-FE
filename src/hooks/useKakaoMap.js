@@ -10,6 +10,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
   const [marker, setMarker] = useState(null);
   const [dogMarkers, setDogMarkers] = useState([]); // 강아지 마커들 상태 추가
   const [selectedDog, setSelectedDog] = useState(null); // 선택된 강아지 상태 추가
+  // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]); // 위치 배열 상태 추가
 
   const makeLine = useCallback(
@@ -36,13 +37,13 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
         position.coords.latitude,
         position.coords.longitude,
       );
-      const newPosition = positionArr.concat(moveLatLon);
-      setPositionArr(newPosition);
-
-      // 라인을 그리는 함수
-      makeLine(newPosition);
+      setPositionArr((prevArr) => {
+        const newPosition = [...prevArr, moveLatLon];
+        makeLine(newPosition);
+        return newPosition;
+      });
     },
-    [positionArr, makeLine],
+    [makeLine],
   );
 
   useEffect(() => {
@@ -94,7 +95,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     return () => {
       document.head.removeChild(script);
     };
-  }, [appKey, currentLocation]);
+  }, [appKey]);
 
   useEffect(() => {
     if (marker && map) {
@@ -186,7 +187,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     if (map) {
       addDogMarkersAndOverlays();
     }
-  }, [map, isBoring, dogMarkers]);
+  }, [map, isBoring]);
 
   useEffect(() => {
     if (map) {
