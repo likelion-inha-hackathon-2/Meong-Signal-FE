@@ -15,6 +15,7 @@ import ReviewWritten from "./pages/MyInfo/ReviewWritten";
 import MyInfoMain from "./pages/MyInfo/MyInfoMain";
 import MyInfoEdit from "./pages/MyInfo/MyInfoEdit";
 import RegisterDog from "./pages/MyInfo/RegisterDog";
+import GoalStatus from "./pages/MyInfo/GoalStatus";
 import WalkDetail from "./pages/Walk/WalkDetail";
 import ChatList from "./pages/Chat/ChatList";
 import KakaoAuth from "./pages/SocialLogin/KakaoAuth";
@@ -41,6 +42,7 @@ function App() {
             <Route path="/reviews/written" element={<ReviewWritten />} />
             <Route path="/myinfo-main" element={<MyInfoMain />} />
             <Route path="/myinfo-edit" element={<MyInfoEdit />} />
+            <Route path="/achievement" element={<GoalStatus />} />
             <Route path="/dogs-new" element={<RegisterDog />} />
             <Route path="/walk" element={<WalkDetail />} />
             <Route path="/walk-my-record" element={<MyWalk />} />
