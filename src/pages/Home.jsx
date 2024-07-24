@@ -58,26 +58,21 @@ const Home = () => {
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    const fetchDogs = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getAllDogs();
-        setDogCount(data.count !== undefined ? data.count : 0); // 강아지 수 예외처리
+        const [dogResponse, userResponse] = await Promise.all([
+          getAllDogs(),
+          getUserInfo(),
+        ]);
+
+        // 주변에 강아지가 없으면 0으로 (빈 배열 예외처리)
+        setDogCount(dogResponse.length ? dogResponse.length : 0);
+        setUserName(userResponse.nickname);
       } catch (error) {
         console.error(error);
       }
     };
-
-    const fetchUserInfo = async () => {
-      try {
-        const userInfo = await getUserInfo();
-        setUserName(userInfo.nickname); // 사용자 닉네임
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchDogs();
-    fetchUserInfo();
+    fetchData();
   }, []);
 
   const handleButtonClick = () => {

@@ -61,7 +61,7 @@ const StyledMyInfoButton = styled(Button)`
   font-style: normal;
 `;
 
-// 내정보 수정, 강아지등록
+// 내 정보 수정, 강아지 등록
 const StyledLinkButton = styled(Button)`
   font-family: "PretendardR";
   color: var(--gray-color1);
@@ -131,6 +131,9 @@ const MyInfoMain = () => {
   const onClickMyWalk = () => {
     navigate("/walk-my-record");
   };
+  const onClickGoalStatus = () => {
+    navigate("/achievement");
+  };
   const onClickReviewReceived = () => {
     navigate("/reviews/received");
   };
@@ -159,7 +162,7 @@ const MyInfoMain = () => {
 
       <MyInfoButtonContainer>
         <StyledMyInfoButton text="내 산책현황" onClick={onClickMyWalk} />
-        <StyledMyInfoButton text="칭호관리" />
+        <StyledMyInfoButton text="칭호관리" onClick={onClickGoalStatus} />
         <StyledMyInfoButton
           text="내가 남긴 리뷰"
           onClick={onClickReviewWritten}

@@ -11,6 +11,18 @@ export const getWalksRecord = async () => {
   }
 };
 
+// 산책 완료 시 기록 저장
+export const saveWalkData = async () => {
+  try {
+    const response = await authApi.post("/walks/new");
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error(error.response);
+    throw error;
+  }
+};
+
 /*
 // 산책 관련 유저 이미지 조회
 export const getUserImage = async (walkId) => {
