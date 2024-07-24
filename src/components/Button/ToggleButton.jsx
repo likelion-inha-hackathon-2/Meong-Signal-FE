@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { getAllDogs } from "../../apis/getAllDogs";
-import { getBoringDogs } from "../../apis/getBoringDogs";
 
 const ToggleContainer = styled.div`
   position: absolute;
@@ -51,11 +49,10 @@ const ToggleSwitch = styled.div`
 const ToggleButton = ({ onToggle }) => {
   const [toggled, setToggled] = useState(false);
 
-  const handleClick = async () => {
+  const handleClick = () => {
     const newToggled = !toggled;
     setToggled(newToggled);
-    const data = newToggled ? await getBoringDogs() : await getAllDogs();
-    onToggle(data);
+    onToggle(newToggled);
   };
 
   return (

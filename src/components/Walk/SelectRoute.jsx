@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { getMarkedTrails } from "../../apis/trail";
 import { saveWalkData } from "../../apis/walk";
 import { updateDogStatus } from "../../apis/updateDogStatus";
+import { getDogInfo } from "../../apis/getDogInfo";
 import { getDistance } from "../../utils/getDistance";
 
 const SelectRoute = ({ dog_id, dog_name }) => {
@@ -63,24 +64,34 @@ const SelectRoute = ({ dog_id, dog_name }) => {
     updateDogStatus(dog_id, "W"); // 상태 업데이트
   };
 
-  const handleEndWalk = () => {
+  const handleEndWalk = async () => {
     stopTracking();
     setStatus("end");
     updateDogStatus(dog_id, "B"); // 상태 업데이트
-    postWalkData(); // 산책 데이터 전송
+    await postWalkData(); // 산책 데이터 전송
+    await fetchDogInfo(); // 산책 종료 시 강아지 정보 가져오기
   };
 
   const postWalkData = () => {
-    saveWalkData({
+    return saveWalkData({
       walk: {
-        dog_id,
+        dog_id: dog_id,
         time: parseFloat(time),
-        meong,
+        meong: meong,
         distance: parseFloat(distance),
       },
     })
       .then((response) => console.log(response))
       .catch((error) => console.error(error));
+  };
+
+  const fetchDogInfo = async () => {
+    try {
+      const data = await getDogInfo(dog_id);
+      console.log(`강아지 이름: ${data.dog.name}`);
+    } catch (error) {
+      console.error("Error fetching dog info:", error);
+    }
   };
 
   const fetchRoutes = () => {
