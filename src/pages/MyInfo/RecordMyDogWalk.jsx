@@ -10,14 +10,14 @@ const WalkRecordBox = styled.div`
   flex-direction: column;
   gap: 15px;
   padding: 20px 10px;
-
+  margin: 20px 0;
   border-radius: 8px;
   background-color: var(--yellow-color1);
   width: 300px;
 `;
 
 const WalkTitle = styled.h2`
-  font-size: 20px;
+  font-size: 18px;
   font-family: "PretendardB";
   font-weight: 700;
 `;
@@ -69,6 +69,23 @@ const RecordMyDogWalk = () => {
             <p>거리: {walk.distance} km</p>
             <p>산책한 사람: {walk.nickname}</p>
             <p>날짜: {walk.date}</p>
+          </WalkInfo>
+        ))}
+      </WalkRecordBox>
+      <WalkRecordBox>
+        {dogInfo.name && (
+          <WalkTitle>
+            강아지 {dogInfo.name}의 산책 후기
+            <p>아직 만드는 중!!</p>
+          </WalkTitle>
+        )}
+        {walks.map((walk, index) => (
+          <WalkInfo key={index}>
+            <p>멍: {walk.meong}</p>
+            <p>시간: {walk.time} 분</p>
+            <p>날짜: {walk.date}</p>
+            <p>산책 후기 내용: {walk.evaluator_content}</p>
+            <p>평균 별점: {walk.evaluated_star}</p>
           </WalkInfo>
         ))}
       </WalkRecordBox>

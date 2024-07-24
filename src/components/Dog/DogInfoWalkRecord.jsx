@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import Button from "../Button/Button";
 
 const DogInfoContainer = styled.div`
   display: flex;
@@ -10,7 +11,7 @@ const DogInfoContainer = styled.div`
   padding: 10px;
   border-radius: 8px;
   margin-bottom: 10px;
-  background-color: var(--yellow-color2);
+  background-color: var(--gray-color1);
   cursor: pointer;
 `;
 
@@ -31,6 +32,13 @@ const DogInfoWrapper = styled.div`
   letter-spacing: -0.132px;
 `;
 
+const ReviewButton = styled(Button)`
+  width: 70px;
+  height: 35px;
+  font-size: 14px;
+  font-style: normal;
+`;
+
 const DogInfoWalkRecord = ({
   name,
   gender,
@@ -47,6 +55,7 @@ const DogInfoWalkRecord = ({
       <div>성별: {gender === "M" ? "남" : "여"}</div>
       <div>소개: {introduction}</div>
     </DogInfoWrapper>
+    <ReviewButton text="리뷰 작성" />
   </DogInfoContainer>
 );
 
