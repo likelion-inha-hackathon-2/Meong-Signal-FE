@@ -66,7 +66,7 @@ const Home = () => {
         ]);
 
         // 주변에 강아지가 없으면 0으로 (빈 배열 예외처리)
-        setDogCount(dogResponse.dogs ? dogResponse.dogs.length : 0);
+        setDogCount(dogResponse.length ? dogResponse.length : 0);
         setUserName(userResponse.nickname);
       } catch (error) {
         console.error(error);
