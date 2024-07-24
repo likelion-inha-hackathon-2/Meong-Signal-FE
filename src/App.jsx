@@ -18,6 +18,7 @@ import RegisterDog from "./pages/MyInfo/RegisterDog";
 import GoalStatus from "./pages/MyInfo/GoalStatus";
 import WalkDetail from "./pages/Walk/WalkDetail";
 import ChatList from "./pages/Chat/ChatList";
+import ChatRoom from "./pages/Chat/ChatRoom";
 import KakaoAuth from "./pages/SocialLogin/KakaoAuth";
 import NaverAuth from "./pages/SocialLogin/NaverAuth";
 import GoogleAuth from "./pages/SocialLogin/GoogleAuth";
@@ -26,35 +27,35 @@ import RecordMyDogWalk from "./pages/MyInfo/RecordMyDogWalk";
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Login />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/topup" element={<TopUp />} />
-            <Route path="/signup1" element={<SignUp1 />} />
-            <Route path="/signup2" element={<SignUp2 />} />
-            <Route path="/map-info" element={<MapInfo />} />
-            <Route path="/map-status" element={<MapStatus />} />
-            <Route path="/map-tag" element={<TagFiltering />} />
-            <Route path="/reviews/received" element={<ReviewReceived />} />
-            <Route path="/reviews/written" element={<ReviewWritten />} />
-            <Route path="/myinfo-main" element={<MyInfoMain />} />
-            <Route path="/myinfo-edit" element={<MyInfoEdit />} />
-            <Route path="/achievement" element={<GoalStatus />} />
-            <Route path="/dogs-new" element={<RegisterDog />} />
-            <Route path="/walk" element={<WalkDetail />} />
-            <Route path="/walk-my-record" element={<MyWalk />} />
-            <Route path="/walk-dog-record" element={<RecordMyDogWalk />} />
-            <Route path="/chat" element={<ChatList />} />
-            <Route path="/kakao/auth" element={<KakaoAuth />} />
-            <Route path="/naver/auth" element={<NaverAuth />} />
-            <Route path="/google/auth" element={<GoogleAuth />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Login />} />
+          <Route path="home" element={<Home />} />
+          <Route path="topup" element={<TopUp />} />
+          <Route path="signup1" element={<SignUp1 />} />
+          <Route path="signup2" element={<SignUp2 />} />
+          <Route path="map-info" element={<MapInfo />} />
+          <Route path="map-status/:dogId" element={<MapStatus />} />
+          <Route path="map-tag" element={<TagFiltering />} />
+          <Route path="chatlist" element={<ChatList />} />
+          <Route path="chat/:ownerId" element={<ChatRoom />} />
+          <Route path="reviews/received" element={<ReviewReceived />} />
+          <Route path="reviews/written" element={<ReviewWritten />} />
+          <Route path="myinfo-main" element={<MyInfoMain />} />
+          <Route path="myinfo-edit" element={<MyInfoEdit />} />
+          <Route path="achievement" element={<GoalStatus />} />
+          <Route path="dogs-new" element={<RegisterDog />} />
+          <Route path="walk" element={<WalkDetail />} />
+          <Route path="walk-my-record" element={<MyWalk />} />
+          <Route path="walk-dog-record" element={<RecordMyDogWalk />} />
+          <Route path="chat" element={<ChatList />} />
+          <Route path="kakao/auth" element={<KakaoAuth />} />
+          <Route path="naver/auth" element={<NaverAuth />} />
+          <Route path="google/auth" element={<GoogleAuth />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -2,20 +2,20 @@ import React, { useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Map from "../../components/Map/Map";
-import { getCurrentPosition } from "../../apis/geolocation";
+import { getCoordinates } from "../../apis/geolocation";
 
 const MapInfo = () => {
-  const [initialLocation, setInitialLocation] = useState({
-    // 초기 위치 인하대. 어차피 현 위치로 바뀜!
-    latitude: 37.4482020408321,
-    longitude: 126.651415033662,
+  const [currentLocation, setCurrentLocation] = useState({
+    // 초기 위치 지정 안함
+    latitude: null,
+    longitude: null,
   });
 
   useEffect(() => {
     const fetchCoordinates = async () => {
       try {
-        const coordinates = await getCurrentPosition();
-        setInitialLocation({
+        const coordinates = await getCoordinates();
+        setCurrentLocation({
           latitude: coordinates.latitude,
           longitude: coordinates.longitude,
         });
@@ -25,14 +25,18 @@ const MapInfo = () => {
     };
 
     fetchCoordinates();
-  }, [initialLocation]); // 의존성 배열..
+  }, []);
+
+  if (currentLocation.latitude === null || currentLocation.longitude === null) {
+    return <div>Loading...</div>; // 위치 정보가 로드될 때까지 로딩 표시
+  }
 
   return (
     <>
       <Header />
       <Map
-        latitude={initialLocation.latitude}
-        longitude={initialLocation.longitude}
+        latitude={currentLocation.latitude}
+        longitude={currentLocation.longitude}
       />
       <Footer />
     </>

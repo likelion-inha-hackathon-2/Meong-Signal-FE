@@ -4,19 +4,24 @@ import styled from "styled-components";
 import Image from "../Image/Image";
 import tagsData from "../Tag/tagsData.json";
 import Button from "../Button/Button";
-import authApi from "../../apis/authApi"; // authApi import
+import authApi from "../../apis/authApi";
+import defaultDogImage from "../../assets/images/add-dog.png"; // 디폴트 이미지 예외처리
 
-const Tooltip = styled.div`
-  position: absolute;
+const TooltipContainer = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 10px;
+  width: 250px;
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  font-family: "PretendardM";
+  gap: 2px;
 `;
 
 const Tag = styled.span`
@@ -24,16 +29,25 @@ const Tag = styled.span`
   padding: 5px;
   background-color: #eee;
   border-radius: 4px;
+  font-size: 12px;
 `;
 
+// 보호자와 채팅하기
+const StyledButton = styled(Button)`
+  font-size: 14px;
+  width: 150px;
+`;
+
+// 툴팁 닫기 버튼
 const CloseButton = styled.button`
-  margin-top: 10px;
+  width: 70px;
+  margin-top: 5px;
   padding: 5px 10px;
   background-color: #f5f5f5;
-  border: 1px solid #ddd;
+  border: 1px solid var(--gray-color1);
   border-radius: 4px;
   cursor: pointer;
-
+  font-family: "PretendardR";
   &:hover {
     background-color: #e0e0e0;
   }
@@ -66,15 +80,17 @@ const DogMoreInfo = ({ dogId, onClose }) => {
   const getTagInfo = (tagId) => tagsData.find((tag) => tag.id === tagId);
 
   return (
-    <Tooltip>
+    <TooltipContainer>
       <Image
-        src={dog.image}
+        src={dog.image || defaultDogImage}
         alt={dog.name}
-        style={{ width: "70px", height: "70px" }}
+        width="70px"
+        height="70px"
       />
-      <h3>{dog.name}</h3>
+      <h3>이름: {dog.name}</h3>
       <p>성별: {dog.gender === "M" ? "남" : "여"}</p>
       <p>나이: {dog.age}살</p>
+      <p>소개: {dog.introduction}</p>
       <div>
         {tags.slice(0, 2).map((tag) => {
           const tagInfo = getTagInfo(tag.number);
@@ -85,12 +101,12 @@ const DogMoreInfo = ({ dogId, onClose }) => {
           );
         })}
       </div>
-      <Button
+      <StyledButton
         text="💌보호자와 채팅하기"
         onClick={() => (window.location.href = `/chat/${dogId}`)}
       />
       <CloseButton onClick={onClose}>닫기</CloseButton>
-    </Tooltip>
+    </TooltipContainer>
   );
 };
 

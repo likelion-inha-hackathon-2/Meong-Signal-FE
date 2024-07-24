@@ -8,6 +8,8 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
   const [map, setMap] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(initialLocation); // 현재 위치
   const [marker, setMarker] = useState(null);
+  const [dogMarkers, setDogMarkers] = useState([]); // 강아지 마커들 상태 추가
+  const [selectedDog, setSelectedDog] = useState(null); // 선택된 강아지 상태 추가
 
   useEffect(() => {
     const loadKakaoMap = () => {
@@ -73,11 +75,18 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
   }, [currentLocation, marker, map]);
 
   useEffect(() => {
-    // 토글에 따라 달라져야함!
     const fetchDogs = isBoring ? getBoringDogs : getAllDogs;
     const addDogMarkersAndOverlays = async () => {
       try {
         const dogs = await fetchDogs();
+
+        // 기존 마커 제거
+        dogMarkers.forEach((dogMarker) => {
+          dogMarker.setMap(null);
+        });
+
+        const newMarkers = [];
+
         for (const dog of dogs) {
           const { latitude, longitude } = await getCoordinates(
             dog.road_address,
@@ -97,6 +106,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           });
 
           dogMarker.setMap(map);
+          newMarkers.push(dogMarker);
 
           const overlayContent = document.createElement("div");
           overlayContent.innerHTML = `
@@ -111,7 +121,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           overlayContent
             .querySelector(`#overlay-${dog.id}`)
             .addEventListener("click", () => {
-              window.location.href = `/dog/${dog.id}`;
+              setSelectedDog(dog); // 강아지 선택
             });
 
           const overlay = new window.kakao.maps.CustomOverlay({
@@ -121,7 +131,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           });
 
           window.kakao.maps.event.addListener(dogMarker, "click", () => {
-            window.location.href = `/dog/${dog.id}`;
+            setSelectedDog(dog); // 강아지 선택
           });
 
           window.kakao.maps.event.addListener(dogMarker, "mouseover", () => {
@@ -132,6 +142,9 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
             overlay.setMap(null);
           });
         }
+
+        // 새로운 마커들 상태 업데이트
+        setDogMarkers(newMarkers);
       } catch (error) {
         console.error("Error adding dog markers and overlays:", error);
       }
@@ -159,7 +172,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     setMarker(markerInstance);
   };
 
-  return { mapContainer, map, currentLocation };
+  return { mapContainer, map, currentLocation, selectedDog, setSelectedDog };
 };
 
 export default useKakaoMap;
