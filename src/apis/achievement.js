@@ -24,3 +24,14 @@ export const setRepresentativeAchievement = async (achievementId) => {
     throw error;
   }
 };
+
+// 설정한 대표 업적 조회
+export const getRepresentativeAchievement = async () => {
+  try {
+    const response = await authApi.get("/achievements/achievements/represent");
+    return response.data;
+  } catch (error) {
+    console.error("Error setting representative achievement:", error);
+    throw error;
+  }
+};
