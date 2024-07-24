@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom"; // URL 파라미터를 가져오기 위해 추가
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Map from "../../components/Map/Map";
 import { getCoordinates } from "../../apis/geolocation";
+import SelectRoute from "../../components/Walk/SelectRoute";
 
 const MapStatus = () => {
+  const { dogId } = useParams(); // URL 파라미터에서 dogId 가져오기
   const [initialLocation, setInitialLocation] = useState({
     latitude: 37.4482020408321,
     longitude: 126.651415033662,
@@ -23,7 +26,7 @@ const MapStatus = () => {
     };
 
     fetchCoordinates();
-  }, [initialLocation]); // 의존성 배열 수정
+  }, [initialLocation]);
 
   return (
     <>
@@ -34,6 +37,7 @@ const MapStatus = () => {
         width="300px"
         height="300px"
       />
+      <SelectRoute dog_id={parseInt(dogId, 10)} dog_name="강아지 이름" />
       <Footer />
     </>
   );

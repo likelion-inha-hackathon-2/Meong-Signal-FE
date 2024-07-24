@@ -92,7 +92,7 @@ const Map = ({ latitude, longitude, width, height }) => {
         overlayContent
           .querySelector(`#overlay-${dog.id}`)
           .addEventListener("click", () => {
-            setSelectedDogId(dog.id);
+            navigate(`/map-status/${dog.id}`);
           });
 
         const overlay = new window.kakao.maps.CustomOverlay({
@@ -110,7 +110,7 @@ const Map = ({ latitude, longitude, width, height }) => {
         });
       });
     }
-  }, [dogs, location.pathname, map]);
+  }, [dogs, location.pathname, map, navigate]);
 
   const handleToggle = async (isBoring) => {
     try {

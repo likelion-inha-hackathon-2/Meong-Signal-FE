@@ -111,7 +111,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           overlayContent
             .querySelector(`#overlay-${dog.id}`)
             .addEventListener("click", () => {
-              window.location.href = `/dog/${dog.id}`;
+              window.location.href = `/map-status/${dog.id}`;
             });
 
           const overlay = new window.kakao.maps.CustomOverlay({
@@ -121,7 +121,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           });
 
           window.kakao.maps.event.addListener(dogMarker, "click", () => {
-            window.location.href = `/dog/${dog.id}`;
+            window.location.href = `/map-status/${dog.id}`;
           });
 
           window.kakao.maps.event.addListener(dogMarker, "mouseover", () => {
