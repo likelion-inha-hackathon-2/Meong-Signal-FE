@@ -6,43 +6,55 @@ const ChatRoomContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 10px;
-  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-color: var(--yellow-color1);
+  width: 350px;
+  font-family: "PretendardM";
 `;
 
 const ProfileImage = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background-color: #ccc;
-  margin-right: 10px;
+  margin-right: 20px;
 `;
 
 const ChatInfo = styled.div`
   display: flex;
   flex-direction: column;
+  color: black;
 `;
 
 const Nickname = styled.div`
   font-weight: bold;
+  font-size: 18px;
 `;
 
 const LastMessage = styled.div`
-  color: var(--gray-color1);
+  color: #444444;
+  margin: 5px 0;
+`;
+
+const LastTimeStamp = styled.div`
+  color: gray;
+  font-size: 12px;
+  text-align: right;
 `;
 
 const Chat = ({ room }) => {
   return (
     <ChatRoomContainer>
       <ProfileImage
-        src={room.other_user_profile_image}
+        src={room.other_user_profile_image || "/default-profile.png"}
         alt={`${room.other_user_nickname}님의 프로필 사진`}
       />
       <ChatInfo>
         <Nickname>{room.other_user_nickname}</Nickname>
         <LastMessage>{room.last_message_content}</LastMessage>
-        <LastMessage>
+        <LastTimeStamp>
           {new Date(room.last_message_timestamp).toLocaleString()}
-        </LastMessage>
+        </LastTimeStamp>
       </ChatInfo>
     </ChatRoomContainer>
   );

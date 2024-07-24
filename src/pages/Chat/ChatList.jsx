@@ -3,13 +3,23 @@ import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import authApi from "../../apis/authApi";
-import Chat from "../Chat/Chat";
+import Chat from "../../components/Chat/Chat";
 
 // 채팅방 컴포넌트 리스트
 const ChatRoomList = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Loading = styled.div`
+  font-family: "PretendardS";
+`;
+
+const EmptyMessage = styled.div`
+  font-family: "PretendardM";
 `;
 
 const ChatList = () => {
@@ -22,7 +32,7 @@ const ChatList = () => {
         const response = await authApi.get("/chat/rooms");
         setChatRooms(response.data);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching chat rooms:", error);
       } finally {
         setLoading(false);
       }
@@ -35,9 +45,9 @@ const ChatList = () => {
     <>
       <Header />
       {loading ? (
-        <div>로딩 중...</div>
+        <Loading>로딩 중...</Loading>
       ) : chatRooms.length === 0 ? (
-        <div>채팅방 목록이 비어있어요.</div>
+        <EmptyMessage>채팅방 목록이 비어있어요.</EmptyMessage>
       ) : (
         <ChatRoomList>
           {chatRooms.map((room, index) => (
