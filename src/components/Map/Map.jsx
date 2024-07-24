@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import useKakaoMap from "../../hooks/useKakaoMap";
@@ -31,11 +31,13 @@ const StyledTagFilteringIcon = styled.div`
 const Map = ({ latitude, longitude, width, height }) => {
   const initialLocation = { latitude, longitude };
   const [isBoring, setIsBoring] = useState(false);
-  const { mapContainer, selectedDog, setSelectedDog } = useKakaoMap(
+  const { mapContainer, map, selectedDog, setSelectedDog } = useKakaoMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
     initialLocation,
     isBoring,
   );
+
+  const [positionArr, setPositionArr] = useState([]); // 위치 배열
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -56,6 +58,54 @@ const Map = ({ latitude, longitude, width, height }) => {
   const handleCloseTooltip = () => {
     setSelectedDog(null);
   };
+
+  // 라인을 그리는 함수
+  const makeLine = useCallback(
+    (position) => {
+      let linePath = position;
+
+      var polyline = new window.kakao.maps.Polyline({
+        path: linePath,
+        strokeWeight: 5,
+        strokeColor: "#ff0000",
+        strokeOpacity: 0.7,
+        strokeStyle: "solid",
+      });
+
+      // 지도에 선을 표시합니다
+      polyline.setMap(map);
+    },
+    [map],
+  );
+
+  // 라인을 그리기 위한 좌표 배열을 만들어주는 함수
+  const setLinePathArr = useCallback(
+    (position) => {
+      const moveLatLon = new window.kakao.maps.LatLng(
+        position.coords.latitude,
+        position.coords.longitude,
+      );
+      const newPosition = positionArr.concat(moveLatLon);
+      setPositionArr(newPosition);
+
+      // 라인을 그리는 함수
+      makeLine(newPosition);
+    },
+    [positionArr, makeLine],
+  );
+
+  useEffect(() => {
+    // map이 변경될 시 확인하고 map이 존재하면 5초마다 현재 위치를 가져오는 함수를 실행
+    if (map) {
+      let interval = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(setLinePathArr);
+      }, 5000);
+
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [map, setLinePathArr]);
 
   return (
     <StyledMap ref={mapContainer} width={width} height={height}>
