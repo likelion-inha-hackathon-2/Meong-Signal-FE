@@ -9,6 +9,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
   const [currentLocation, setCurrentLocation] = useState(initialLocation); // 현재 위치
   const [marker, setMarker] = useState(null);
   const [dogMarkers, setDogMarkers] = useState([]); // 강아지 마커들 상태 추가
+  const [selectedDog, setSelectedDog] = useState(null); // 선택된 강아지 상태 추가
 
   useEffect(() => {
     const loadKakaoMap = () => {
@@ -120,11 +121,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           overlayContent
             .querySelector(`#overlay-${dog.id}`)
             .addEventListener("click", () => {
-              if (dog.status === "B") {
-                window.location.href = `/map-status/${dog.id}`;
-              } else {
-                alert("현재 강아지가 심심한 상태가 아닙니다.");
-              }
+              setSelectedDog(dog); // 강아지 선택
             });
 
           const overlay = new window.kakao.maps.CustomOverlay({
@@ -134,11 +131,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           });
 
           window.kakao.maps.event.addListener(dogMarker, "click", () => {
-            if (dog.status === "B") {
-              window.location.href = `/map-status/${dog.id}`;
-            } else {
-              alert("현재 강아지가 심심한 상태가 아닙니다.");
-            }
+            setSelectedDog(dog); // 강아지 선택
           });
 
           window.kakao.maps.event.addListener(dogMarker, "mouseover", () => {
@@ -179,7 +172,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     setMarker(markerInstance);
   };
 
-  return { mapContainer, map, currentLocation };
+  return { mapContainer, map, currentLocation, selectedDog, setSelectedDog };
 };
 
 export default useKakaoMap;

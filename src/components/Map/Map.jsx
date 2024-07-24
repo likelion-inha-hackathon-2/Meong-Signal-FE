@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import useKakaoMap from "../../hooks/useKakaoMap";
@@ -7,6 +7,7 @@ import MapInfoButton from "../Button/MapInfoButton";
 import { useNavigate, useLocation } from "react-router-dom";
 import DogMoreInfo from "../Dog/DogMoreInfo";
 import IconTagFiltering from "../../assets/icons/icon-tag-filtering.png";
+import "react-tooltip/dist/react-tooltip.css"; // ReactTooltip CSS import
 
 const StyledMap = styled.div`
   position: relative;
@@ -30,7 +31,7 @@ const StyledTagFilteringIcon = styled.div`
 const Map = ({ latitude, longitude, width, height }) => {
   const initialLocation = { latitude, longitude };
   const [isBoring, setIsBoring] = useState(false);
-  const { mapContainer, map } = useKakaoMap(
+  const { mapContainer, selectedDog, setSelectedDog } = useKakaoMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
     initialLocation,
     isBoring,
@@ -38,12 +39,7 @@ const Map = ({ latitude, longitude, width, height }) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedDogId, setSelectedDogId] = useState(null);
   const [isMapInfo, setIsMapInfo] = useState(location.pathname === "/map-info");
-
-  useEffect(() => {
-    // isBoring 상태가 변경될 때마다 지도를 다시 렌더링
-  }, [isBoring, map]);
 
   const handleToggle = (newToggled) => {
     setIsBoring(newToggled);
@@ -57,16 +53,19 @@ const Map = ({ latitude, longitude, width, height }) => {
     setIsMapInfo(!isMapInfo);
   };
 
+  const handleCloseTooltip = () => {
+    setSelectedDog(null);
+  };
+
   return (
     <StyledMap ref={mapContainer} width={width} height={height}>
       <ToggleButton onToggle={handleToggle} />
       <MapInfoButton isMapInfo={isMapInfo} onClick={handleMapInfoClick} />
       <StyledTagFilteringIcon onClick={onClickTagFilteringIcon} />
-      {selectedDogId && (
-        <DogMoreInfo
-          dogId={selectedDogId}
-          onClose={() => setSelectedDogId(null)}
-        />
+      {selectedDog && (
+        <>
+          <DogMoreInfo dogId={selectedDog.id} onClose={handleCloseTooltip} />
+        </>
       )}
     </StyledMap>
   );

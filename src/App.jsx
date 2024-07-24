@@ -18,6 +18,7 @@ import RegisterDog from "./pages/MyInfo/RegisterDog";
 import GoalStatus from "./pages/MyInfo/GoalStatus";
 import WalkDetail from "./pages/Walk/WalkDetail";
 import ChatList from "./pages/Chat/ChatList";
+import ChatRoom from "./pages/Chat/ChatRoom";
 import KakaoAuth from "./pages/SocialLogin/KakaoAuth";
 import NaverAuth from "./pages/SocialLogin/NaverAuth";
 import GoogleAuth from "./pages/SocialLogin/GoogleAuth";
@@ -37,6 +38,8 @@ function App() {
           <Route path="map-info" element={<MapInfo />} />
           <Route path="map-status/:dogId" element={<MapStatus />} />
           <Route path="map-tag" element={<TagFiltering />} />
+          <Route path="chatlist" element={<ChatList />} />
+          <Route path="chat/:ownerId" element={<ChatRoom />} />
           <Route path="reviews/received" element={<ReviewReceived />} />
           <Route path="reviews/written" element={<ReviewWritten />} />
           <Route path="myinfo-main" element={<MyInfoMain />} />
