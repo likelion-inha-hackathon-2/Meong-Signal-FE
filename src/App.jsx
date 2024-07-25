@@ -24,6 +24,9 @@ import NaverAuth from "./pages/SocialLogin/NaverAuth";
 import GoogleAuth from "./pages/SocialLogin/GoogleAuth";
 import MyWalk from "./pages/MyInfo/MyWalk";
 import RecordMyDogWalk from "./pages/MyInfo/RecordMyDogWalk";
+import MapStatusStart from "./pages/Map/MapStatusStart";
+import MapStatusWalking from "./pages/Map/MapStatusWalking";
+import MapStatusComplete from "./pages/Map/MapStatusComplete";
 
 function App() {
   return (
@@ -53,6 +56,9 @@ function App() {
           <Route path="kakao/auth" element={<KakaoAuth />} />
           <Route path="naver/auth" element={<NaverAuth />} />
           <Route path="google/auth" element={<GoogleAuth />} />
+          <Route path="map-status-start/:dogId" element={<MapStatusStart />} />
+          <Route path="map-status-walking/:dogId" element={<MapStatusWalking />} />
+          <Route path="map-status-complete/:dogId" element={<MapStatusComplete />} />
         </Route>
       </Routes>
     </BrowserRouter>
