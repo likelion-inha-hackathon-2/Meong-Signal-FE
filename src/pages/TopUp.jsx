@@ -1,9 +1,9 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import FootPrintIcon from "../assets/icons/icon-dogfootprint.png";
+import { getMyMeong, addMyMeong } from "../apis/meong";
 
 const TitleSection = styled.span`
   font-family: "PretendardB";
@@ -87,9 +87,7 @@ const Container = styled.div`
   gap: 0px;
   border-radius: 8px;
   margin-bottom: 15px;
-  background-color: #ffffff; /* 내부 배경색을 흰색으로 설정 */
   border: 6px solid var(--yellow-color1);
-  color: #000000; /* 텍스트 색상 설정 */
 `;
 
 const TopContainer = styled.div`
@@ -112,46 +110,67 @@ const SmallIconStyled = styled.img`
 `;
 
 const TopUp = () => {
-  const navigate = useNavigate();
+  const [meong, setMeong] = useState(0);
 
-  const handleBoxClick = (path) => {
-    navigate(path);
+  const handleBoxClick = async (add_meong) => {
+    try {
+      await addMyMeong(add_meong);
+      alert("충전이 완료되었습니다!");
+      // 충전 후 보유 멍 업데이트
+      const response = await getMyMeong();
+      setMeong(response.current_meong);
+    } catch (error) {
+      alert("충전 중 오류가 발생했습니다.");
+    }
   };
+
+  useEffect(() => {
+    const fetchMeong = async () => {
+      try {
+        const response = await getMyMeong();
+        setMeong(response.current_meong);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchMeong();
+  }, []);
 
   return (
     <>
       <Header />
       <TitleSection>보유멍</TitleSection>
       <TopContainer>
-        <Number>300</Number>
+        <Number>{meong}</Number>
         <IconStyled src={FootPrintIcon} alt="Dog Footprint Icon" />
       </TopContainer>
       <Info>지금 바로 멍을 충전하여 다양한 기능을 이용해보세요!</Info>
       <Container>
         <BoxNumber>10</BoxNumber>
         <SmallIconStyled src={FootPrintIcon} />
-        <Box onClick={() => handleBoxClick("/path1")}>
+        <Box onClick={() => handleBoxClick(10)}>
           <BoxPrice>1,000원</BoxPrice>
         </Box>
       </Container>
       <Container>
         <BoxNumber>50</BoxNumber>
         <SmallIconStyled src={FootPrintIcon} />
-        <Box onClick={() => handleBoxClick("/path2")}>
+        <Box onClick={() => handleBoxClick(50)}>
           <BoxPrice>5,000원</BoxPrice>
         </Box>
       </Container>
       <Container>
         <BoxNumber style={{ marginLeft: "12px" }}>100</BoxNumber>
         <SmallIconStyled src={FootPrintIcon} style={{ marginLeft: "15px" }} />
-        <Box onClick={() => handleBoxClick("/path3")}>
+        <Box onClick={() => handleBoxClick(100)}>
           <BoxPrice>9,000원</BoxPrice>
         </Box>
       </Container>
       <Container>
         <BoxNumber style={{ marginLeft: "12px" }}>300</BoxNumber>
         <SmallIconStyled src={FootPrintIcon} style={{ marginLeft: "16px" }} />
-        <Box onClick={() => handleBoxClick("/path4")}>
+        <Box onClick={() => handleBoxClick(300)}>
           <BoxPrice>25,000원</BoxPrice>
         </Box>
       </Container>

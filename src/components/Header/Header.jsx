@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Image from "../Image/Image";
 import { useNavigate } from "react-router-dom";
+import { getMyMeong } from "../../apis/meong";
 import ArrowIcon from "../../assets/icons/icon-arrow.png";
 import Pluscoin from "../../assets/icons/icon-plus.png";
 import Dogfoot from "../../assets/icons/icon-dogfootprint.png";
@@ -57,7 +58,21 @@ const NumberText = styled.span`
 `;
 
 const Header = () => {
+  const [meong, setMeong] = useState(0);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchMeong = async () => {
+      try {
+        const response = await getMyMeong();
+        setMeong(response.current_meong);
+      } catch (error) {
+        console.error("Error fetching 멍:", error);
+      }
+    };
+
+    fetchMeong();
+  }, []);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -78,7 +93,7 @@ const Header = () => {
       </IconWrapper>
       <ButtonWrapper>
         <IconImage src={Dogfoot} alt="dog" />
-        <NumberText onClick={handleNumberClick}>300</NumberText>
+        <NumberText onClick={handleNumberClick}>{meong}</NumberText>
         <IconWrapper onClick={handlePluscoinClick}>
           <IconImage src={Pluscoin} alt="Plus" />
         </IconWrapper>
