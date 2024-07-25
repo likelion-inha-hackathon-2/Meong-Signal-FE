@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import Map from "../../components/Map/Map";
+import Map2 from "../../components/Map/Map2";
 import { getDogInfo } from "../../apis/getDogInfo";
 import { getCoordinates } from "../../apis/geolocation";
 
@@ -76,7 +76,7 @@ const MapStatusStart = () => {
   }, []);
 
   const handleStartWalk = () => {
-    navigate(`/map-status/walking/${dogId}`);  // 산책중 페이지로 이동 (라우팅 설정 필요)
+    navigate(`/map-status-walking/${dogId}`); // 산책중 페이지로 이동 (라우팅 설정 필요)
   };
 
   return (
@@ -87,11 +87,12 @@ const MapStatusStart = () => {
           <DogImage src={dogInfo.image} alt={dogInfo.name} />
           <DogName>{dogInfo.name}와 산책을 시작합니다!</DogName>
         </DogInfo>
-        <Map
+        <Map2
           latitude={currentLocation.latitude}
           longitude={currentLocation.longitude}
           width="100%"
           height="300px"
+          dogId={dogId} // dogId 전달
         />
         <StartButton onClick={handleStartWalk}>산책 시작</StartButton>
       </Container>
@@ -101,3 +102,4 @@ const MapStatusStart = () => {
 };
 
 export default MapStatusStart;
+
