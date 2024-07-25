@@ -6,19 +6,12 @@ import Trail from "./Trail";
 const ListContainer = styled.div`
   display: flex;
   flex-wrap: nowrap;
-  gap: 10px;
-`;
-
-const SectionTitle = styled.h2`
-  font-size: 18px;
-  margin-bottom: 10px;
-  font-family: "PretendardM";
+  gap: 2px;
 `;
 
 const SavedTrail = ({ trails, handleBookmarkToggle }) => {
   return (
     <>
-      <SectionTitle>내가 저장한 산책로</SectionTitle>
       <ListContainer>
         {trails.map((trail, index) => (
           <Trail
