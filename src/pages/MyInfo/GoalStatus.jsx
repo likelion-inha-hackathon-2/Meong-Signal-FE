@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Button from "../../components/Button/Button";
+
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import {
   getAllAchievements,
-  // eslint-disable-next-line no-unused-vars
   setRepresentativeAchievement,
   getRepresentativeAchievement,
 } from "../../apis/achievement";
-import IconDogEmoji from "../../assets/icons/icon-dogEmoji.png";
+import AchievementCategory from "../../components/AchievementCategory/AchievementCategory";
 
-const AchievementContainer = styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20,92 +19,29 @@ const AchievementContainer = styled.div`
   margin: 20px 0;
 `;
 
-const AchievementCategory = styled.div`
+const RepresentativeAchievementContainer = styled.div`
   width: 100%;
   max-width: 600px;
   margin-bottom: 20px;
 `;
 
-const AchievementTitle = styled.h2`
+const RepresentativeAchievementTitle = styled.h2`
   font-size: 20px;
   font-family: "PretendardB";
   margin-bottom: 10px;
 `;
 
-const AchievementList = styled.ul`
-  list-style: none;
-  padding: 0;
-`;
-
-const AchievementItem = styled(styled.li.withConfig({
-  shouldForwardProp: (prop) => prop !== "isRepresentative",
-})`
+const RepresentativeAchievementItem = styled.div`
   background-color: var(--gray-color1);
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  // 설정된 업적이라면 테두리 설정
-  border: ${({ isRepresentative }) =>
-    isRepresentative ? "3px solid var(--blue-color)" : "none"};
-`)``;
-
-const AchievementHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 `;
 
-const ProgressBar = styled.div`
-  background-color: var(--gray-color2);
-  border-radius: 4px;
-  overflow: hidden;
-  height: 25px;
-  margin-top: 10px;
-  position: relative;
-`;
-
-const Progress = styled.div`
-  background-color: var(--green-color);
-  height: 100%;
-  width: ${({ $progress }) => $progress}%;
-  transition: width 0.3s;
-  position: relative;
-`;
-
-const DogEmoji = styled.img`
-  position: absolute;
-  top: -2px;
-  right: -10px;
-  height: 25px;
-  width: 25px;
-  z-index: 99;
-  transform: translateX(${({ $progress }) => $progress}%);
-`;
-
-const AchievementText = styled.span`
-  margin: 5px 0;
+const RepresentativeAchievementText = styled.span`
   font-family: "PretendardM";
-`;
-
-const AchievementFooter = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const StyledButton = styled(Button)`
-  font-size: 14px;
-  background-color: var(--blue-color);
-  color: white;
-  border: none;
-  cursor: pointer;
-  width: 120px;
-  height: 30px;
-  &:hover {
-    background-color: #0700c8;
-  }
 `;
 
 const GoalsStatus = () => {
@@ -159,75 +95,41 @@ const GoalsStatus = () => {
     }
   };
 
-  const renderGoalsStatus = (achievementList, isWalking = false) =>
-    achievementList.map((achievement) => {
-      const progress = (achievement.now_count / achievement.total_count) * 100;
-      const unit = isWalking ? "km" : "번";
-      const totalText = `${achievement.total_count}${unit}`;
-      const isRepresentative = representativeAchievement?.id === achievement.id;
-      return (
-        <AchievementItem
-          key={achievement.id}
-          isRepresentative={isRepresentative}
-        >
-          <AchievementHeader>
-            <AchievementText>
-              {achievement.title} ({totalText})
-            </AchievementText>
-            <StyledButton
-              text="대표 업적 설정하기"
-              onClick={() => handleSetRepresentative(achievement)}
-            />
-          </AchievementHeader>
-          <ProgressBar>
-            <Progress $progress={progress}>
-              <DogEmoji src={IconDogEmoji} $progress={progress} />
-            </Progress>
-          </ProgressBar>
-          <AchievementFooter>
-            <AchievementText>
-              {achievement.now_count} / {achievement.total_count}
-            </AchievementText>
-            {achievement.is_achieved ? (
-              <AchievementText>Completed!!</AchievementText>
-            ) : null}
-          </AchievementFooter>
-        </AchievementItem>
-      );
-    });
+  const isRepresentative = (achievement) =>
+    representativeAchievement?.id === achievement.id;
 
   return (
     <>
       <Header />
-      <AchievementContainer>
+      <Container>
         {message && <p>{message}</p>}
         {representativeAchievement ? (
-          <AchievementCategory>
-            <AchievementTitle>👑 대표 업적</AchievementTitle>
-            <AchievementList>
-              <AchievementItem>
-                <AchievementText>
-                  👟 {representativeAchievement.title}
-                </AchievementText>
-              </AchievementItem>
-            </AchievementList>
-          </AchievementCategory>
+          <RepresentativeAchievementContainer>
+            <RepresentativeAchievementTitle>
+              👑 대표 업적
+            </RepresentativeAchievementTitle>
+            <RepresentativeAchievementItem>
+              <RepresentativeAchievementText>
+                👟 {representativeAchievement.title}
+              </RepresentativeAchievementText>
+            </RepresentativeAchievementItem>
+          </RepresentativeAchievementContainer>
         ) : (
           <p>아직 달성한 업적이 없습니다.</p>
         )}
-        <AchievementCategory>
-          <AchievementTitle>🐶 강쥐와 친해지기</AchievementTitle>
-          <AchievementList>
-            {renderGoalsStatus(goalsStatus.dog)}
-          </AchievementList>
-        </AchievementCategory>
-        <AchievementCategory>
-          <AchievementTitle>🏃‍♂️ 강쥐와 튼튼해지기</AchievementTitle>
-          <AchievementList>
-            {renderGoalsStatus(goalsStatus.walking, true)}
-          </AchievementList>
-        </AchievementCategory>
-      </AchievementContainer>
+        <AchievementCategory
+          title="🐶 강쥐와 친해지기"
+          achievements={goalsStatus.dog}
+          handleSetRepresentative={handleSetRepresentative}
+          isRepresentative={isRepresentative}
+        />
+        <AchievementCategory
+          title="🏃‍♂️ 강쥐와 튼튼해지기"
+          achievements={goalsStatus.walking}
+          handleSetRepresentative={handleSetRepresentative}
+          isRepresentative={isRepresentative}
+        />
+      </Container>
       <Footer />
     </>
   );
