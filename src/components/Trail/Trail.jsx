@@ -1,5 +1,3 @@
-// src/components/Trail/Trail.js
-
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -10,7 +8,7 @@ import bookmarkIcon2 from "../../assets/icons/icon-Bookmark2.png";
 const TrailCard = styled.div`
   width: 150px;
   height: 120px;
-  padding: 10px;
+  padding: 8px;
   margin: 10px;
   background-color: #f4f4f4;
   border-radius: 10px;
@@ -40,15 +38,16 @@ const BookmarkIcon = styled.img`
 
 const Title = styled.h3`
   font-size: 14px;
-  margin: 5px 0;
+  margin: 2px 0;
   text-align: center;
-  margin-bottom: 15px;
-  font-family: "PretendardR";
+  margin-bottom: 10px;
+  font-family: "PretendardM";
+  font-weight: 600;
   font-weight: bold;
 `;
 
 const InfoWrapper = styled.div`
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.5;
   font-family: "PretendardR";
 `;
