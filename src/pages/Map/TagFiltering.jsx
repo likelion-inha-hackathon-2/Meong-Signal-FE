@@ -163,7 +163,7 @@ const TagFiltering = () => {
   const handleContactButtonClick = async () => {
     try {
       // 견주 아이디, 사용자 아이디를 파라미터로 넣어야 함
-      const response = await createChatRoom(dog.owner_id, 1);
+      const response = await createChatRoom(1, 2);
       if (response && response.room_id) {
         navigate(`/chat/${response.room_id}`);
       } else {
