@@ -7,6 +7,8 @@ import Tag from "../../components/Tag/Tag";
 import { searchByTag } from "../../apis/searchByTag"; // 태그에 해당하는 것만
 import { getDogInfo } from "../../apis/getDogInfo";
 import { getCoordinates } from "../../apis/geolocation";
+import { createChatRoom } from "../../apis/chatApi"; // 채팅방 생성 API
+import { useNavigate } from "react-router-dom"; // useNavigate로 변경
 
 // 강아지 여러마리 컨테이너
 const DogList = styled.div`
@@ -94,6 +96,7 @@ const TagFiltering = () => {
   const [dogs, setDogs] = useState([]); // 해당하는 태그에 대한 강아지만
   const [location, setLocation] = useState(null);
   const [dogInfos, setDogInfos] = useState({}); // 해당 강아지들에 대한 정보
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -156,6 +159,21 @@ const TagFiltering = () => {
     setSelectedTags(newSelectedTags);
   };
 
+  // 유저와 보호자 간 채팅방 생성
+  const handleContactButtonClick = async () => {
+    try {
+      // 견주 아이디, 사용자 아이디를 파라미터로 넣어야 함
+      const response = await createChatRoom(dog.owner_id, 1);
+      if (response && response.room_id) {
+        navigate(`/chat/${response.room_id}`);
+      } else {
+        console.error("Failed to create chat room");
+      }
+    } catch (error) {
+      console.error("Error creating chat room:", error);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -181,7 +199,10 @@ const TagFiltering = () => {
                 <p>{dog.distance}km 만큼 떨어진</p>
                 <p>{dog.road_address}에 있어요.</p>
               </DogAddress>
-              <ContactButton text="💌보호자와 채팅하기" />
+              <ContactButton
+                text="💌보호자와 채팅하기"
+                onClick={() => handleContactButtonClick(dog)}
+              />
             </DogItem>
           ))
         ) : (
