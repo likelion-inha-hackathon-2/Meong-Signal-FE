@@ -27,4 +27,9 @@ authApi.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+// 채팅방 용 엑세스 토큰 가져오기 함수
+export const getAccessToken = () => {
+  return localStorage.getItem("accessToken");
+};
+
 export default authApi;
