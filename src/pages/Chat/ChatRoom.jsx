@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
-import { useParams } from "react-router-dom";
+import { getAccessToken } from "../../apis/authApi";
 
 // 채팅 메시지 리스트
 const MessageList = styled.div`
@@ -45,7 +45,6 @@ const ProfileImage = styled.img`
   margin: ${(props) => (props.$isSender ? "0 0 0 10px" : "0 10px 0 0")};
 `;
 
-// 내가 메시지를 입력하는 창
 const InputContainer = styled.div`
   display: flex;
   align-items: center;
@@ -72,32 +71,43 @@ const SendButton = styled(Button)`
 `;
 
 const ChatRoom = () => {
-  const { roomId } = useParams();
+  const roomId = 1; // 룸 아이디를 1로 고정
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
-    // 여기에 직접 입력하고 테스트 가능!
-    const dummy = [
-      {
-        /* 더미 데이터 여기에 복붙  */
-      },
-    ];
+    const dummy = [{}];
     setMessages(dummy);
 
-    // 웹소켓 연결
-    // const socket = new WebSocket('ws://링크주소');
-    // socket.onmessage = (event) => {
-    //   const message = JSON.parse(event.data);
-    //   setMessages((prevMessages) => [...prevMessages, message]);
-    // };
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+      console.error("토큰 x");
+      return;
+    }
 
-    // return () => {
-    //   socket.close();
-    // };
+    const socket = new WebSocket(
+      "ws://" +
+        window.location.host +
+        "/ws/chat/" +
+        roomId +
+        "/?token=" +
+        encodeURIComponent(accessToken),
+    );
+
+    socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    };
+
+    socket.onclose = (event) => {
+      console.error("WebSocket이 닫혔습니다: ", event);
+    };
+
+    return () => {
+      socket.close();
+    };
   }, [roomId]);
 
-  // 사용자가 보내는 메시지 처리 (POST)
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       const message = {
@@ -110,9 +120,6 @@ const ChatRoom = () => {
         timestamp: new Date().toISOString(),
         read: false,
       };
-
-      // 메시지 보내기
-      // socket.send(JSON.stringify(message));
 
       setMessages((prevMessages) => [...prevMessages, message]);
       setNewMessage("");
