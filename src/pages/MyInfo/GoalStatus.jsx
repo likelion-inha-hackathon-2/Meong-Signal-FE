@@ -69,7 +69,7 @@ const ProgressBar = styled.div`
 const Progress = styled.div`
   background-color: var(--green-color);
   height: 100%;
-  width: ${({ progress }) => progress}%;
+  width: ${({ $progress }) => $progress}%;
   transition: width 0.3s;
   position: relative;
 `;
@@ -81,7 +81,7 @@ const DogEmoji = styled.img`
   height: 25px;
   width: 25px;
   z-index: 99;
-  transform: translateX(${({ progress }) => progress}%);
+  transform: translateX(${({ $progress }) => $progress}%);
 `;
 
 const AchievementText = styled.span`
@@ -180,7 +180,7 @@ const GoalsStatus = () => {
             />
           </AchievementHeader>
           <ProgressBar>
-            <Progress progress={progress}>
+            <Progress $progress={progress}>
               <DogEmoji src={IconDogEmoji} $progress={progress} />
             </Progress>
           </ProgressBar>
@@ -201,26 +201,28 @@ const GoalsStatus = () => {
       <Header />
       <AchievementContainer>
         {message && <p>{message}</p>}
-        {representativeAchievement && (
+        {representativeAchievement ? (
           <AchievementCategory>
-            <AchievementTitle>👑대표 업적</AchievementTitle>
+            <AchievementTitle>👑 대표 업적</AchievementTitle>
             <AchievementList>
               <AchievementItem>
                 <AchievementText>
-                  ✨{representativeAchievement.title}✨
+                  👟 {representativeAchievement.title}
                 </AchievementText>
               </AchievementItem>
             </AchievementList>
           </AchievementCategory>
+        ) : (
+          <p>아직 달성한 업적이 없습니다.</p>
         )}
         <AchievementCategory>
-          <AchievementTitle>🐶강쥐와 친해지기</AchievementTitle>
+          <AchievementTitle>🐶 강쥐와 친해지기</AchievementTitle>
           <AchievementList>
             {renderGoalsStatus(goalsStatus.dog)}
           </AchievementList>
         </AchievementCategory>
         <AchievementCategory>
-          <AchievementTitle>🏃‍♂️강쥐와 튼튼해지기</AchievementTitle>
+          <AchievementTitle>🏃‍♂️ 강쥐와 튼튼해지기</AchievementTitle>
           <AchievementList>
             {renderGoalsStatus(goalsStatus.walking, true)}
           </AchievementList>
