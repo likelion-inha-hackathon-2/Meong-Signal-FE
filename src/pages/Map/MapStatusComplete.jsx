@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import Map from "../../components/Map/Map";
+import Map2 from "../../components/Map/Map2";
 import { getDogInfo } from "../../apis/getDogInfo";
 import { getDistance } from "../../apis/getDistance";
 import { getCoordinates } from "../../apis/geolocation";
@@ -16,6 +16,7 @@ const Container = styled.div`
 const DogInfo = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 20px;
 `;
 
@@ -29,6 +30,15 @@ const DogImage = styled.img`
 const DogName = styled.div`
   font-size: 20px;
   font-weight: bold;
+`;
+
+const InfoButton = styled.button`
+  padding: 5px 10px;
+  background-color: #dddddd;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
 `;
 
 const CompleteButton = styled.button`
@@ -54,15 +64,19 @@ const MapStatusComplete = () => {
     latitude: 37.4482020408321,
     longitude: 126.651415033662,
   });
-  const [initialLocation, setInitialLocation] = useState(currentLocation);
-  const [distance, setDistance] = useState(0);
-  const [calories, setCalories] = useState(0);
+  const [initialLocation, setInitialLocation] = useState(null);
+  const [finalDistance, setFinalDistance] = useState(0);
+  const [finalCalories, setFinalCalories] = useState(0);
 
   useEffect(() => {
     const fetchDogInfo = async () => {
       try {
         const data = await getDogInfo(dogId);
         setDogInfo(data.dog);
+        setInitialLocation({
+          latitude: data.dog.latitude,
+          longitude: data.dog.longitude,
+        });
       } catch (error) {
         console.error("Error fetching dog info:", error);
       }
@@ -75,7 +89,6 @@ const MapStatusComplete = () => {
     const fetchCoordinates = async () => {
       try {
         const coordinates = await getCoordinates();
-        setInitialLocation(coordinates);
         setCurrentLocation(coordinates);
       } catch (error) {
         console.error("Error fetching coordinates:", error);
@@ -83,35 +96,17 @@ const MapStatusComplete = () => {
     };
 
     fetchCoordinates();
+  }, []);
 
-    const watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const newCurrentLocation = {
-          latitude: parseFloat(latitude),
-          longitude: parseFloat(longitude),
-        };
-        setCurrentLocation(newCurrentLocation);
-        const dist = getDistance(
-          initialLocation.latitude,
-          initialLocation.longitude,
-          newCurrentLocation.latitude,
-          newCurrentLocation.longitude
-        );
-        setDistance((prev) => prev + dist);
-        setCalories((prev) => prev + dist * 0.04);
-      },
-      (error) => console.error(error),
-      { enableHighAccuracy: true }
-    );
-
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
-  }, [initialLocation]);
+  useEffect(() => {
+    const distance = parseFloat(localStorage.getItem('walkDistance')) || 0;
+    const calories = parseFloat(localStorage.getItem('walkCalories')) || 0;
+    setFinalDistance(distance);
+    setFinalCalories(calories);
+  }, []);
 
   const handleReview = () => {
-    navigate(`/reviews/${dogId}`); // DogReview.jsx 로 이동해야 할거 같은데 아직 안만들어져서,,, 임의로
+    navigate(`/reviews/${dogId}`); // DogReview.jsx로 이동
   };
 
   return (
@@ -119,18 +114,25 @@ const MapStatusComplete = () => {
       <Header />
       <Container>
         <DogInfo>
-          <DogImage src={dogInfo.image} alt={dogInfo.name} />
-          <DogName>{dogInfo.name}와의 산책이 종료되었습니다.</DogName>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <DogImage src={dogInfo.image} alt={dogInfo.name} />
+            <DogName>{dogInfo.name}와의 산책이 종료되었습니다.</DogName>
+          </div>
+          <div>
+            <InfoButton>정보 보기</InfoButton>
+            <InfoButton>보호자와 채팅하기</InfoButton>
+          </div>
         </DogInfo>
-        <Map
+        <Map2
           latitude={currentLocation.latitude}
           longitude={currentLocation.longitude}
           width="100%"
           height="300px"
+          dogId={dogId} // dogId 전달
         />
         <CompleteButton onClick={handleReview}>후기 남기러 가기</CompleteButton>
-        <Stat>이번 산책에서 총 이동한 거리: {distance.toFixed(1)} km</Stat>
-        <Stat>이번 산책에서 소모한 칼로리: {calories.toFixed(0)} kcal</Stat>
+        <Stat>이번 산책에서 총 이동한 거리: {finalDistance.toFixed(1)} km</Stat>
+        <Stat>이번 산책에서 소모한 칼로리: {finalCalories.toFixed(0)} kcal</Stat>
       </Container>
       <Footer />
     </>
