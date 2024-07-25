@@ -5,6 +5,7 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import {
   getAllAchievements,
+  // eslint-disable-next-line no-unused-vars
   setRepresentativeAchievement,
   getRepresentativeAchievement,
 } from "../../apis/achievement";
