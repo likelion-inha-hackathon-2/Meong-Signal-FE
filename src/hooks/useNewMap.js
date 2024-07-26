@@ -5,8 +5,10 @@ import { getDogInfo } from "../apis/getDogInfo";
 const useNewMap = (appKey, initialLocation, dogId, keyword = "") => {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [dogMarker, setDogMarker] = useState(null);
   const [selectedDog, setSelectedDog] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]);
   const infowindow = useRef(null);
   const [markers, setMarkers] = useState([]);
@@ -55,7 +57,6 @@ const useNewMap = (appKey, initialLocation, dogId, keyword = "") => {
         });
       } else {
         console.error("현재 브라우저에서는 현 위치를 불러올 수 없어요.");
-
       }
     };
 

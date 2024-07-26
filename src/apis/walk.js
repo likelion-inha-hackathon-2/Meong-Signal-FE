@@ -12,13 +12,16 @@ export const getWalksRecord = async () => {
 };
 
 // 산책 완료 시 기록 저장
-export const saveWalkData = async () => {
+export const saveWalkData = async (formData) => {
   try {
-    const response = await authApi.post("/walks/new");
-    console.log(response.data);
+    const response = await authApi.post("/walks/new", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error) {
-    console.error(error.response);
+    console.error("Error saving walk data:", error);
     throw error;
   }
 };

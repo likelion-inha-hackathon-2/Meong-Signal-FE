@@ -3,6 +3,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import useNewMap from "../../hooks/useNewMap";
 import DogMoreInfo from "../Dog/DogMoreInfo";
+import { useLocation } from "react-router-dom";
 
 const StyledMap = styled.div`
   position: relative;
@@ -11,7 +12,12 @@ const StyledMap = styled.div`
   flex-shrink: 0;
 `;
 
-const MapUser = ({ latitude, longitude, width, height, dogId, keyword }) => {
+const MapUser = ({ latitude, longitude, width, height }) => {
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const dogId = query.get("dogId");
+  const keyword = query.get("keyword");
+
   const initialLocation = { latitude, longitude };
   const { mapContainer, map, selectedDog, setSelectedDog, markers } = useNewMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
@@ -84,8 +90,6 @@ MapUser.propTypes = {
   longitude: PropTypes.number.isRequired,
   width: PropTypes.string,
   height: PropTypes.string,
-  dogId: PropTypes.string.isRequired,
-  keyword: PropTypes.string,
 };
 
 export default MapUser;

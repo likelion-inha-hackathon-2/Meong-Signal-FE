@@ -26,6 +26,7 @@ import MyWalk from "./pages/MyInfo/MyWalk";
 import RecordMyDogWalk from "./pages/MyInfo/RecordMyDogWalk";
 import MapStatusStart from "./pages/Map/MapStatusStart";
 import MapStatusWalking from "./pages/Map/MapStatusWalking";
+import MapStatusUser from "./pages/Map/MapStatusUser";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
             path="map-status-walking/:dogId"
             element={<MapStatusWalking />}
           />
+          <Route path="map-status-user/:dogId" element={<MapStatusUser />} />
         </Route>
       </Routes>
     </BrowserRouter>
