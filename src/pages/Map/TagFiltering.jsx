@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import Button from "../../components/Button/Button";
 import Tag from "../../components/Tag/Tag";
 import { searchByTag } from "../../apis/searchByTag"; // 태그에 해당하는 것만
+import { getDogInfo } from "../../apis/getDogInfo";
 import { getCoordinates } from "../../apis/geolocation";
 
 // 강아지 여러마리 컨테이너
@@ -43,6 +45,13 @@ const DogName = styled.div`
   margin-bottom: 5px;
 `;
 
+const DogInfo = styled.div`
+  font-size: 14px;
+  font-family: "PretendardR";
+  text-align: center;
+  margin-bottom: 5px;
+`;
+
 const DogAddress = styled.div`
   font-size: 14px;
   font-family: "PretendardR";
@@ -55,10 +64,10 @@ const TitleWrapper = styled.h1`
   font-weight: 700;
 `;
 
-const TestWrapper = styled.div`
+const TextWrapper = styled.div`
   font-size: 16px;
   font-family: "PretendardM";
-  margin: 20px;
+  margin: 10px;
   color: var(--gray-color3);
 `;
 
@@ -66,14 +75,14 @@ const MessageWrapper = styled.div`
   font-size: 16px;
   font-family: "PretendardM";
   margin: 20px;
-  color: var(--gray-color2);
+  color: var(--gray-color3);
   text-align: center;
 `;
 
-const ContactButton = styled.button`
+const ContactButton = styled(Button)`
   padding: 5px 10px;
   margin-top: 10px;
-  background-color: var(--primary-color);
+  width: 200px;
   color: white;
   border: none;
   border-radius: 5px;
@@ -84,12 +93,12 @@ const TagFiltering = () => {
   const [selectedTags, setSelectedTags] = useState([]); // 선택한 태그
   const [dogs, setDogs] = useState([]); // 해당하는 태그에 대한 강아지만
   const [location, setLocation] = useState(null);
+  const [dogInfos, setDogInfos] = useState({}); // 해당 강아지들에 대한 정보
 
   useEffect(() => {
     const fetchLocation = async () => {
       try {
         const coordinates = await getCoordinates();
-        console.log("Current coordinates:", coordinates);
         setLocation(coordinates);
       } catch (error) {
         console.error("Failed to get current position:", error);
@@ -102,15 +111,32 @@ const TagFiltering = () => {
     const fetchDogsByTags = async () => {
       if (selectedTags.length > 0 && location) {
         let dogsByTags = [];
+        let dogInfoPromises = [];
         for (const tag of selectedTags) {
           const response = await searchByTag(tag.id, location);
           if (response && Array.isArray(response.dogs)) {
             dogsByTags = [...dogsByTags, ...response.dogs];
+            for (const dog of response.dogs) {
+              dogInfoPromises.push(getDogInfo(dog.id));
+            }
           } else {
             console.error("Expected response to be an array, got:", response);
           }
         }
+
+        const dogInfosResponse = await Promise.all(dogInfoPromises);
+        let newDogInfos = {};
+        dogInfosResponse.forEach((info, index) => {
+          if (info && info.dog) {
+            newDogInfos[dogsByTags[index].id] = info.dog;
+          }
+        });
+
         setDogs(dogsByTags);
+        setDogInfos(newDogInfos);
+      } else {
+        setDogs([]); // 태그를 해제하면 강아지 목록을 초기화
+        setDogInfos({});
       }
     };
 
@@ -134,24 +160,33 @@ const TagFiltering = () => {
     <>
       <Header />
       <TitleWrapper>함께 산책하고 싶은 강아지를 만나보세요!</TitleWrapper>
-      <TestWrapper>최대 3개의 태그까지 선택하여 검색할 수 있어요.</TestWrapper>
+      <TextWrapper>최대 3개의 태그까지 선택하여 검색할 수 있어요.</TextWrapper>
       <Tag selectedTags={selectedTags} handleTagClick={handleTagClick} />
       <DogList>
-        {dogs.length > 0 ? (
+        {selectedTags.length === 0 ? (
+          <MessageWrapper>태그를 선택하세요.</MessageWrapper>
+        ) : dogs.length > 0 ? (
           dogs.map((dog) => (
             <DogItem key={dog.id}>
               <DogImage src={dog.image} alt={dog.name} />
               <DogName>{dog.name}</DogName>
+              {dogInfos[dog.id] && (
+                <DogInfo>
+                  <div>성별: {dogInfos[dog.id].gender}</div>
+                  <div>나이: {dogInfos[dog.id].age}</div>
+                  <div>{dogInfos[dog.id].introduction}</div>
+                </DogInfo>
+              )}
               <DogAddress>
                 <p>{dog.distance}km 만큼 떨어진</p>
                 <p>{dog.road_address}에 있어요.</p>
               </DogAddress>
-              <ContactButton>연락하기</ContactButton>
+              <ContactButton text="💌보호자와 채팅하기" />
             </DogItem>
           ))
         ) : (
           <MessageWrapper>
-            선택된 태그에 해당하는 강아지가 주변에 없어요 ㅠㅠ
+            선택된 태그와 일치하는 강아지가 주변에 없어요ㅠㅠ
           </MessageWrapper>
         )}
       </DogList>

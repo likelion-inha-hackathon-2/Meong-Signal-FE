@@ -95,7 +95,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     return () => {
       document.head.removeChild(script);
     };
-  }, [appKey]);
+  }, [appKey, currentLocation.latitude, currentLocation.longitude]); // 현재 위치를 종속성 배열에 추가
 
   useEffect(() => {
     if (marker && map) {
@@ -187,7 +187,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     if (map) {
       addDogMarkersAndOverlays();
     }
-  }, [map, isBoring]);
+  }, [map, isBoring, dogMarkers]);
 
   useEffect(() => {
     if (map) {

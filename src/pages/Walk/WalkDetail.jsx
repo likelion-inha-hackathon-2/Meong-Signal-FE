@@ -17,9 +17,18 @@ const WalkDetailContainer = styled.div`
   flex-direction: column;
 `;
 
+const TitleWrapper = styled.div`
+  font-size: 20px;
+  font-family: "PretendardS";
+  margin: 0 15px;
+`;
+
 // 저장된 산책로 데이터가 없다면 해당 메시지 출력
-const Message = styled.p`
-  font-size: 16px;
+const IsEmptyMessage = styled.p`
+  padding-left: 20px;
+  margin-top: 10px;
+  font-family: "PretendardR";
+  font-size: 14px;
 `;
 
 const WalkDetail = () => {
@@ -41,8 +50,6 @@ const WalkDetail = () => {
   }, []);
 
   useEffect(() => {
-    // if (!currentLocation) return;
-
     const fetchRecommendedTrails = async () => {
       try {
         const data = await getRecommendedTrails(currentLocation);
@@ -86,7 +93,7 @@ const WalkDetail = () => {
         if (data.id) {
           setSavedTrails((prevTrails) => [...prevTrails, data]);
         } else {
-          console.error("Failed to toggle bookmark:", data.message);
+          console.error("Failed to toggle bookmark:", data.IsEmptyMessage);
         }
       }
     } catch (error) {
@@ -101,18 +108,20 @@ const WalkDetail = () => {
     <>
       <Header />
       <WalkDetailContainer>
+        <TitleWrapper>🏁 추천 산책로</TitleWrapper>
         <RecommendedTrail
           trails={recommendedTrails}
           handleBookmarkToggle={handleBookmarkToggle}
           isBookmarked={isTrailBookmarked}
         />
+        <TitleWrapper>💘 내가 저장한 산책로</TitleWrapper>
         {savedTrails.length > 0 ? (
           <SavedTrail
             trails={savedTrails}
             handleBookmarkToggle={handleBookmarkToggle}
           />
         ) : (
-          <Message>저장된 산책로 데이터가 없습니다.</Message>
+          <IsEmptyMessage>아직 저장된 산책로가 없습니다.</IsEmptyMessage>
         )}
       </WalkDetailContainer>
       <Footer />
