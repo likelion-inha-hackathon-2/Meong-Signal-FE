@@ -23,12 +23,21 @@ ChartJS.register(
 );
 
 const Graph = ({ recentWalks }) => {
+  let cumulativeDistance = 0;
+  const labels = recentWalks.map((walk) =>
+    new Date(walk.date).toLocaleDateString(),
+  );
+  const dataPoints = recentWalks.map((walk) => {
+    cumulativeDistance += parseFloat(walk.distance);
+    return cumulativeDistance;
+  });
+
   const data = {
-    labels: recentWalks.map((walk) => new Date(walk.date).toLocaleDateString()),
+    labels: labels,
     datasets: [
       {
-        label: "산책 거리 (km)",
-        data: recentWalks.map((walk) => parseFloat(walk.distance)),
+        label: "누적 산책 거리 (km)",
+        data: dataPoints,
         fill: false,
         backgroundColor: "rgb(255, 157, 157)",
         borderColor: "#DF6666",
@@ -62,7 +71,6 @@ Graph.propTypes = {
       id: PropTypes.number.isRequired,
       distance: PropTypes.string.isRequired,
       kilocalories: PropTypes.string.isRequired,
-      meong: PropTypes.number.isRequired,
       time: PropTypes.number.isRequired,
       date: PropTypes.string.isRequired,
       user_id: PropTypes.number.isRequired,
