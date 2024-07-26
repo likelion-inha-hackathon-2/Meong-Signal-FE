@@ -42,7 +42,7 @@ function App() {
           <Route path="map-status" element={<MapStatus />} />
           <Route path="map-tag" element={<TagFiltering />} />
           <Route path="chatlist" element={<ChatList />} />
-          <Route path="chat/:ownerId" element={<ChatRoom />} />
+          <Route path="chat/:roomId" element={<ChatRoom />} />
           <Route path="reviews/received" element={<ReviewReceived />} />
           <Route path="reviews/written" element={<ReviewWritten />} />
           <Route path="myinfo-main" element={<MyInfoMain />} />
