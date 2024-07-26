@@ -68,7 +68,7 @@ const RouteItem = styled.div`
   padding: 10px;
   margin: 5px 0;
   background-color: #f0f0f0;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
 `;
 
@@ -77,7 +77,7 @@ const StopButton = styled.button`
   background-color: #ff9900;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
 `;
@@ -108,10 +108,13 @@ const MapStatusUser = () => {
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [initialLocation, setInitialLocation] = useState(null);
-  // 산책 상태 3개로 나눠서 초기 상태는 산책 전으로
-  const [walkStage, setWalkStage] = useState("before"); // 산책 전, 산책 중, 산책 후로 관리
+  const [walkStage, setWalkStage] = useState("before");
   const [distance, setDistance] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [socket, setSocket] = useState(null);
+  const [ownerEmail] = useState("owner@gmail.com");
+  const [roomId, setRoomId] = useState(null);
+  const [walkUserEmail] = useState("walking@gmail.com");
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -131,6 +134,28 @@ const MapStatusUser = () => {
 
     fetchInitialData();
   }, [dogId]);
+
+  useEffect(() => {
+    const setupRoomAndSocket = async () => {
+      try {
+        await CreateRoom();
+      } catch (error) {
+        console.error("Error setting up room and socket:", error);
+      }
+    };
+
+    setupRoomAndSocket();
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      const intervalId = setInterval(() => {
+        sendLocation();
+      }, 3000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [socket]);
 
   useEffect(() => {
     if (walkStage === "during") {
@@ -172,6 +197,81 @@ const MapStatusUser = () => {
     }
   }, [walkStage, initialLocation]);
 
+  const CreateRoom = async () => {
+    if (socket) {
+      socket.close();
+    }
+    const token = localStorage.getItem("accessToken");
+    const response = await fetch(
+      "https://meong-signal.kro.kr/walk-status/rooms/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          owner_email: ownerEmail,
+          walk_user_email: walkUserEmail,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const roomData = await response.json();
+    setRoomId(roomData.id); // Update roomId state
+
+    console.log("roomId:", roomData.id);
+  };
+
+  const setUpWebSocket = (roomId) => {
+    const newSocket = new WebSocket(
+      `wss://meong-signal.kro.kr/ws/room/${roomId}/locations`,
+    );
+
+    newSocket.onopen = () => {
+      console.log("WebSocket connected");
+      setSocket(newSocket);
+    };
+
+    newSocket.onmessage = (e) => {
+      let data = JSON.parse(e.data);
+      console.log("Received data from socket:", data);
+    };
+
+    newSocket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    newSocket.onclose = () => {
+      console.log("WebSocket closed");
+      setSocket(null);
+    };
+  };
+
+  const sendLocation = async () => {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      console.warn("WebSocket is not open. Skipping location send.");
+      return;
+    }
+
+    const coordinates = await getCoordinates();
+    setCurrentLocation(coordinates);
+
+    const locationPayload = {
+      owner_email: ownerEmail,
+      walk_user_email: walkUserEmail,
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+    };
+
+    socket.send(JSON.stringify(locationPayload));
+    console.log("Sent current location:", locationPayload);
+  };
+
   const handleStartWalk = (route = null) => {
     setSelectedRoute(route);
     setWalkStage("during");
@@ -183,10 +283,15 @@ const MapStatusUser = () => {
     );
   };
 
+  // 산책로 저장된 거 받아오기
   const handleShowRoutes = async () => {
     try {
       const savedRoutes = await getMarkedTrails();
-      setRoutes(savedRoutes || []);
+      if (Array.isArray(savedRoutes)) {
+        setRoutes(savedRoutes);
+      } else {
+        setRoutes([]);
+      }
       setShowRoutes(true);
     } catch (error) {
       console.error("Error fetching routes:", error);
@@ -222,6 +327,7 @@ const MapStatusUser = () => {
       alert("산책 데이터를 저장하는 중에 오류가 발생했습니다.");
     }
   };
+
   const handleReview = () => navigate(`/reviews/${dogId}`);
 
   const renderWalkStage = () => {
@@ -240,11 +346,18 @@ const MapStatusUser = () => {
             {showRoutes && (
               <RouteList>
                 <h1>산책로 선택</h1>
-                {routes.map((route, index) => (
-                  <RouteItem key={index} onClick={() => handleStartWalk(route)}>
-                    {route.name}
-                  </RouteItem>
-                ))}
+                {routes.length > 0 ? (
+                  routes.map((route, index) => (
+                    <RouteItem
+                      key={index}
+                      onClick={() => handleStartWalk(route)}
+                    >
+                      {route.name}
+                    </RouteItem>
+                  ))
+                ) : (
+                  <p>저장된 산책로가 없습니다</p>
+                )}
               </RouteList>
             )}
           </>

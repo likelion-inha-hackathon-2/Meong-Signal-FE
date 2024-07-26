@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { getCoordinates } from "../apis/geolocation";
 import { getDogInfo } from "../apis/getDogInfo";
 
-const useNewMap = (appKey, initialLocation, dogId, keyword = "") => {
+const useUserMap = (appKey, initialLocation, dogId, keyword = "") => {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
   // eslint-disable-next-line no-unused-vars
@@ -174,4 +174,4 @@ const useNewMap = (appKey, initialLocation, dogId, keyword = "") => {
   return { mapContainer, map, selectedDog, setSelectedDog, markers };
 };
 
-export default useNewMap;
+export default useUserMap;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import useNewMap from "../../hooks/useNewMap";
+import useUserMap from "../../hooks/useUserMap";
 import DogMoreInfo from "../Dog/DogMoreInfo";
 import { useLocation } from "react-router-dom";
 
@@ -20,12 +20,13 @@ const MapUser = ({ latitude, longitude, width, height }) => {
 
   const initialLocation = { latitude, longitude };
   // eslint-disable-next-line no-unused-vars
-  const { mapContainer, map, selectedDog, setSelectedDog, markers } = useNewMap(
-    process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
-    initialLocation,
-    dogId,
-    keyword,
-  );
+  const { mapContainer, map, selectedDog, setSelectedDog, markers } =
+    useUserMap(
+      process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
+      initialLocation,
+      dogId,
+      keyword,
+    );
 
   // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]);
