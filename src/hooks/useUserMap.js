@@ -2,22 +2,21 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { getCoordinates } from "../apis/geolocation";
 import { getDogInfo } from "../apis/getDogInfo";
 
-const useUserMap = (appKey, initialLocation, dogId, keyword = "") => {
+const useUserMap = (appKey, initialLocation, dogId, keyword = "", roomId) => {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
-  // eslint-disable-next-line no-unused-vars
   const [dogMarker, setDogMarker] = useState(null);
   const [selectedDog, setSelectedDog] = useState(null);
-  // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]);
   const infowindow = useRef(null);
   const [markers, setMarkers] = useState([]);
+  const [socket, setSocket] = useState(null);
 
   const makeLine = useCallback(
     (position) => {
       let linePath = position;
 
-      var polyline = new window.kakao.maps.Polyline({
+      const polyline = new window.kakao.maps.Polyline({
         path: linePath,
         strokeWeight: 5,
         strokeColor: "#FFAE00",
@@ -31,18 +30,15 @@ const useUserMap = (appKey, initialLocation, dogId, keyword = "") => {
   );
 
   const setLinePathArr = useCallback(
-    (position) => {
-      const moveLatLon = new window.kakao.maps.LatLng(
-        position.coords.latitude,
-        position.coords.longitude,
-      );
+    (latitude, longitude) => {
+      const moveLatLon = new window.kakao.maps.LatLng(latitude, longitude);
       setPositionArr((prevArr) => {
         const newPosition = [...prevArr, moveLatLon];
         makeLine(newPosition);
         return newPosition;
       });
     },
-    [map],
+    [makeLine],
   );
 
   useEffect(() => {
@@ -160,16 +156,40 @@ const useUserMap = (appKey, initialLocation, dogId, keyword = "") => {
   }, [map, keyword]);
 
   useEffect(() => {
-    if (map) {
-      const interval = setInterval(() => {
-        navigator.geolocation.getCurrentPosition(setLinePathArr);
-      }, 5000);
+    if (map && roomId) {
+      const newSocket = new WebSocket(
+        `wss://meong-signal.kro.kr/ws/room/${roomId}/locations`,
+      );
+
+      newSocket.onopen = () => {
+        console.log("WebSocket connected");
+        setSocket(newSocket);
+      };
+
+      newSocket.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        console.log("Received data from socket:", data);
+        if (data.latitude && data.longitude) {
+          setLinePathArr(data.latitude, data.longitude);
+        }
+      };
+
+      newSocket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+
+      newSocket.onclose = () => {
+        console.log("WebSocket closed");
+        setSocket(null);
+      };
 
       return () => {
-        clearInterval(interval);
+        if (newSocket) {
+          newSocket.close();
+        }
       };
     }
-  }, [map, setLinePathArr]);
+  }, [map, roomId, setLinePathArr]);
 
   return { mapContainer, map, selectedDog, setSelectedDog, markers };
 };

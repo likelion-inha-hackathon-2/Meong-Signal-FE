@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import MapUser from "../../components/Map/MapUser";
-import { getCoordinates } from "../../apis/geolocation";
 import { getDogInfo } from "../../apis/getDogInfo";
+import authApi from "../../apis/authApi"; // 수정된 부분
+
+const Container = styled.div`
+  font-family: "PretendardM";
+`;
 
 const MapStatus = ({ dogId }) => {
-  const [initialLocation, setInitialLocation] = useState({
-    latitude: null,
-    longitude: null,
-  });
-  const [currentLocation, setCurrentLocation] = useState(initialLocation);
+  const [currentLocation, setCurrentLocation] = useState(null);
   const [dogName, setDogName] = useState(""); // 강아지 이름 상태 추가
   const [walkUserEmail, setWalkUserEmail] = useState("walking@gmail.com"); // 고정 산책자 이메일
   const [ownerEmail, setOwnerEmail] = useState("owner@gmail.com"); // 고정 견주 이메일
@@ -31,69 +32,40 @@ const MapStatus = ({ dogId }) => {
   }, [dogId]);
 
   useEffect(() => {
-    const fetchInitialCoordinates = async () => {
-      try {
-        const coordinates = await getCoordinates();
-        setInitialLocation(coordinates);
-        setCurrentLocation(coordinates);
-        console.log(coordinates);
-      } catch (error) {
-        console.error("Error fetching initial coordinates:", error);
-      }
-    };
-
-    fetchInitialCoordinates();
-  }, []);
-
-  useEffect(() => {
     const setupRoomAndSocket = async () => {
       try {
-        await CreateRoom();
+        await createRoom();
       } catch (error) {
         console.error("Error setting up room and socket:", error);
       }
     };
 
     setupRoomAndSocket();
-  }, []); // 빈 배열로 두어 컴포넌트 마운트 시 한 번만 실행
+  }, []); // 마운트 시 한 번만 실행
 
-  const CreateRoom = async () => {
+  const createRoom = async () => {
     if (socket) {
       socket.close();
     }
-    const token = localStorage.getItem("accessToken");
-    const response = await fetch(
-      "https://meong-signal.kro.kr/walk-status/rooms/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          owner_email: ownerEmail,
-          walk_user_email: walkUserEmail,
-        }),
-      },
-    );
 
-    if (!response.ok) {
+    const response = await authApi.post("/walk-status/rooms/", {
+      owner_email: ownerEmail,
+      walk_user_email: walkUserEmail,
+    });
+
+    if (!response.status === 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const roomData = await response.json();
+    const roomData = response.data;
     setRoomId(roomData.id); // roomId 상태 업데이트
 
     console.log("roomId:", roomData.id);
 
-    OpenOrCreateRoom(roomData.id);
+    setUpWebSocket(roomData.id);
   };
 
-  const OpenOrCreateRoom = (roomId) => {
-    SetUpWebSocket(roomId);
-  };
-
-  const SetUpWebSocket = (roomId) => {
+  const setUpWebSocket = (roomId) => {
     const newSocket = new WebSocket(
       `wss://meong-signal.kro.kr/ws/room/${roomId}/locations`,
     );
@@ -129,14 +101,26 @@ const MapStatus = ({ dogId }) => {
   return (
     <>
       <Header />
-      <p>내 강아지 {dogName}가 산책 중 상태라면</p>
-      산책 중인 유저 정보와 강아지 위치 조회
-      <MapUser
-        latitude={currentLocation.latitude}
-        longitude={currentLocation.longitude}
-        width="300px"
-        height="300px"
-      />
+      <Container>
+        {dogName ? (
+          <>
+            <p>내 강아지 {dogName}이 산책 중이에요!</p>
+            <p>현재 여기서 산책 중이에요!</p>
+            {currentLocation ? (
+              <MapUser
+                latitude={currentLocation.latitude}
+                longitude={currentLocation.longitude}
+                width="300px"
+                height="300px"
+              />
+            ) : (
+              <p>위치를 불러오는 중...</p>
+            )}
+          </>
+        ) : (
+          <p>산책 중인 강아지가 없습니다</p>
+        )}
+      </Container>
       <Footer />
     </>
   );
