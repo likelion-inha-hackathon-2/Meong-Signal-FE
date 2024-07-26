@@ -6,8 +6,10 @@ import Rate from "../Rate/Rate";
 const ReviewCard = styled.div`
   display: flex;
   align-items: center;
+  align-items: center;
+  justify-content: center;
   width: 300px;
-  height: 107px;
+  height: auto;
   padding: 10px;
   border-radius: 8px;
   margin-bottom: 10px;

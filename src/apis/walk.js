@@ -12,37 +12,42 @@ export const getWalksRecord = async () => {
 };
 
 // 산책 완료 시 기록 저장
-export const saveWalkData = async () => {
+export const saveWalkData = async (formData) => {
   try {
-    const response = await authApi.post("/walks/new");
-    console.log(response.data);
+    const response = await authApi.post("/walks/new", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error) {
-    console.error(error.response);
+    console.error("Error saving walk data:", error);
     throw error;
   }
 };
 
-/*
-// 산책 관련 유저 이미지 조회
-export const getUserImage = async (walkId) => {
+// 산책 후 리뷰를 위한 사용자 정보 조회
+export const getUserImageAndName = async (walkId) => {
   try {
-    const response = await authApi.get(`/walks/user-image/${walkId}`);
+    const response = await authApi.post(`/walks/user-image`, {
+      walk_id: walkId,
+    });
     return response.data;
   } catch (error) {
-    console.error(error.response);
+    console.error("Error fetching user image and name:", error);
     throw error;
   }
 };
 
 // 산책 정보와 그에 달린 리뷰 조회
-export const getWalkReviewInfo = async () => {
+export const getWalkReviewInfo = async (walkId) => {
   try {
-    const response = await authApi.post("/walks/walk-review-info");
+    const response = await authApi.post("/walks/walk-review-info", {
+      walk_id: walkId,
+    });
     return response.data;
   } catch (error) {
     console.error(error.response);
     throw error;
   }
 };
-*/

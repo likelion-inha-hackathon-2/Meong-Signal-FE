@@ -5,10 +5,9 @@ import TagReview from "../../components/Review/TagReview";
 import StarReview from "../../components/Review/RateReview";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import Image from "../../components/Image/Image";
-import IconNote from "../../assets/icons/review/icon-review-w.png";
 
 const Container = styled.div`
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -23,7 +22,7 @@ const ReviewSection = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-family: "PretendardS";
+  font-family: "PretendardB";
   margin: 10px 0;
 `;
 
@@ -58,10 +57,7 @@ const SentReview = () => {
     <>
       <Header />
       <Container>
-        <TitleWrapper>
-          <Image src={IconNote} width="32px" height="32px"></Image>
-          <SectionTitle>내가 작성한 후기</SectionTitle>
-        </TitleWrapper>
+        <TitleWrapper>🖋 내가 작성한 후기</TitleWrapper>
         <ReviewSection>
           <SectionTitle>사용자 후기</SectionTitle>
           {userReviews.map((review, index) => (

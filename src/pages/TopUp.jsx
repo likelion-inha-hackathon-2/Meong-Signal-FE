@@ -139,7 +139,7 @@ const TopUp = () => {
 
   return (
     <>
-      <Header />
+      <Header meong={meong} />
       <TitleSection>보유멍</TitleSection>
       <TopContainer>
         <Number>{meong}</Number>

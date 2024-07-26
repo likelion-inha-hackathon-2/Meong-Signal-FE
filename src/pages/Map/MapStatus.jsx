@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"; // URL 파라미터를 가져오기 위해 추가
+import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import Map from "../../components/Map/Map";
-import SelectRoute from "../../components/Walk/SelectRoute";
+import MapUser from "../../components/Map/MapUser";
 import { getDogInfo } from "../../apis/getDogInfo";
-import { getCoordinates } from "../../apis/geolocation";
+import authApi from "../../apis/authApi"; // 수정된 부분
 
-const MapStatus = () => {
-  const { dogId } = useParams(); // URL 파라미터에서 dogId 가져오기
-  const [initialLocation, setInitialLocation] = useState({
-    latitude: 37.4482020408321,
-    longitude: 126.651415033662,
-  }); // 초기 좌표 인하대
-  const [currentLocation, setCurrentLocation] = useState(initialLocation);
+const Container = styled.div`
+  font-family: "PretendardM";
+`;
+
+const MapStatus = ({ dogId }) => {
+  const [currentLocation, setCurrentLocation] = useState(null);
   const [dogName, setDogName] = useState(""); // 강아지 이름 상태 추가
+  const [walkUserEmail, setWalkUserEmail] = useState("walking@gmail.com"); // 고정 산책자 이메일
+  const [ownerEmail, setOwnerEmail] = useState("owner@gmail.com"); // 고정 견주 이메일
+  const [socket, setSocket] = useState(null);
+  const [roomId, setRoomId] = useState(null);
 
   useEffect(() => {
     const fetchDogInfo = async () => {
       try {
-        const data = await getDogInfo(dogId);
-        setDogName(data.dog.name); // 강아지 이름은 제대로 받아옴
+        const data = await getDogInfo(`/dogs/${dogId}`);
+        setDogName(data.dog.name);
       } catch (error) {
         console.error("Error fetching dog info:", error);
       }
@@ -30,45 +32,96 @@ const MapStatus = () => {
   }, [dogId]);
 
   useEffect(() => {
-    const fetchInitialCoordinates = async () => {
+    const setupRoomAndSocket = async () => {
       try {
-        const coordinates = await getCoordinates();
-        setInitialLocation(coordinates);
-        setCurrentLocation(coordinates);
+        await createRoom();
       } catch (error) {
-        console.error("Error fetching initial coordinates:", error);
+        console.error("Error setting up room and socket:", error);
       }
     };
 
-    fetchInitialCoordinates();
+    setupRoomAndSocket();
+  }, []); // 마운트 시 한 번만 실행
 
-    const watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setCurrentLocation({
-          latitude: parseFloat(latitude),
-          longitude: parseFloat(longitude),
-        });
-      },
-      (error) => console.error(error),
-      { enableHighAccuracy: true },
+  const createRoom = async () => {
+    if (socket) {
+      socket.close();
+    }
+
+    const response = await authApi.post("/walk-status/rooms/", {
+      owner_email: ownerEmail,
+      walk_user_email: walkUserEmail,
+    });
+
+    if (!response.status === 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const roomData = response.data;
+    setRoomId(roomData.id); // roomId 상태 업데이트
+
+    console.log("roomId:", roomData.id);
+
+    setUpWebSocket(roomData.id);
+  };
+
+  const setUpWebSocket = (roomId) => {
+    const newSocket = new WebSocket(
+      `wss://meong-signal.kro.kr/ws/room/${roomId}/locations`,
     );
 
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
+    newSocket.onopen = () => {
+      console.log("WebSocket connected");
+      setSocket(newSocket); // 연결되었을 때만 socket 상태 업데이트
     };
-  }, []);
+
+    newSocket.onmessage = (e) => {
+      let data = JSON.parse(e.data);
+      console.log("소켓에서 받아온 현재 강아지 위치:", data); // 여기서 받는 데이터가 강아지의 위치 데이터입니다.
+
+      if (data.latitude && data.longitude) {
+        setCurrentLocation({
+          latitude: data.latitude,
+          longitude: data.longitude,
+        });
+        console.log("setCurrentLocation 수정");
+      }
+    };
+
+    newSocket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    newSocket.onclose = () => {
+      console.log("WebSocket closed");
+      setSocket(null);
+    };
+  };
 
   return (
     <>
       <Header />
-      <Map
-        latitude={currentLocation.latitude}
-        longitude={currentLocation.longitude}
-        width="300px"
-        height="300px"
-      />
-      <SelectRoute dog_id={parseInt(dogId, 10)} dog_name={dogName} /> <Footer />
+      <Container>
+        {dogName ? (
+          <>
+            <p>내 강아지 {dogName}이 산책 중이에요!</p>
+            <p>현재 여기서 산책 중이에요!</p>
+            {currentLocation ? (
+              <MapUser
+                latitude={currentLocation.latitude}
+                longitude={currentLocation.longitude}
+                width="300px"
+                height="300px"
+              />
+            ) : (
+              <p>위치를 불러오는 중...</p>
+            )}
+          </>
+        ) : (
+          <p>산책 중인 강아지가 없습니다</p>
+        )}
+      </Container>
+      <Footer />
     </>
   );
 };

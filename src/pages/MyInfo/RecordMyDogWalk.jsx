@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getDogInfo } from "../../apis/getDogInfo";
 
 const WalkRecordBox = styled.div`
@@ -22,7 +22,6 @@ const WalkTitle = styled.h2`
   font-weight: 700;
 `;
 
-// 산책 기록 박스 하나
 const WalkInfo = styled.div`
   display: flex;
   flex-direction: column;
@@ -38,9 +37,18 @@ const RecordMyDogWalk = () => {
   const { id } = location.state || {};
   const [dogInfo, setDogInfo] = useState({});
   const [walks, setWalks] = useState([]);
+  const navigate = useNavigate();
+
+  const handleReviewClick = (walkId) => {
+    navigate(`/review/owner`, { state: { walkId } });
+  };
+
+  const handleRecordClick = (walkId) => {
+    navigate(`/more-record-my-dog-walk`, { state: { walkId } });
+  };
 
   useEffect(() => {
-    const fetchDogInfo = async () => {
+    const fetchDogInfoAndWalks = async () => {
       if (!id) {
         console.error("존재하지 않는 아이디!");
         return;
@@ -50,42 +58,32 @@ const RecordMyDogWalk = () => {
         setDogInfo(data.dog);
         setWalks(data.walks);
       } catch (error) {
-        console.error("Error fetching dog info:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchDogInfo();
+    fetchDogInfoAndWalks();
   }, [id]);
 
   return (
     <>
       <Header />
       <WalkRecordBox>
-        {dogInfo.name && (
-          <WalkTitle>강아지 {dogInfo.name}의 산책 기록</WalkTitle>
-        )}
+        {dogInfo.name && <WalkTitle>{dogInfo.name}의 산책 기록</WalkTitle>}
         {walks.map((walk, index) => (
           <WalkInfo key={index}>
             <p>거리: {walk.distance} km</p>
             <p>산책한 사람: {walk.nickname}</p>
             <p>날짜: {walk.date}</p>
-          </WalkInfo>
-        ))}
-      </WalkRecordBox>
-      <WalkRecordBox>
-        {dogInfo.name && (
-          <WalkTitle>
-            강아지 {dogInfo.name}의 산책 후기
-            <p>아직 만드는 중!!</p>
-          </WalkTitle>
-        )}
-        {walks.map((walk, index) => (
-          <WalkInfo key={index}>
-            <p>멍: {walk.meong}</p>
-            <p>시간: {walk.time} 분</p>
-            <p>날짜: {walk.date}</p>
-            <p>산책 후기 내용: {walk.evaluator_content}</p>
-            <p>평균 별점: {walk.evaluated_star}</p>
+            <button
+              onClick={() => handleReviewClick(walk.id)}
+              disabled={walk.is_reviewed === 1}
+            >
+              {walk.is_reviewed === 1 ? "리뷰 작성 완료" : "리뷰 작성하기"}
+            </button>
+            <button onClick={() => handleRecordClick(walk.id)}>
+              산책 기록 보기
+            </button>
           </WalkInfo>
         ))}
       </WalkRecordBox>
