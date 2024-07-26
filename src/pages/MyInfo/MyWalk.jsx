@@ -4,6 +4,7 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { getWalksRecord } from "../../apis/walk";
 import Graph from "../../components/Graph/Graph";
+import WalkItem from "../../components/Walk/WalkItem";
 
 const Container = styled.div`
   display: flex;
@@ -11,7 +12,6 @@ const Container = styled.div`
   gap: 20px;
   padding: 20px;
   font-family: "PretendardR";
-  width: 350px;
 `;
 
 const WalkRecordBox = styled.div`
@@ -19,7 +19,6 @@ const WalkRecordBox = styled.div`
   flex-direction: column;
   gap: 10px;
   padding: 10px;
-  border: 1px solid var(--gray-color1);
   border-radius: 8px;
   background-color: var(--yellow-color1);
 `;
@@ -30,7 +29,6 @@ const WalkTitle = styled.h2`
   font-weight: 700;
 `;
 
-// 내 산책기록 조회
 const MyWalk = () => {
   const [walkData, setWalkData] = useState({
     total_distance: 0,
@@ -76,6 +74,15 @@ const MyWalk = () => {
           <p>총 거리: {walkData.total_distance}km</p>
           <p>총 칼로리 소모: {walkData.total_kilocalories}kcal</p>
         </WalkRecordBox>
+        {walkData.recent_walks.map((walk) => (
+          <WalkItem
+            key={walk.id}
+            image={walk.image}
+            distance={walk.distance}
+            time={walk.time}
+            date={new Date(walk.date).toLocaleDateString()}
+          />
+        ))}
       </Container>
       <Footer />
     </>

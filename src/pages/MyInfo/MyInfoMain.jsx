@@ -9,9 +9,7 @@ import { getUserInfo } from "../../apis/getUserInfo";
 import authApi from "../../apis/authApi";
 import { useNavigate } from "react-router-dom";
 
-const StyledImage = styled(Image)`
-  pointer-events: none; // 클릭 비활성화
-`;
+const StyledImage = styled(Image)``;
 
 const MyInfoButtonContainer = styled.div`
   display: grid;
@@ -47,7 +45,13 @@ const MyDogInfoContainer = styled.div`
   align-items: center;
   gap: 90px;
   margin-bottom: 10px;
+  font-family: "pretendardB";
+`;
+
+const DogInfoText = styled.div`
+  margin-bottom: 10px;
   font-family: "pretendardR";
+  color: var(--balck-color);
 `;
 
 const StyledMyInfoButton = styled(Button)`
@@ -181,6 +185,7 @@ const MyInfoMain = () => {
             onClick={() => navigate("/dogs-new")}
           ></StyledLinkButton>
         </MyDogInfoContainer>
+        <DogInfoText>강아지 사진을 클릭해 산책 기록을 조회하세요!</DogInfoText>
         {dogs.length === 0 ? (
           <p>등록된 강아지가 없습니다.</p>
         ) : (
