@@ -22,7 +22,7 @@ const ButtonWrapper = styled.div`
 
 const HeaderWrapper = styled.div`
   display: flex;
-  justify-content: space-between; /* 아이템들을 양 끝으로 정렬 */
+  justify-content: space-between;
   align-items: center;
   width: 100%;
   height: 56px;
@@ -61,16 +61,16 @@ const Header = () => {
   const [meong, setMeong] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchMeong = async () => {
-      try {
-        const response = await getMyMeong();
-        setMeong(response.current_meong);
-      } catch (error) {
-        console.error("Error fetching 멍:", error);
-      }
-    };
+  const fetchMeong = async () => {
+    try {
+      const response = await getMyMeong();
+      setMeong(response.current_meong);
+    } catch (error) {
+      console.error("Error fetching 멍:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchMeong();
   }, []);
 
