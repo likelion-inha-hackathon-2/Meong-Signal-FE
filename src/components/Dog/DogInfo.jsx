@@ -7,6 +7,7 @@ import statusR from "../../assets/images/status-r.png";
 import statusB from "../../assets/images/status-b.png";
 import statusW from "../../assets/images/status-w.png";
 import statusChange from "../../assets/images/status-change.png";
+import { useNavigate } from "react-router-dom";
 
 const DogInfoContainer = styled.div`
   display: flex;
@@ -22,7 +23,7 @@ const DogInfoContainer = styled.div`
 const DogImage = styled.img`
   margin-right: 10px;
   border-radius: 50%;
-  pointer-events: none;
+  cursor: pointer;
 `;
 
 const DogInfoWrapper = styled.div`
@@ -65,7 +66,10 @@ const statusImages = {
   W: statusW,
   change: statusChange,
 };
+
+// 내 강아지 조회
 const DogInfo = ({ id, name, gender, age, introduction, status, image }) => {
+  const navigate = useNavigate();
   const [currentStatus, setCurrentStatus] = useState(status);
   const [tooltipVisible, setTooltipVisible] = useState(false);
 
@@ -88,9 +92,19 @@ const DogInfo = ({ id, name, gender, age, introduction, status, image }) => {
     setTooltipVisible((prev) => !prev);
   };
 
+  const handleReviewClick = () => {
+    navigate(`/record-my-dog-walk`, { state: { id } });
+  };
+
   return (
     <DogInfoContainer onClick={() => setTooltipVisible(false)}>
-      <DogImage src={image} alt={`${name}`} width="80px" height=" 80px" />
+      <DogImage
+        src={image}
+        alt={`${name}`}
+        width="80px"
+        height=" 80px"
+        onClick={handleReviewClick}
+      />
       <DogInfoWrapper>
         <div>이름: {name}</div>
         <div>나이: {age}</div>

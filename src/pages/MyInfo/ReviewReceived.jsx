@@ -5,10 +5,9 @@ import TagReview from "../../components/Review/TagReview";
 import StarReview from "../../components/Review/RateReview";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import Image from "../../components/Image/Image";
-import IconMailBox from "../../assets/icons/review/icon-review-r.png";
 
 const Container = styled.div`
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -23,7 +22,7 @@ const ReviewSection = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-family: "PretendardS";
+  font-family: "PretendardB";
   margin: 10px 0;
 `;
 
@@ -59,10 +58,7 @@ const ReceivedReview = () => {
       <Header />
       <Container>
         <ReviewSection>
-          <TitleWrapper>
-            <Image src={IconMailBox} width="32px" height="32px" />
-            <SectionTitle>내가 받은 후기</SectionTitle>
-          </TitleWrapper>
+          <TitleWrapper>💌 내가 받은 리뷰</TitleWrapper>
           <SectionTitle>산책 후기</SectionTitle>
           {walkingReviews.map((review, index) => (
             <TagReview key={index} review={review} />

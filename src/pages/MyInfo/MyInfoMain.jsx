@@ -9,7 +9,10 @@ import { getUserInfo } from "../../apis/getUserInfo";
 import authApi from "../../apis/authApi";
 import { useNavigate } from "react-router-dom";
 
-const StyledImage = styled(Image)``;
+const StyledImage = styled(Image)`
+  justify-content: center;
+  align-items: center;
+`;
 
 const MyInfoButtonContainer = styled.div`
   display: grid;
@@ -148,13 +151,13 @@ const MyInfoMain = () => {
   return (
     <>
       <Header />
+      <StyledImage
+        src={userInfo.profile_image}
+        alt="Profile"
+        width="150px"
+        height="150px"
+      />
       <UserInfo>
-        <StyledImage
-          src={userInfo.profile_image}
-          alt="Profile"
-          width="150px"
-          height="150px"
-        />
         <SectionTitle>{userInfo.nickname}님, 안녕하세요!</SectionTitle>
         지금까지 총 {userInfo.total_distance}km 산책하고{" "}
         {userInfo.total_kilocalories}kcal를 소비했네요.

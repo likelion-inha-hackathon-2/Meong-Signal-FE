@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { createUserReview } from "../../apis/review";
+import { createOwnerReview } from "../../apis/review";
 import { getUserImageAndName } from "../../apis/walk";
 import Image from "../../components/Image/Image";
 import Button from "../../components/Button/Button";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import Tag from "../../components/Tag/Tag";
+import Rate from "../../components/Rate/Rate";
 
 const Container = styled.div`
   width: 350px;
@@ -16,7 +16,7 @@ const Container = styled.div`
   font-family: "PretendardM";
 `;
 
-const DogInfo = styled.div`
+const UserInfo = styled.div`
   display: flex;
   align-items: center;
   margin: 20px;
@@ -24,12 +24,12 @@ const DogInfo = styled.div`
   justify-content: center;
 `;
 
-const DogImage = styled(Image)`
+const UserImage = styled(Image)`
   border-radius: 50%;
   margin-right: 10px;
 `;
 
-const DogName = styled.p`
+const UserName = styled.p`
   font-size: 20px;
   font-weight: bold;
   text-align: center;
@@ -76,13 +76,13 @@ const ButtonContainer = styled.div`
   margin-top: 20px;
 `;
 
-const UserReview = () => {
-  const location = useLocation();
+const OwnerReview = () => {
   const navigate = useNavigate();
-  const { walkId } = location.state || {}; // 상태로 전달된 walkId 접근
+  const location = useLocation();
+  const { walkId } = location.state || {};
   const [walkDetails, setWalkDetails] = useState(null);
+  const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
-  const [selectedTags, setSelectedTags] = useState([]);
   const [meong, setMeong] = useState(5);
 
   useEffect(() => {
@@ -95,30 +95,15 @@ const UserReview = () => {
       }
     };
 
-    if (walkId) {
-      fetchWalkDetails();
-    }
+    fetchWalkDetails();
   }, [walkId]);
 
-  const handleTagClick = (tag) => {
-    setSelectedTags((prevSelectedTags) =>
-      prevSelectedTags.includes(tag)
-        ? prevSelectedTags.filter((t) => t !== tag)
-        : [...prevSelectedTags, tag],
-    );
-  };
-
+  // 리뷰 작성
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const reviewData = {
-        review: { content, walk_id: walkId },
-        meong,
-        tags: selectedTags.map((tag) => ({ number: tag.id })),
-      };
-
-      await createUserReview(reviewData);
-      alert("리뷰가 성공적으로 작성되었습니다.");
+      await createOwnerReview({ walk_id: walkId, rating, content, meong });
+      alert("리뷰 작성이 완료되었습니다.");
       navigate("/myinfo-main");
     } catch (error) {
       console.error("Error creating review:", error);
@@ -130,20 +115,24 @@ const UserReview = () => {
     <>
       <Header />
       <Container>
+        <UserName>{walkDetails.user_name}님은 어떠셨나요?</UserName>
         {walkDetails && (
           <>
-            <DogName>{walkDetails.dog_name}와(과)의 산책은 어떠셨나요?</DogName>
-            <DogInfo>
-              <DogImage
-                src={walkDetails.dog_image}
+            <UserInfo>
+              <UserImage
+                src={walkDetails.user_image}
                 width="120px"
                 height="120px"
-                alt="강아지 사진"
+                alt="프로필 사진"
               />
-            </DogInfo>
+            </UserInfo>
           </>
         )}
         <Form onSubmit={handleSubmit}>
+          <FieldContainer>
+            <Label>별점:</Label>
+            <Rate value={rating} onChange={setRating} />
+          </FieldContainer>
           <FieldContainer>
             <Label>리뷰 내용:</Label>
             <TextArea
@@ -151,10 +140,6 @@ const UserReview = () => {
               onChange={(e) => setContent(e.target.value)}
               required
             />
-          </FieldContainer>
-          <FieldContainer>
-            <Label>태그:</Label>
-            <Tag selectedTags={selectedTags} handleTagClick={handleTagClick} />
           </FieldContainer>
           <FieldContainer>
             <Label>멍 선물:</Label>
@@ -179,4 +164,4 @@ const UserReview = () => {
   );
 };
 
-export default UserReview;
+export default OwnerReview;

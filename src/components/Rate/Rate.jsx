@@ -69,10 +69,4 @@ Rate.propTypes = {
   readOnly: PropTypes.bool,
 };
 
-// 리뷰 페이지에서는 불러만 와야하므로 리드온리 속성 추가
-Rate.defaultProps = {
-  onChange: null,
-  readOnly: false,
-};
-
 export default Rate;

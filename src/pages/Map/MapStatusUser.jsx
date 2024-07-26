@@ -115,6 +115,7 @@ const MapStatusUser = () => {
   const [ownerEmail] = useState("owner@gmail.com");
   const [roomId, setRoomId] = useState(null);
   const [walkUserEmail] = useState("walking@gmail.com");
+  const [walkId, setWalkId] = useState(null);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -283,7 +284,6 @@ const MapStatusUser = () => {
     );
   };
 
-  // 산책로 저장된 거 받아오기
   const handleShowRoutes = async () => {
     try {
       const savedRoutes = await getMarkedTrails();
@@ -315,11 +315,14 @@ const MapStatusUser = () => {
             formData.append("image", blob, "walk_image.png");
           }
 
-          await saveWalkData(formData);
+          // 이미지가 있든 없든 데이터 저장
+          const response = await saveWalkData(formData);
+          setWalkId(response.id); // 산책 id
           alert("산책 데이터가 성공적으로 저장되었습니다.");
         }, "image/png");
       } else {
-        await saveWalkData(formData);
+        const response = await saveWalkData(formData);
+        setWalkId(response.id); // 산책 id
         alert("산책 데이터가 성공적으로 저장되었습니다.");
       }
     } catch (error) {
@@ -328,7 +331,7 @@ const MapStatusUser = () => {
     }
   };
 
-  const handleReview = () => navigate(`/reviews/${dogId}`);
+  const handleReview = () => navigate("/review/user", { state: { walkId } });
 
   const renderWalkStage = () => {
     switch (walkStage) {

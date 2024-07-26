@@ -6,8 +6,9 @@ import tagsData from "../Tag/tagsData.json";
 const ReviewCard = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 300px;
-  height: 107px;
+  height: auto;
   padding: 10px;
   border-radius: 8px;
   margin-bottom: 10px;
@@ -31,7 +32,7 @@ const ReviewImage = styled.img`
 
 const Tag = styled.span`
   background-color: var(--white-color);
-  padding: 5px 10px;
+  padding: 5px 4px;
   border-radius: 5px;
   margin: 0 3px;
   display: inline-flex;
