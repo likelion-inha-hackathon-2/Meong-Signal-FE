@@ -19,6 +19,7 @@ const MapUser = ({ latitude, longitude, width, height }) => {
   const keyword = query.get("keyword");
 
   const initialLocation = { latitude, longitude };
+  // eslint-disable-next-line no-unused-vars
   const { mapContainer, map, selectedDog, setSelectedDog, markers } = useNewMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
     initialLocation,
@@ -26,6 +27,7 @@ const MapUser = ({ latitude, longitude, width, height }) => {
     keyword,
   );
 
+  // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]);
 
   const handleCloseTooltip = useCallback(() => {

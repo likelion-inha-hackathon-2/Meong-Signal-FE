@@ -10,7 +10,6 @@ import { getMarkedTrails } from "../../apis/trail";
 import { saveWalkData } from "../../apis/walk";
 import { getDistance } from "../../utils/getDistance";
 import html2canvas from "html2canvas";
-import { saveAs } from "file-saver";
 
 const Container = styled.div`
   padding: 20px;
