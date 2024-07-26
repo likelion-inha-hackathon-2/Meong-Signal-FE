@@ -24,6 +24,8 @@ import NaverAuth from "./pages/SocialLogin/NaverAuth";
 import GoogleAuth from "./pages/SocialLogin/GoogleAuth";
 import MyWalk from "./pages/MyInfo/MyWalk";
 import RecordMyDogWalk from "./pages/MyInfo/RecordMyDogWalk";
+import MapStatusUser from "./pages/Map/MapStatusUser";
+import MapWalkingTest from "./pages/Map/MapWalkingTest"; // 웹소켓 테스트 페이지
 
 function App() {
   return (
@@ -36,10 +38,11 @@ function App() {
           <Route path="signup1" element={<SignUp1 />} />
           <Route path="signup2" element={<SignUp2 />} />
           <Route path="map-info" element={<MapInfo />} />
-          <Route path="map-status/:dogId" element={<MapStatus />} />
+          <Route path="map-status" element={<MapStatus />} />
+          <Route path="map-status/:dogId" element={<MapStatusUser />} />
           <Route path="map-tag" element={<TagFiltering />} />
           <Route path="chatlist" element={<ChatList />} />
-          <Route path="chat/:ownerId" element={<ChatRoom />} />
+          <Route path="chat/:roomId" element={<ChatRoom />} />
           <Route path="reviews/received" element={<ReviewReceived />} />
           <Route path="reviews/written" element={<ReviewWritten />} />
           <Route path="myinfo-main" element={<MyInfoMain />} />
@@ -53,6 +56,7 @@ function App() {
           <Route path="kakao/auth" element={<KakaoAuth />} />
           <Route path="naver/auth" element={<NaverAuth />} />
           <Route path="google/auth" element={<GoogleAuth />} />
+          <Route path="map-walking-test" element={<MapWalkingTest />} />
         </Route>
       </Routes>
     </BrowserRouter>

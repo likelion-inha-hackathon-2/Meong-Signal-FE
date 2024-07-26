@@ -4,6 +4,8 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import { getAccessToken } from "../../apis/authApi";
+import { getUserInfo } from "../../apis/getUserInfo";
+import { useParams } from "react-router-dom"; // url 뒤에 붙은 채팅방 고유 넘버를 가져오기
 
 // 채팅 메시지 리스트
 const MessageList = styled.div`
@@ -71,12 +73,32 @@ const SendButton = styled(Button)`
 `;
 
 const ChatRoom = () => {
-  const roomId = 1; // 룸 아이디를 1로 고정
+  const { roomId } = useParams(); // url로부터 roomId를 가져옴
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [socket, setSocket] = useState(null);
+  const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
 
   useEffect(() => {
-    const dummy = [{}];
+    const fetchUserInfo = async () => {
+      try {
+        // 여기서 유저 아이디와 본인 프사가 필요함
+        const userInfo = await getUserInfo();
+        setUserInfo(userInfo);
+      } catch (error) {
+        console.error("사용자 정보를 가져오지 못했습니다: ", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  useEffect(() => {
+    const dummy = [
+      {
+        /* 기존 채팅 내역 */
+      },
+    ];
     setMessages(dummy);
 
     const accessToken = getAccessToken();
@@ -85,7 +107,7 @@ const ChatRoom = () => {
       return;
     }
 
-    const socket = new WebSocket(
+    const newSocket = new WebSocket(
       "ws://" +
         window.location.host +
         "/ws/chat/" +
@@ -94,33 +116,34 @@ const ChatRoom = () => {
         encodeURIComponent(accessToken),
     );
 
-    socket.onmessage = (event) => {
+    newSocket.onmessage = (event) => {
       const message = JSON.parse(event.data);
       setMessages((prevMessages) => [...prevMessages, message]);
     };
 
-    socket.onclose = (event) => {
+    newSocket.onclose = (event) => {
       console.error("WebSocket이 닫혔습니다: ", event);
     };
 
+    setSocket(newSocket);
+
     return () => {
-      socket.close();
+      newSocket.close();
     };
   }, [roomId]);
 
   const handleSendMessage = () => {
-    if (newMessage.trim()) {
+    if (newMessage.trim() && userInfo) {
       const message = {
-        id: messages.length + 1,
         room: roomId,
-        sender: 1, // 현재 사용자 ID
-        sender_profile_image:
-          "https://meong-signal-s3-bucket.s3.ap-northeast-2.amazonaws.com/users/default_user.jpg",
+        sender: 1, // user_id로 고쳐야 함
+        sender_profile_image: userInfo.profile_image, // 사용자 프로필 이미지
         content: newMessage,
         timestamp: new Date().toISOString(),
         read: false,
       };
 
+      socket.send(JSON.stringify(message));
       setMessages((prevMessages) => [...prevMessages, message]);
       setNewMessage("");
     }
@@ -130,14 +153,17 @@ const ChatRoom = () => {
     <>
       <Header />
       <MessageList>
-        {messages.map((msg) => (
-          <MessageContainer key={msg.id} $isSender={msg.sender === 1}>
+        {messages.map((msg, index) => (
+          <MessageContainer
+            key={index}
+            $isSender={msg.sender === userInfo?.user_id}
+          >
             <ProfileImage
               src={msg.sender_profile_image}
               alt="프로필 사진"
-              $isSender={msg.sender === 1}
+              $isSender={msg.sender === userInfo?.user_id}
             />
-            <MessageBubble $isSender={msg.sender === 1}>
+            <MessageBubble $isSender={msg.sender === userInfo?.user_id}>
               {msg.content}
             </MessageBubble>
           </MessageContainer>

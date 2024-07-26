@@ -5,6 +5,8 @@ import Image from "../Image/Image";
 import tagsData from "../Tag/tagsData.json";
 import Button from "../Button/Button";
 import authApi from "../../apis/authApi";
+import { useNavigate } from "react-router-dom"; // useNavigate 임포트
+import { createChatRoom } from "../../apis/chatApi"; // chatApi 임포트
 import defaultDogImage from "../../assets/images/add-dog.png"; // 디폴트 이미지 예외처리
 
 const TooltipContainer = styled.div`
@@ -56,6 +58,7 @@ const CloseButton = styled.button`
 const DogMoreInfo = ({ dogId, onClose }) => {
   const [dog, setDog] = useState(null);
   const [tags, setTags] = useState([]);
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   useEffect(() => {
     const fetchDogInfo = async () => {
@@ -78,6 +81,20 @@ const DogMoreInfo = ({ dogId, onClose }) => {
 
   // 태그 id 매칭
   const getTagInfo = (tagId) => tagsData.find((tag) => tag.id === tagId);
+
+  const handleContactButtonClick = async () => {
+    try {
+      // 견주 아이디, 사용자 아이디를 파라미터로 넣어야 함
+      const response = await createChatRoom(dog.owner_id, 1);
+      if (response && response.room_id) {
+        navigate(`/chat/${response.room_id}`);
+      } else {
+        console.error("Failed to create chat room");
+      }
+    } catch (error) {
+      console.error("Error creating chat room:", error);
+    }
+  };
 
   return (
     <TooltipContainer>
@@ -103,7 +120,7 @@ const DogMoreInfo = ({ dogId, onClose }) => {
       </div>
       <StyledButton
         text="💌보호자와 채팅하기"
-        onClick={() => (window.location.href = `/chat/${dogId}`)}
+        onClick={handleContactButtonClick}
       />
       <CloseButton onClick={onClose}>닫기</CloseButton>
     </TooltipContainer>
