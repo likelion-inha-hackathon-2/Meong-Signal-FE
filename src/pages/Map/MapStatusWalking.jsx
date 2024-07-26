@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import html2canvas from "html2canvas";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import Map2 from "../../components/Map/Map2";
+import MapUser from "../../components/Map/MapUser";
 import { getDogInfo } from "../../apis/getDogInfo";
-import { getDistance } from "../../apis/getDistance";
+import { getDistance } from "../../utils/getDistance.js";
 import { getCoordinates } from "../../apis/geolocation";
+import { saveWalkData } from "../../apis/walk";
 
 const Container = styled.div`
   padding: 20px;
@@ -51,31 +53,49 @@ const StopButton = styled.button`
   cursor: pointer;
 `;
 
+const CompleteButton = styled.button`
+  padding: 10px 20px;
+  background-color: #ff9900;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+`;
+
 const Stat = styled.div`
   margin-top: 20px;
   font-size: 18px;
 `;
 
-// 칼로리 계산 함수
-const get_calories = (distance, time, weight_kg = 70) => {
-  const METs = 3.5;
-  const calories_burned = (time * METs * weight_kg * 3.5) / 200;
-  return calories_burned;
-};
-
 const MapStatusWalking = () => {
-  const { dogId } = useParams();
+  const { dogId } = useParams(); // dogId를 useParams로 가져옵니다.
   const navigate = useNavigate();
   const [dogInfo, setDogInfo] = useState({});
-  const [currentLocation, setCurrentLocation] = useState({
-    latitude: 37.4482020408321,
-    longitude: 126.651415033662,
+  const [initialLocation, setInitialLocation] = useState({
+    latitude: null,
+    longitude: null,
   });
-  const [initialLocation, setInitialLocation] = useState(currentLocation);
-  const [previousLocation, setPreviousLocation] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(initialLocation);
   const [distance, setDistance] = useState(0);
-  const [calories, setCalories] = useState(0);
-  const [startTime, setStartTime] = useState(null);
+  const [isWalking, setIsWalking] = useState(true);
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  const mapRef = useRef(null);
+
+  useEffect(() => {
+    const fetchInitialCoordinates = async () => {
+      try {
+        const coordinates = await getCoordinates();
+        setInitialLocation(coordinates);
+        setCurrentLocation(coordinates);
+        localStorage.setItem("startTime", new Date().toISOString());
+      } catch (error) {
+        console.error("Error fetching initial coordinates:", error);
+      }
+    };
+
+    fetchInitialCoordinates();
+  }, []);
 
   useEffect(() => {
     const fetchDogInfo = async () => {
@@ -91,63 +111,75 @@ const MapStatusWalking = () => {
   }, [dogId]);
 
   useEffect(() => {
-    const fetchCoordinates = async () => {
-      try {
-        const coordinates = await getCoordinates();
-        setInitialLocation(coordinates);
-        setCurrentLocation(coordinates);
-        setPreviousLocation(coordinates);
-        setStartTime(new Date()); // 산책 시작 시간 설정
-      } catch (error) {
-        console.error("Error fetching coordinates:", error);
-      }
-    };
-
-    fetchCoordinates();
-  }, []);
+    let interval;
+    if (isWalking) {
+      interval = setInterval(() => {
+        const startTime = new Date(localStorage.getItem("startTime"));
+        setTimeElapsed(Math.floor((new Date() - startTime) / 60000));
+      }, 60000);
+    }
+    return () => clearInterval(interval);
+  }, [isWalking]);
 
   useEffect(() => {
-    const watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const newCurrentLocation = {
-          latitude: parseFloat(latitude),
-          longitude: parseFloat(longitude),
-        };
-        setCurrentLocation(newCurrentLocation);
+    if (isWalking) {
+      const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const newCurrentLocation = {
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude),
+          };
+          setCurrentLocation(newCurrentLocation);
 
-        if (previousLocation) {
-          const dist = getDistance(
-            previousLocation.latitude,
-            previousLocation.longitude,
-            newCurrentLocation.latitude,
-            newCurrentLocation.longitude
-          );
-          setDistance((prev) => prev + dist);
+          if (initialLocation.latitude && initialLocation.longitude) {
+            const dist = getDistance(
+              initialLocation.latitude,
+              initialLocation.longitude,
+              newCurrentLocation.latitude,
+              newCurrentLocation.longitude,
+            );
+            if (!isNaN(dist)) {
+              setDistance(dist);
+              localStorage.setItem("walkDistance", dist);
+            }
+          }
+        },
+        (error) => console.error(error),
+        { enableHighAccuracy: true },
+      );
 
-          // 시간 계산 (분 단위)
-          const currentTime = new Date();
-          const timeElapsed = (currentTime - startTime) / 60000; // 밀리초를 분으로 변환
-          const totalCalories = get_calories(distance + dist, timeElapsed);
-          setCalories(totalCalories);
+      return () => {
+        navigator.geolocation.clearWatch(watchId);
+      };
+    }
+  }, [isWalking, initialLocation]);
 
-          // 로컬 스토리지에 저장
-          localStorage.setItem('walkDistance', (distance + dist).toString());
-          localStorage.setItem('walkCalories', totalCalories.toString());
-        }
-        setPreviousLocation(newCurrentLocation);
-      },
-      (error) => console.error(error),
-      { enableHighAccuracy: true }
-    );
+  const handleEndWalk = async () => {
+    setIsWalking(false);
 
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
-  }, [previousLocation, startTime, distance]);
+    try {
+      if (mapRef.current) {
+        const canvas = await html2canvas(mapRef.current);
+        canvas.toBlob(async (blob) => {
+          const formData = new FormData();
+          formData.append("dog_id", dogId);
+          formData.append("time", timeElapsed);
+          formData.append("distance", distance);
+          formData.append("image", blob);
 
-  const handleEndWalk = () => {
-    navigate(`/map-status-complete/${dogId}`); // 산책 완료 페이지로 이동
+          await saveWalkData(formData);
+          alert("산책 데이터가 성공적으로 저장되었습니다.");
+        }, "image/png");
+      }
+    } catch (error) {
+      console.error("Error saving walk data:", error);
+      alert("산책 데이터를 저장하는 중에 오류가 발생했습니다.");
+    }
+  };
+
+  const handleReview = () => {
+    navigate(`/reviews/${dogId}`);
   };
 
   return (
@@ -155,25 +187,51 @@ const MapStatusWalking = () => {
       <Header />
       <Container>
         <DogInfo>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
             <DogImage src={dogInfo.image} alt={dogInfo.name} />
-            <DogName>{dogInfo.name}와 산책중입니다!</DogName>
+            <DogName>
+              {dogInfo.name}
+              {isWalking ? "와 산책중입니다!" : "와의 산책이 종료되었습니다."}
+            </DogName>
           </div>
           <div>
-            <InfoButton>정보 보기</InfoButton>
-            <InfoButton>보호자와 채팅하기</InfoButton>
+            {isWalking ? (
+              <>
+                <InfoButton>정보 보기</InfoButton>
+                <InfoButton>보호자와 채팅하기</InfoButton>
+              </>
+            ) : (
+              <CompleteButton onClick={handleReview}>
+                후기 남기러 가기
+              </CompleteButton>
+            )}
           </div>
         </DogInfo>
-        <Map2
-          latitude={currentLocation.latitude}
-          longitude={currentLocation.longitude}
-          width="100%"
-          height="300px"
-          dogId={dogId} // dogId 전달
-        />
-        <StopButton onClick={handleEndWalk}>산책 종료</StopButton>
-        <Stat>지금까지 {distance.toFixed(1)} km를 이동하셨어요!</Stat>
-        <Stat>소비한 칼로리는 {calories.toFixed(0)} kcal에요!</Stat>
+        <div ref={mapRef}>
+          {initialLocation.latitude && initialLocation.longitude && (
+            <MapUser
+              latitude={currentLocation.latitude}
+              longitude={currentLocation.longitude}
+              width="100%"
+              height="300px"
+              dogId={dogId} // MapUser에 dogId를 전달합니다.
+            />
+          )}
+        </div>
+        {isWalking ? (
+          <>
+            <StopButton onClick={handleEndWalk}>산책 종료</StopButton>
+            <Stat>지금까지 {timeElapsed}분 동안</Stat>
+            <Stat>{distance.toFixed(1)}km를 이동하셨어요!</Stat>
+          </>
+        ) : (
+          <>
+            <Stat>이번 산책에서 총 소요 시간: {timeElapsed}분</Stat>
+            <Stat>
+              이번 산책에서 소모한 칼로리: {(distance * 50).toFixed(0)} kcal
+            </Stat>
+          </>
+        )}
       </Container>
       <Footer />
     </>

@@ -26,7 +26,6 @@ import MyWalk from "./pages/MyInfo/MyWalk";
 import RecordMyDogWalk from "./pages/MyInfo/RecordMyDogWalk";
 import MapStatusStart from "./pages/Map/MapStatusStart";
 import MapStatusWalking from "./pages/Map/MapStatusWalking";
-import MapStatusComplete from "./pages/Map/MapStatusComplete";
 
 function App() {
   return (
@@ -39,7 +38,7 @@ function App() {
           <Route path="signup1" element={<SignUp1 />} />
           <Route path="signup2" element={<SignUp2 />} />
           <Route path="map-info" element={<MapInfo />} />
-          <Route path="map-status/:dogId" element={<MapStatus />} />
+          <Route path="map-status" element={<MapStatus />} />
           <Route path="map-tag" element={<TagFiltering />} />
           <Route path="chatlist" element={<ChatList />} />
           <Route path="chat/:ownerId" element={<ChatRoom />} />
@@ -57,8 +56,10 @@ function App() {
           <Route path="naver/auth" element={<NaverAuth />} />
           <Route path="google/auth" element={<GoogleAuth />} />
           <Route path="map-status-start/:dogId" element={<MapStatusStart />} />
-          <Route path="map-status-walking/:dogId" element={<MapStatusWalking />} />
-          <Route path="map-status-complete/:dogId" element={<MapStatusComplete />} />
+          <Route
+            path="map-status-walking/:dogId"
+            element={<MapStatusWalking />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -2,12 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import useNewMap from "../../hooks/useNewMap";
-import ToggleButton from "../Button/ToggleButton";
-import MapInfoButton from "../Button/MapInfoButton";
-import { useNavigate, useLocation } from "react-router-dom";
 import DogMoreInfo from "../Dog/DogMoreInfo";
-import IconTagFiltering from "../../assets/icons/icon-tag-filtering.png";
-import "react-tooltip/dist/react-tooltip.css"; // ReactTooltip CSS import
 
 const StyledMap = styled.div`
   position: relative;
@@ -16,52 +11,21 @@ const StyledMap = styled.div`
   flex-shrink: 0;
 `;
 
-const StyledTagFilteringIcon = styled.div`
-  width: 31px;
-  height: 32px;
-  position: absolute;
-  right: 15px;
-  bottom: 20px;
-  z-index: 100;
-  cursor: pointer;
-  background-image: url(${IconTagFiltering});
-  background-size: cover;
-`;
-
-const Map2 = ({ latitude, longitude, width, height, dogId }) => { // dogId 추가
+const MapUser = ({ latitude, longitude, width, height, dogId, keyword }) => {
   const initialLocation = { latitude, longitude };
-  const [isBoring, setIsBoring] = useState(false);
-  const { mapContainer, map, selectedDog, setSelectedDog } = useNewMap(
+  const { mapContainer, map, selectedDog, setSelectedDog, markers } = useNewMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
     initialLocation,
-    dogId, // dogId 전달
-    isBoring,
+    dogId,
+    keyword,
   );
 
-  // eslint-disable-next-line no-unused-vars
-  const [positionArr, setPositionArr] = useState([]); // 위치 배열
-
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [isMapInfo, setIsMapInfo] = useState(location.pathname === "/map-info");
-
-  const handleToggle = useCallback((newToggled) => {
-    setIsBoring(newToggled);
-  }, []);
-
-  const onClickTagFilteringIcon = useCallback(() => {
-    navigate("/map-tag");
-  }, [navigate]);
-
-  const handleMapInfoClick = useCallback(() => {
-    setIsMapInfo((prev) => !prev);
-  }, []);
+  const [positionArr, setPositionArr] = useState([]);
 
   const handleCloseTooltip = useCallback(() => {
     setSelectedDog(null);
   }, [setSelectedDog]);
 
-  // 라인을 그리는 함수
   const makeLine = useCallback(
     (position) => {
       let linePath = position;
@@ -74,13 +38,11 @@ const Map2 = ({ latitude, longitude, width, height, dogId }) => { // dogId 추�
         strokeStyle: "solid",
       });
 
-      // 지도에 선을 표시합니다
       polyline.setMap(map);
     },
     [map],
   );
 
-  // 라인을 그리기 위한 좌표 배열을 만들어주는 함수
   const setLinePathArr = useCallback(
     (position) => {
       const moveLatLon = new window.kakao.maps.LatLng(
@@ -110,9 +72,6 @@ const Map2 = ({ latitude, longitude, width, height, dogId }) => { // dogId 추�
 
   return (
     <StyledMap ref={mapContainer} width={width} height={height}>
-      <ToggleButton onToggle={handleToggle} />
-      <MapInfoButton isMapInfo={isMapInfo} onClick={handleMapInfoClick} />
-      <StyledTagFilteringIcon onClick={onClickTagFilteringIcon} />
       {selectedDog && (
         <DogMoreInfo dogId={selectedDog.id} onClose={handleCloseTooltip} />
       )}
@@ -120,12 +79,13 @@ const Map2 = ({ latitude, longitude, width, height, dogId }) => { // dogId 추�
   );
 };
 
-Map2.propTypes = { // 수정된 부분
+MapUser.propTypes = {
   latitude: PropTypes.number.isRequired,
   longitude: PropTypes.number.isRequired,
   width: PropTypes.string,
   height: PropTypes.string,
-  dogId: PropTypes.string.isRequired, // dogId PropTypes 추가
+  dogId: PropTypes.string.isRequired,
+  keyword: PropTypes.string,
 };
 
-export default Map2;
+export default MapUser;
