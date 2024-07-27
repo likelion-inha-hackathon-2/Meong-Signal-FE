@@ -14,13 +14,16 @@ const StyledImage = styled(Image)`
   align-items: center;
 `;
 
-const MyInfoButtonContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding: 20px;
+const UserInfo = styled.div`
+  width: 300px;
+  padding: 20px 0;
+  font-family: "pretendardM";
+  font-size: 14px;
+  justify-content: center;
+  align-items: center;
 `;
 
+// 메인 타이틀
 const SectionTitle = styled.h3`
   margin-top: 20px;
   margin-bottom: 10px;
@@ -29,15 +32,16 @@ const SectionTitle = styled.h3`
   text-align: left;
 `;
 
-const UserInfo = styled.div`
+const MyInfoButtonContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
   padding: 20px;
-  font-family: "pretendardS";
-  font-size: 14px;
-  justify-content: center;
-  align-items: center;
 `;
 
+// 강아지 목록 컨테이너
 const MyDogInfoWrapper = styled.div`
+  margin: 20px 0;
   display: flex;
   flex-direction: column;
 `;
@@ -51,9 +55,11 @@ const MyDogInfoContainer = styled.div`
   font-family: "pretendardB";
 `;
 
+// 강아지 사진을 클릭해 산책 기록을 조회하세요!
 const DogInfoText = styled.div`
   margin-bottom: 10px;
-  font-family: "pretendardR";
+  font-size: 14px;
+  font-family: "pretendardM";
   color: var(--balck-color);
 `;
 

@@ -24,6 +24,13 @@ const DogImage = styled.img`
   margin-right: 10px;
   border-radius: 50%;
   cursor: pointer;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+
+  &:hover {
+    transform: scale(1.2);
+  }
 `;
 
 const DogInfoWrapper = styled.div`
