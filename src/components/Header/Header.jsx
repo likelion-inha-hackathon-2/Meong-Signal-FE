@@ -6,19 +6,7 @@ import { getMyMeong } from "../../apis/meong";
 import ArrowIcon from "../../assets/icons/icon-arrow.png";
 import Pluscoin from "../../assets/icons/icon-plus.png";
 import Dogfoot from "../../assets/icons/icon-dogfootprint.png";
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 112px;
-  height: 39px;
-  top: 11px;
-  left: 192px;
-  gap: 8px;
-  border-radius: 16px;
-  background-color: #ffffff;
-`;
+import ShopIcon from "../../assets/icons/icon-shop.png";
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -57,6 +45,23 @@ const NumberText = styled.span`
   font-family: "pretendardB";
 `;
 
+const RightContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 112px;
+  height: 39px;
+  gap: 8px;
+  border-radius: 16px;
+  background-color: #ffffff;
+`;
+
 const Header = () => {
   const [meong, setMeong] = useState(0);
   const navigate = useNavigate();
@@ -86,18 +91,31 @@ const Header = () => {
     navigate("/topup");
   };
 
+  const handleShopClick = () => {
+    navigate("/shop");
+  };
+
   return (
     <HeaderWrapper>
       <IconWrapper onClick={handleBackClick}>
         <ArrowImage src={ArrowIcon} alt="Back" />
       </IconWrapper>
-      <ButtonWrapper>
-        <IconImage src={Dogfoot} alt="dog" />
-        <NumberText onClick={handleNumberClick}>{meong}</NumberText>
-        <IconWrapper onClick={handlePluscoinClick}>
-          <IconImage src={Pluscoin} alt="Plus" />
+      <RightContainer>
+        <IconWrapper onClick={handleShopClick}>
+          <IconImage src={ShopIcon} alt="Shop" />
         </IconWrapper>
-      </ButtonWrapper>
+        <ButtonWrapper>
+          <IconImage
+            src={Dogfoot}
+            alt="dog"
+            style={{ pointerEvents: "none" }}
+          />
+          <NumberText onClick={handleNumberClick}>{meong}</NumberText>
+          <IconWrapper onClick={handlePluscoinClick}>
+            <IconImage src={Pluscoin} alt="Plus" />
+          </IconWrapper>
+        </ButtonWrapper>
+      </RightContainer>
     </HeaderWrapper>
   );
 };

@@ -24,7 +24,7 @@ const Label = styled.label`
 const InputField = styled.input`
   width: 100%;
   height: 40px;
-  padding: 0 10px;
+  padding: 0 20px;
   border: none;
   border-radius: 4px;
   font-size: 14px;

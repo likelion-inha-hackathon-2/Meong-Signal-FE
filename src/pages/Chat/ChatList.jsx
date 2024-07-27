@@ -26,6 +26,7 @@ const ChatList = () => {
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // 유저가 속한 채팅방 목록 반환
   useEffect(() => {
     const fetchChatRooms = async () => {
       try {

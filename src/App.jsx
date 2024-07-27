@@ -29,6 +29,8 @@ import MapWalkingTest from "./pages/Map/MapWalkingTest"; // 웹소켓 테스트 
 import OwnerReview from "./pages/MyInfo/OwnerReview";
 import UserReview from "./pages/MyInfo/UserReview";
 import MoreRecordMyDogWalk from "./pages/MyInfo/MoreRecordMyDogWalk";
+import MeongShop from "./pages/MeongShop/MeongShop";
+import MyGoods from "./pages/MeongShop/MyGoods";
 
 function App() {
   return (
@@ -45,7 +47,7 @@ function App() {
           <Route path="map-status/:dogId" element={<MapStatusUser />} />
           <Route path="map-tag" element={<TagFiltering />} />
           <Route path="chatlist" element={<ChatList />} />
-          <Route path="chat/:roomId" element={<ChatRoom />} />
+          <Route path="chat/rooms/:roomId" element={<ChatRoom />} />
           <Route path="reviews/received" element={<ReviewReceived />} />
           <Route path="reviews/written" element={<ReviewWritten />} />
           <Route path="/review/owner" element={<OwnerReview />} />
@@ -66,6 +68,8 @@ function App() {
           <Route path="naver/auth" element={<NaverAuth />} />
           <Route path="google/auth" element={<GoogleAuth />} />
           <Route path="map-walking-test" element={<MapWalkingTest />} />
+          <Route path="shop" element={<MeongShop />} />
+          <Route path="my-goods" element={<MyGoods />} />
         </Route>
       </Routes>
     </BrowserRouter>
