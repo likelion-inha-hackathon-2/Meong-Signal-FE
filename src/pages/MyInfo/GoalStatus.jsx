@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import {
@@ -47,7 +46,7 @@ const RepresentativeAchievementText = styled.span`
 
 const GoalsStatus = () => {
   const [goalsStatus, setGoalsStatus] = useState({ dog: [], walking: [] });
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(""); // 업적 등록 시 메시지
   const [representativeAchievement, setRepresentativeAchievement] =
     useState(null);
 
@@ -74,30 +73,38 @@ const GoalsStatus = () => {
     fetchRepresentativeAchievement();
   }, []);
 
+  // 대표 업적 예외 처리
   const handleSetRepresentative = async (achievement) => {
     if (achievement.is_representative === 1) {
-      alert("이미 등록된 업적입니다.");
+      alert("이미 대표로 등록된 업적입니다.");
       return;
     }
     if (achievement.is_achieved === 0) {
-      alert("아직 달성하지 않은 업적입니다.");
+      alert("아직 완료되지 않은 업적입니다.");
       return;
     }
     try {
       const response = await setRepresentativeAchievement(achievement.id);
-      setMessage(response.message);
-      setRepresentativeAchievement({
-        id: achievement.id,
-        title: achievement.title,
-      });
-      alert(`${achievement.title}이 대표 업적으로 설정되었습니다.`);
+      const message = response.message;
+      setMessage(message);
+
+      if (message === "대표로 등록되었습니다.") {
+        setRepresentativeAchievement({
+          id: achievement.id,
+          title: achievement.title,
+        });
+        alert(`${achievement.title}이 대표 업적으로 설정되었습니다.`);
+      } else {
+        alert(message);
+      }
     } catch (error) {
-      console.error(error);
+      alert("대표 업적 설정 중 오류가 발생했습니다.");
     }
   };
 
   const isRepresentative = (achievement) =>
-    representativeAchievement?.id === achievement.id;
+    representativeAchievement &&
+    representativeAchievement.id === achievement.id;
 
   return (
     <>
