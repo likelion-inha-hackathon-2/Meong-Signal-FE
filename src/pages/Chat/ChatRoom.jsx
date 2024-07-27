@@ -5,6 +5,7 @@ import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import { getAccessToken } from "../../apis/authApi";
 import { getUserInfo } from "../../apis/getUserInfo";
+import { getChatRoomMessages } from "../../apis/chatApi";
 import { useParams } from "react-router-dom"; // url 뒤에 붙은 채팅방 고유 넘버를 가져오기
 
 // 채팅 메시지 리스트
@@ -82,7 +83,6 @@ const ChatRoom = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        // 여기서 유저 아이디와 본인 프사가 필요함
         const userInfo = await getUserInfo();
         setUserInfo(userInfo);
       } catch (error) {
@@ -94,12 +94,17 @@ const ChatRoom = () => {
   }, []);
 
   useEffect(() => {
-    const dummy = [
-      {
-        /* 기존 채팅 내역 */
-      },
-    ];
-    setMessages(dummy);
+    // 메시지 목록 조회
+    const fetchChatMessages = async () => {
+      try {
+        const response = await getChatRoomMessages(roomId);
+        setMessages(response);
+      } catch (error) {
+        console.error("Failed to fetch chat messages:", error);
+      }
+    };
+
+    fetchChatMessages();
 
     const accessToken = getAccessToken();
     if (!accessToken) {
@@ -136,7 +141,7 @@ const ChatRoom = () => {
     if (newMessage.trim() && userInfo) {
       const message = {
         room: roomId,
-        sender: 1, // user_id로 고쳐야 함
+        sender: userInfo.id, // user_id로 고쳐야 함
         sender_profile_image: userInfo.profile_image, // 사용자 프로필 이미지
         content: newMessage,
         timestamp: new Date().toISOString(),
@@ -154,16 +159,13 @@ const ChatRoom = () => {
       <Header />
       <MessageList>
         {messages.map((msg, index) => (
-          <MessageContainer
-            key={index}
-            $isSender={msg.sender === userInfo?.user_id}
-          >
+          <MessageContainer key={index} $isSender={msg.sender === userInfo?.id}>
             <ProfileImage
               src={msg.sender_profile_image}
               alt="프로필 사진"
-              $isSender={msg.sender === userInfo?.user_id}
+              $isSender={msg.sender === userInfo?.id}
             />
-            <MessageBubble $isSender={msg.sender === userInfo?.user_id}>
+            <MessageBubble $isSender={msg.sender === userInfo?.id}>
               {msg.content}
             </MessageBubble>
           </MessageContainer>

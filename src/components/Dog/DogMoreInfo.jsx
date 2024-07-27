@@ -5,8 +5,8 @@ import Image from "../Image/Image";
 import tagsData from "../Tag/tagsData.json";
 import Button from "../Button/Button";
 import authApi from "../../apis/authApi";
-import { useNavigate } from "react-router-dom"; // useNavigate 임포트
-import { createChatRoom } from "../../apis/chatApi"; // chatApi 임포트
+import { useNavigate } from "react-router-dom";
+import { createChatRoom } from "../../apis/chatApi";
 import defaultDogImage from "../../assets/images/add-dog.png"; // 디폴트 이미지 예외처리
 
 const TooltipContainer = styled.div`
@@ -82,12 +82,15 @@ const DogMoreInfo = ({ dogId, onClose }) => {
   // 태그 id 매칭
   const getTagInfo = (tagId) => tagsData.find((tag) => tag.id === tagId);
 
-  const handleContactButtonClick = async () => {
+  // 유저와 보호자 간 채팅방 생성
+  const handleContactButtonClick = async (dog) => {
     try {
-      // 견주 아이디, 사용자 아이디를 파라미터로 넣어야 함
-      const response = await createChatRoom(dog.owner_id, 1);
+      const response = await createChatRoom(dog.id);
+      // 결과로 나온 룸 id로 접속
       if (response && response.room_id) {
-        navigate(`/chat/${response.room_id}`);
+        navigate(`/chat/rooms/${response.room_id}`, {
+          state: { dogId: dog.id },
+        });
       } else {
         console.error("Failed to create chat room");
       }
