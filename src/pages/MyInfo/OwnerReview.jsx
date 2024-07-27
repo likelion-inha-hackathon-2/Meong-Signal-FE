@@ -115,7 +115,9 @@ const OwnerReview = () => {
     <>
       <Header />
       <Container>
-        <UserName>{walkDetails.user_name}님은 어떠셨나요?</UserName>
+        {walkDetails && (
+          <UserName>{walkDetails.user_name}님은 어떠셨나요?</UserName>
+        )}
         {walkDetails && (
           <>
             <UserInfo>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getWalkReviewInfo } from "../../apis/walk";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
@@ -82,28 +81,37 @@ const ReviewerReview = styled.div`
 const MyReviewContainer = styled.div`
   display: flex;
   width: 100%;
-  flex-direction: row-reverse;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 const MyReviewText = styled.div`
-  justify-content: center;
-  align-items: center;
   font-size: 12px;
+  margin-right: 10px;
 `;
 
 const MyProfileImage = styled.img`
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  margin-left: 20px;
 `;
 
 const MoreRecordMyDogWalk = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { walkId } = location.state || {};
+
   const [walkInfo, setWalkInfo] = useState(null);
 
+  // 산책 기록 없을 때 예외처리
   useEffect(() => {
+    if (!walkId) {
+      alert("조회할 수 없는 산책기록입니다.");
+      navigate(-1);
+      return;
+    }
+
     const fetchWalkReviewInfo = async () => {
       try {
         const data = await getWalkReviewInfo(walkId);
@@ -114,7 +122,7 @@ const MoreRecordMyDogWalk = () => {
     };
 
     fetchWalkReviewInfo();
-  }, [walkId]);
+  }, [walkId, navigate]);
 
   if (!walkInfo) {
     return <div>Loading...</div>;
@@ -146,20 +154,16 @@ const MoreRecordMyDogWalk = () => {
           </ReviewerDetails>
         </ReviewerInfoContainer>
         <MyReviewContainer>
+          <MyReviewText>{walkInfo.my_review}</MyReviewText>
           <MyProfileImage
             src={walkInfo.my_profile_image}
             alt="나의 프로필 사진"
           />
-          <MyReviewText>{walkInfo.my_review}</MyReviewText>
         </MyReviewContainer>
       </WalkInfoContainer>
       <Footer />
     </>
   );
-};
-
-MoreRecordMyDogWalk.propTypes = {
-  walkId: PropTypes.number.isRequired,
 };
 
 export default MoreRecordMyDogWalk;
