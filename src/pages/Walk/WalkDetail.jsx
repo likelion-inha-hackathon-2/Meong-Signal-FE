@@ -12,7 +12,6 @@ import {
 } from "../../apis/trail";
 import { getCoordinates } from "../../apis/geolocation";
 import { getChallenge } from "../../apis/getChallenge"; // getChallenge 함수 임포트
-//import dogEmoji from "../../assets/icons/icon-dogEmoji.png";
 import footprintIcon from "../../assets/icons/icon-footprint.png";
 import speakerIcon from "../../assets/icons/icon-speaker.png";
 import walkingIcon from "../../assets/icons/icon-walking2.png";
@@ -211,11 +210,8 @@ const WalkDetail = () => {
               3마리의 강아지와 산책하기
             </ChallengeText>
             <ChallengeBadge met={isDogsChallengeMet}>
-              15
-              <FootprintIcon
-                src={footprintIcon}
-                alt="footprint"
-              />
+              {weekChallenge.week_dogs}
+              <FootprintIcon src={footprintIcon} alt="footprint" />
             </ChallengeBadge>
           </ChallengeItem>
           <ChallengeItem>
@@ -224,11 +220,8 @@ const WalkDetail = () => {
               총 30km 산책하기
             </ChallengeText>
             <ChallengeBadge met={isDistanceChallengeMet}>
-              20
-              <FootprintIcon
-                src={footprintIcon}
-                alt="footprint"
-              />
+              {weekChallenge.week_distance}
+              <FootprintIcon src={footprintIcon} alt="footprint" />
             </ChallengeBadge>
           </ChallengeItem>
         </ChallengeSection>
