@@ -24,8 +24,8 @@ export const createChatRoom = async (dogId) => {
     const userId = userInfo.id;
 
     const response = await authApi.post("/chat/newroom", {
-      owner_id: ownerId,
-      user_id: userId,
+      owner_user: ownerId,
+      user_user: userId,
     });
 
     return response.data; // 여기서 romm id 나옴

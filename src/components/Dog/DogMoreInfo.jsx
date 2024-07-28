@@ -89,8 +89,8 @@ const DogMoreInfo = ({ dogId, onClose }) => {
       // console.log("Creating chat room for dog ID:", dogId);
       const response = await createChatRoom(dogId);
       // 결과로 나온 룸 id로 접속
-      if (response && response.room_id) {
-        navigate(`/chat/rooms/${response.room_id}`, {
+      if (response && response.id) {
+        navigate(`/chat/rooms/${response.id}`, {
           state: { dogId: dog.id },
         });
       } else {
