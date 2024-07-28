@@ -9,7 +9,7 @@ import { getMarkedTrails } from "../../apis/trail";
 import { saveWalkData } from "../../apis/walk";
 import { getDistance } from "../../utils/getDistance";
 import html2canvas from "html2canvas";
-import useUserMap from "../../hooks/useUserMap"; 
+import useUserMap from "../../hooks/useUserMap";
 
 const Container = styled.div`
   padding: 20px;
@@ -114,7 +114,11 @@ const MapStatusUser = () => {
   const [roomId, setRoomId] = useState(null);
   const [walkUserEmail] = useState("walking@gmail.com");
 
-  const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap("a1f6381f3fff2a9900ebcbf1623543eb", dogId, selectedRoute ? selectedRoute.name : "");
+  const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap(
+    process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
+    dogId,
+    selectedRoute ? selectedRoute.name : "",
+  );
 
   useEffect(() => {
     const fetchInitialData = async () => {
