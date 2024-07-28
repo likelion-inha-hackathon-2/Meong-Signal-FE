@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import {
@@ -84,15 +83,24 @@ const GoalsStatus = () => {
       return;
     }
     try {
-      const response = await setRepresentativeAchievement(achievement.id);
-      setMessage(response.message);
-      setRepresentativeAchievement({
+      const response = await setRepresentativeAchievement({
         id: achievement.id,
-        title: achievement.title,
       });
-      alert(`${achievement.title}이 대표 업적으로 설정되었습니다.`);
+      console.log("Response from setting representative:", response);
+      const message = response?.message;
+      setMessage(message);
+      if (message === "대표로 등록되었습니다.") {
+        setRepresentativeAchievement({
+          id: achievement.id,
+          title: achievement.title,
+        });
+        alert(`${achievement.title}이 대표 업적으로 설정되었습니다.`);
+      } else {
+        alert(message);
+      }
     } catch (error) {
       console.error(error);
+      alert("대표 업적 설정에 실패했습니다.");
     }
   };
 
@@ -122,13 +130,17 @@ const GoalsStatus = () => {
           title="🐶 강쥐와 친해지기"
           achievements={goalsStatus.dog}
           handleSetRepresentative={handleSetRepresentative}
-          isRepresentative={isRepresentative}
+          isRepresentative={(achievement) =>
+            isRepresentative(achievement) ? "true" : "false"
+          }
         />
         <AchievementCategory
           title="🏃‍♂️ 강쥐와 튼튼해지기"
           achievements={goalsStatus.walking}
           handleSetRepresentative={handleSetRepresentative}
-          isRepresentative={isRepresentative}
+          isRepresentative={(achievement) =>
+            isRepresentative(achievement) ? "true" : "false"
+          }
         />
       </Container>
       <Footer />

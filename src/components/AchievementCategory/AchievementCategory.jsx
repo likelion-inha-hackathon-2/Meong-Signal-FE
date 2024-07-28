@@ -28,8 +28,8 @@ const Item = styled.li`
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  border: ${({ isRepresentative }) =>
-    isRepresentative ? "3px solid var(--blue-color)" : "none"};
+  border: ${({ $isRepresentative }) =>
+    $isRepresentative === "true" ? "3px solid var(--blue-color)" : "none"};
 `;
 
 const Header = styled.div`
@@ -106,7 +106,7 @@ const AchievementCategory = ({
         return (
           <Item
             key={achievement.id}
-            isRepresentative={isRepresentative(achievement)}
+            $isRepresentative={isRepresentative(achievement)}
           >
             <Header>
               <Text>
