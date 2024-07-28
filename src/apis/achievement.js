@@ -12,16 +12,14 @@ export const getAllAchievements = async () => {
 };
 
 // 대표 업적 설정하기 - 업적 id 필요
-export const setRepresentativeAchievement = async (achievementId) => {
+export const updateRepresentativeAchievement = async (achievementId) => {
   try {
     const response = await authApi.post("/achievements/set-represent", {
       id: achievementId,
     });
-    // console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error("Error setting representative achievement:", error);
-    throw error;
+    console.error("Error response data:", error.response.data);
   }
 };
 
@@ -31,7 +29,7 @@ export const getRepresentativeAchievement = async () => {
     const response = await authApi.get("/achievements/represent");
     return response.data;
   } catch (error) {
-    console.error("Error setting representative achievement:", error);
+    console.error("Error fetching representative achievement:", error);
     throw error;
   }
 };

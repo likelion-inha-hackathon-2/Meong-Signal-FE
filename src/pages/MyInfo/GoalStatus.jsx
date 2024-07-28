@@ -4,11 +4,10 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import {
   getAllAchievements,
-  // eslint-disable-next-line no-unused-vars
-  setRepresentativeAchievement,
+  updateRepresentativeAchievement,
   getRepresentativeAchievement,
 } from "../../apis/achievement";
-import AchievementCategory from "../../components/AchievementCategory/AchievementCategory";
+import Achievement from "../../components/Achievement/Achievement";
 
 const Container = styled.div`
   display: flex;
@@ -44,74 +43,74 @@ const RepresentativeAchievementText = styled.span`
   font-family: "PretendardM";
 `;
 
-const GoalsStatus = () => {
+const GoalStatus = () => {
   const [goalsStatus, setGoalsStatus] = useState({ dog: [], walking: [] });
-  const [message, setMessage] = useState("");
   const [representativeAchievement, setRepresentativeAchievement] =
     useState(null);
+  // eslint-disable-next-line no-unused-vars
+  const [message, setMessage] = useState("");
+
+  const fetchGoalsStatus = async () => {
+    try {
+      const data = await getAllAchievements();
+      setGoalsStatus(data);
+    } catch (error) {
+      console.error("Error fetching goalsStatus:", error);
+    }
+  };
+
+  const fetchRepresentativeAchievement = async () => {
+    try {
+      const data = await getRepresentativeAchievement();
+      setRepresentativeAchievement(data);
+    } catch (error) {
+      console.error("Error fetching representative achievement:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchGoalsStatus = async () => {
-      try {
-        const data = await getAllAchievements();
-        setGoalsStatus(data);
-      } catch (error) {
-        console.error("Error fetching goalsStatus:", error);
-      }
-    };
-
-    const fetchRepresentativeAchievement = async () => {
-      try {
-        const data = await getRepresentativeAchievement();
-        setRepresentativeAchievement(data);
-      } catch (error) {
-        console.error("Error fetching representative achievement:", error);
-      }
-    };
-
     fetchGoalsStatus();
     fetchRepresentativeAchievement();
   }, []);
 
-  const handleSetRepresentative = async (achievement) => {
+  // 대표 업적 예외 처리
+  const handleUpdateRepresentative = async (achievement) => {
     if (achievement.is_representative === 1) {
-      alert("이미 등록된 업적입니다.");
+      alert("이미 대표로 등록된 업적입니다.");
       return;
     }
     if (achievement.is_achieved === 0) {
-      alert("아직 달성하지 않은 업적입니다.");
+      alert("아직 완료되지 않은 업적입니다.");
       return;
     }
     try {
-      const response = await setRepresentativeAchievement({
-        id: achievement.id,
-      });
-      console.log("Response from setting representative:", response);
-      const message = response?.message;
+      const response = await updateRepresentativeAchievement(achievement.id);
+      const message = response.message;
       setMessage(message);
+
       if (message === "대표로 등록되었습니다.") {
-        setRepresentativeAchievement({
-          id: achievement.id,
-          title: achievement.title,
-        });
+        await fetchGoalsStatus(); // 모든 업적 목록 재조회
+        await fetchRepresentativeAchievement(); // 대표 업적 재조회
         alert(`${achievement.title}이 대표 업적으로 설정되었습니다.`);
       } else {
         alert(message);
       }
     } catch (error) {
-      console.error(error);
-      alert("대표 업적 설정에 실패했습니다.");
+      alert("대표 업적 설정 중 오류가 발생했습니다.");
     }
   };
 
-  const isRepresentative = (achievement) =>
-    representativeAchievement?.id === achievement.id;
+  const isRepresentative = (achievement) => {
+    if (!representativeAchievement) {
+      return false;
+    }
+    return representativeAchievement.id === achievement.id;
+  };
 
   return (
     <>
       <Header />
       <Container>
-        {message && <p>{message}</p>}
         {representativeAchievement ? (
           <RepresentativeAchievementContainer>
             <RepresentativeAchievementTitle>
@@ -126,21 +125,17 @@ const GoalsStatus = () => {
         ) : (
           <p>아직 달성한 업적이 없습니다.</p>
         )}
-        <AchievementCategory
+        <Achievement
           title="🐶 강쥐와 친해지기"
           achievements={goalsStatus.dog}
-          handleSetRepresentative={handleSetRepresentative}
-          isRepresentative={(achievement) =>
-            isRepresentative(achievement) ? "true" : "false"
-          }
+          handleSetRepresentative={handleUpdateRepresentative}
+          isRepresentative={isRepresentative}
         />
-        <AchievementCategory
+        <Achievement
           title="🏃‍♂️ 강쥐와 튼튼해지기"
           achievements={goalsStatus.walking}
-          handleSetRepresentative={handleSetRepresentative}
-          isRepresentative={(achievement) =>
-            isRepresentative(achievement) ? "true" : "false"
-          }
+          handleSetRepresentative={handleUpdateRepresentative}
+          isRepresentative={isRepresentative}
         />
       </Container>
       <Footer />
@@ -148,4 +143,4 @@ const GoalsStatus = () => {
   );
 };
 
-export default GoalsStatus;
+export default GoalStatus;

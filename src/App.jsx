@@ -50,17 +50,17 @@ function App() {
           <Route path="chat/rooms/:roomId" element={<ChatRoom />} />
           <Route path="reviews/received" element={<ReviewReceived />} />
           <Route path="reviews/written" element={<ReviewWritten />} />
-          <Route path="/review/owner" element={<OwnerReview />} />
-          <Route path="/review/user" element={<UserReview />} />
+          <Route path="review/owner" element={<OwnerReview />} />
+          <Route path="review/user" element={<UserReview />} />
           <Route path="myinfo-main" element={<MyInfoMain />} />
           <Route path="myinfo-edit" element={<MyInfoEdit />} />
           <Route path="achievement" element={<GoalStatus />} />
           <Route path="dogs-new" element={<RegisterDog />} />
           <Route path="walk" element={<WalkDetail />} />
           <Route path="walk-my-record" element={<MyWalk />} />
-          <Route path="/record-my-dog-walk" element={<RecordMyDogWalk />} />
+          <Route path="record-my-dog-walk" element={<RecordMyDogWalk />} />
           <Route
-            path="/more-record-my-dog-walk"
+            path="more-record-my-dog-walk"
             element={<MoreRecordMyDogWalk />}
           />
           <Route path="chat" element={<ChatList />} />

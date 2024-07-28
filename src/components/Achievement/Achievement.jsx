@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import IconDogEmoji from "../../assets/icons/icon-dogEmoji.png";
@@ -29,7 +29,7 @@ const Item = styled.li`
   display: flex;
   flex-direction: column;
   border: ${({ $isRepresentative }) =>
-    $isRepresentative === "true" ? "3px solid var(--blue-color)" : "none"};
+    $isRepresentative ? "3px solid var(--blue-color)" : "none"};
 `;
 
 const Header = styled.div`
@@ -89,57 +89,65 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const AchievementCategory = ({
+const Achievement = ({
   title,
   achievements,
   handleSetRepresentative,
   isRepresentative,
-}) => (
-  <Category>
-    <Title>{title}</Title>
-    <List>
-      {achievements.map((achievement) => {
-        const progress =
-          (achievement.now_count / achievement.total_count) * 100;
-        const unit = achievement.isWalking ? "km" : "번";
-        const totalText = `${achievement.total_count}${unit}`;
-        return (
-          <Item
-            key={achievement.id}
-            $isRepresentative={isRepresentative(achievement)}
-          >
-            <Header>
-              <Text>
-                {achievement.title} ({totalText})
-              </Text>
-              <StyledButton
-                text="대표 업적 설정하기"
-                onClick={() => handleSetRepresentative(achievement)}
-              />
-            </Header>
-            <ProgressBar>
-              <Progress $progress={progress}>
-                <DogEmoji src={IconDogEmoji} $progress={progress} />
-              </Progress>
-            </ProgressBar>
-            <Footer>
-              <Text>
-                {achievement.now_count} / {achievement.total_count}
-              </Text>
-              {achievement.is_achieved ? <Text>Completed!!</Text> : null}
-            </Footer>
-          </Item>
-        );
-      })}
-    </List>
-  </Category>
-);
+}) => {
+  const [localAchievements, setLocalAchievements] = useState(achievements);
 
-AchievementCategory.propTypes = {
+  useEffect(() => {
+    setLocalAchievements(achievements);
+  }, [achievements]);
+
+  return (
+    <Category>
+      <Title>{title}</Title>
+      <List>
+        {localAchievements.map((achievement) => {
+          const progress =
+            (achievement.now_count / achievement.total_count) * 100;
+          const unit = achievement.isWalking ? "km" : "번";
+          const totalText = `${achievement.total_count}${unit}`;
+          return (
+            <Item
+              key={achievement.id}
+              $isRepresentative={isRepresentative(achievement)}
+            >
+              <Header>
+                <Text>
+                  {achievement.title} ({totalText})
+                </Text>
+                <StyledButton
+                  text="대표 업적 설정하기"
+                  onClick={() => handleSetRepresentative(achievement)}
+                />
+              </Header>
+              <ProgressBar>
+                <Progress $progress={progress}>
+                  <DogEmoji src={IconDogEmoji} $progress={progress} />
+                </Progress>
+              </ProgressBar>
+              <Footer>
+                <Text>
+                  {achievement.now_count} / {achievement.total_count}
+                </Text>
+                {achievement.is_achieved ? <Text>Completed!!</Text> : null}
+              </Footer>
+            </Item>
+          );
+        })}
+      </List>
+    </Category>
+  );
+};
+
+Achievement.propTypes = {
   title: PropTypes.string.isRequired,
   achievements: PropTypes.array.isRequired,
   handleSetRepresentative: PropTypes.func.isRequired,
   isRepresentative: PropTypes.func.isRequired,
 };
 
-export default AchievementCategory;
+export default Achievement;
