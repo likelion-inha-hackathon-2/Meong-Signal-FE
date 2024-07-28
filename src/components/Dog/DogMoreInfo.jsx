@@ -63,6 +63,7 @@ const DogMoreInfo = ({ dogId, onClose }) => {
   useEffect(() => {
     const fetchDogInfo = async () => {
       try {
+        console.log("Fetching dog info for dog ID:", dogId);
         const dogResponse = await authApi.get(`/dogs/${dogId}`);
         const tagsResponse = await authApi.get(`/dogs/${dogId}/tags`);
         setDog(dogResponse.data.dog);
@@ -83,9 +84,10 @@ const DogMoreInfo = ({ dogId, onClose }) => {
   const getTagInfo = (tagId) => tagsData.find((tag) => tag.id === tagId);
 
   // 유저와 보호자 간 채팅방 생성
-  const handleContactButtonClick = async (dog) => {
+  const handleContactButtonClick = async () => {
     try {
-      const response = await createChatRoom(dog.id);
+      // console.log("Creating chat room for dog ID:", dogId);
+      const response = await createChatRoom(dogId);
       // 결과로 나온 룸 id로 접속
       if (response && response.room_id) {
         navigate(`/chat/rooms/${response.room_id}`, {
@@ -95,7 +97,10 @@ const DogMoreInfo = ({ dogId, onClose }) => {
         console.error("Failed to create chat room");
       }
     } catch (error) {
-      console.error("Error creating chat room:", error);
+      console.error(
+        "Error creating chat room:",
+        error.response ? error.response.data : error,
+      );
     }
   };
 
@@ -116,7 +121,7 @@ const DogMoreInfo = ({ dogId, onClose }) => {
           const tagInfo = getTagInfo(tag.number);
           return (
             <Tag key={tag.number}>
-              {tagInfo ? `${tagInfo.emoji} ${tagInfo.label}` : `#${tag.number}`}
+              {tagInfo ? `${tagInfo.emoji}${tagInfo.label}` : `#${tag.number}`}
             </Tag>
           );
         })}

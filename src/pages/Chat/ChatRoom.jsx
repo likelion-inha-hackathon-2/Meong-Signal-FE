@@ -5,7 +5,7 @@ import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import { getAccessToken } from "../../apis/authApi";
 import { getUserInfo } from "../../apis/getUserInfo";
-import { getChatRoomMessages } from "../../apis/chatApi";
+import { enterChatRoom, getChatRoomMessages } from "../../apis/chatApi";
 import { useParams } from "react-router-dom"; // url 뒤에 붙은 채팅방 고유 넘버를 가져오기
 
 // 채팅 메시지 리스트
@@ -94,47 +94,59 @@ const ChatRoom = () => {
   }, []);
 
   useEffect(() => {
-    // 메시지 목록 조회
-    const fetchChatMessages = async () => {
+    // 채팅방에 입장
+    const enterRoom = async () => {
       try {
-        const response = await getChatRoomMessages(roomId);
-        setMessages(response);
+        await enterChatRoom(roomId);
       } catch (error) {
-        console.error("Failed to fetch chat messages:", error);
+        console.error("Failed to enter chat room:", error);
+        return;
       }
+
+      // 메시지 목록 조회
+      const fetchChatMessages = async () => {
+        try {
+          const response = await getChatRoomMessages(roomId);
+          setMessages(response);
+        } catch (error) {
+          console.error("Failed to fetch chat messages:", error);
+        }
+      };
+
+      fetchChatMessages();
+
+      const accessToken = getAccessToken();
+      if (!accessToken) {
+        console.error("토큰 x");
+        return;
+      }
+
+      const newSocket = new WebSocket(
+        "ws://" +
+          window.location.host +
+          "/ws/chat/" +
+          roomId +
+          "/?token=" +
+          encodeURIComponent(accessToken),
+      );
+
+      newSocket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        setMessages((prevMessages) => [...prevMessages, message]);
+      };
+
+      newSocket.onclose = (event) => {
+        console.error("WebSocket이 닫혔습니다: ", event);
+      };
+
+      setSocket(newSocket);
+
+      return () => {
+        newSocket.close();
+      };
     };
 
-    fetchChatMessages();
-
-    const accessToken = getAccessToken();
-    if (!accessToken) {
-      console.error("토큰 x");
-      return;
-    }
-
-    const newSocket = new WebSocket(
-      "ws://" +
-        window.location.host +
-        "/ws/chat/" +
-        roomId +
-        "/?token=" +
-        encodeURIComponent(accessToken),
-    );
-
-    newSocket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      setMessages((prevMessages) => [...prevMessages, message]);
-    };
-
-    newSocket.onclose = (event) => {
-      console.error("WebSocket이 닫혔습니다: ", event);
-    };
-
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.close();
-    };
+    enterRoom();
   }, [roomId]);
 
   const handleSendMessage = () => {
