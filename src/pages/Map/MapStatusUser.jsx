@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import MapUser from "../../components/Map/MapUser";
 import { getDogInfo } from "../../apis/getDogInfo";
 import { getCoordinates } from "../../apis/geolocation";
 import { getMarkedTrails } from "../../apis/trail";
 import { saveWalkData } from "../../apis/walk";
 import { getDistance } from "../../utils/getDistance";
 import html2canvas from "html2canvas";
+import useUserMap from "../../hooks/useUserMap";
 
 const Container = styled.div`
   padding: 20px;
@@ -100,14 +100,12 @@ const Stat = styled.div`
 const MapStatusUser = () => {
   const { dogId } = useParams();
   const navigate = useNavigate();
-  const mapRef = useRef(null);
+  const [initialLocation, setInitialLocation] = useState(null);
 
   const [dogInfo, setDogInfo] = useState({ name: "", image: "" });
   const [routes, setRoutes] = useState([]);
   const [showRoutes, setShowRoutes] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState(null);
-  const [currentLocation, setCurrentLocation] = useState(null);
-  const [initialLocation, setInitialLocation] = useState(null);
   const [walkStage, setWalkStage] = useState("before");
   const [distance, setDistance] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -115,7 +113,12 @@ const MapStatusUser = () => {
   const [ownerEmail] = useState("owner@gmail.com");
   const [roomId, setRoomId] = useState(null);
   const [walkUserEmail] = useState("walking@gmail.com");
-  const [walkId, setWalkId] = useState(null);
+
+  const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap(
+    process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
+    dogId,
+    selectedRoute ? selectedRoute.name : "",
+  );
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -134,7 +137,7 @@ const MapStatusUser = () => {
     };
 
     fetchInitialData();
-  }, [dogId]);
+  }, [dogId, setCurrentLocation]);
 
   useEffect(() => {
     const setupRoomAndSocket = async () => {
@@ -174,7 +177,7 @@ const MapStatusUser = () => {
   }, [walkStage]);
 
   useEffect(() => {
-    if (walkStage === "during" && initialLocation) {
+    if (walkStage === "during") {
       const watchId = navigator.geolocation.watchPosition(
         (position) => {
           const newCurrentLocation = {
@@ -196,7 +199,7 @@ const MapStatusUser = () => {
 
       return () => navigator.geolocation.clearWatch(watchId);
     }
-  }, [walkStage, initialLocation]);
+  }, [walkStage, initialLocation, setCurrentLocation]);
 
   const CreateRoom = async () => {
     if (socket) {
@@ -225,7 +228,7 @@ const MapStatusUser = () => {
     const roomData = await response.json();
     setRoomId(roomData.id); // Update roomId state
 
-    console.log("roomId:", roomData.id);
+    setUpWebSocket(roomData.id);
   };
 
   const setUpWebSocket = (roomId) => {
@@ -284,6 +287,7 @@ const MapStatusUser = () => {
     );
   };
 
+  // 산책로 저장된 거 받아오기
   const handleShowRoutes = async () => {
     try {
       const savedRoutes = await getMarkedTrails();
@@ -308,21 +312,18 @@ const MapStatusUser = () => {
       formData.append("time", timeElapsed.toString());
       formData.append("distance", distance.toFixed(1));
 
-      if (mapRef.current) {
-        const canvas = await html2canvas(mapRef.current);
+      if (mapContainer.current) {
+        const canvas = await html2canvas(mapContainer.current);
         canvas.toBlob(async (blob) => {
           if (blob) {
             formData.append("image", blob, "walk_image.png");
           }
 
-          // 이미지가 있든 없든 데이터 저장
-          const response = await saveWalkData(formData);
-          setWalkId(response.id); // 산책 id
+          await saveWalkData(formData);
           alert("산책 데이터가 성공적으로 저장되었습니다.");
         }, "image/png");
       } else {
-        const response = await saveWalkData(formData);
-        setWalkId(response.id); // 산책 id
+        await saveWalkData(formData);
         alert("산책 데이터가 성공적으로 저장되었습니다.");
       }
     } catch (error) {
@@ -331,7 +332,7 @@ const MapStatusUser = () => {
     }
   };
 
-  const handleReview = () => navigate("/review/user", { state: { walkId } });
+  const handleReview = () => navigate(`/reviews/${dogId}`);
 
   const renderWalkStage = () => {
     switch (walkStage) {
@@ -405,20 +406,7 @@ const MapStatusUser = () => {
                 : "와의 산책이 종료되었습니다."}
           </DogName>
         </DogInfo>
-        <div ref={mapRef}>
-          {currentLocation ? (
-            <MapUser
-              latitude={currentLocation.latitude}
-              longitude={currentLocation.longitude}
-              width="100%"
-              height="300px"
-              dogId={dogId}
-              keyword={selectedRoute ? selectedRoute.name : ""}
-            />
-          ) : (
-            <p>현재 위치를 불러오는 중...</p>
-          )}
-        </div>
+        <div ref={mapContainer} style={{ width: "100%", height: "300px" }} />
         {renderWalkStage()}
       </Container>
       <Footer />

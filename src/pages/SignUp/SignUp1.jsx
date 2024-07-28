@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
-import useForm from "../../assets/hooks/useForm";
+import useForm from "../../hooks/useForm";
 import cameraIcon from "../../assets/icons/icon-camera.png";
 import userIcon from "../../assets/icons/icon-user-image.png";
 

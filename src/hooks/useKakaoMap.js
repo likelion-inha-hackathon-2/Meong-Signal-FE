@@ -132,6 +132,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           const dogMarkerImage = new window.kakao.maps.MarkerImage(
             dog.image,
             new window.kakao.maps.Size(20, 20),
+            { shape: "rect", coords: "0,0,50,50" },
           );
 
           const dogMarker = new window.kakao.maps.Marker({

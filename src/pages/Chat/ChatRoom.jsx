@@ -121,28 +121,33 @@ const ChatRoom = () => {
         return;
       }
 
-      const newSocket = new WebSocket(
-        "ws://" +
-          window.location.host +
-          "/ws/chat/" +
-          roomId +
-          "/?token=" +
-          encodeURIComponent(accessToken),
-      );
+      const connectWebSocket = () => {
+        const newSocket = new WebSocket(
+          "wss://meong-signal.kro.kr/ws/chat/" +
+            roomId +
+            "/?token=" +
+            encodeURIComponent(accessToken),
+        );
 
-      newSocket.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        setMessages((prevMessages) => [...prevMessages, message]);
+        newSocket.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+          setMessages((prevMessages) => [...prevMessages, message]);
+        };
+
+        newSocket.onclose = (event) => {
+          console.error("WebSocket이 닫혔습니다: ", event);
+          setTimeout(connectWebSocket, 1000);
+        };
+
+        setSocket(newSocket);
       };
 
-      newSocket.onclose = (event) => {
-        console.error("WebSocket이 닫혔습니다: ", event);
-      };
-
-      setSocket(newSocket);
+      connectWebSocket();
 
       return () => {
-        newSocket.close();
+        if (socket) {
+          socket.close();
+        }
       };
     };
 
@@ -160,9 +165,13 @@ const ChatRoom = () => {
         read: false,
       };
 
-      socket.send(JSON.stringify(message));
-      setMessages((prevMessages) => [...prevMessages, message]);
-      setNewMessage("");
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(message));
+        setMessages((prevMessages) => [...prevMessages, message]);
+        setNewMessage("");
+      } else {
+        console.error("WebSocket이 아직 연결되지 않았습니다.");
+      }
     }
   };
 

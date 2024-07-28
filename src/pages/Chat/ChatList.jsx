@@ -26,12 +26,19 @@ const ChatList = () => {
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 유저가 속한 채팅방 목록 반환
+  // 유저가 속한 채팅방 목록 반환 - roomId 필요!
   useEffect(() => {
     const fetchChatRooms = async () => {
       try {
         const response = await authApi.get("/chat/rooms");
-        setChatRooms(response.data);
+        const rooms = response.data.map((room) => ({
+          ...room,
+          last_message_content:
+            room.last_message_content || "메시지가 없습니다.",
+          last_message_timestamp:
+            room.last_message_timestamp || "시간 정보가 없습니다.",
+        }));
+        setChatRooms(rooms);
       } catch (error) {
         console.error("Error fetching chat rooms:", error);
       } finally {
