@@ -40,7 +40,7 @@ const ChallengeItem = styled.div`
   margin-bottom: 10px;
   padding: 10px;
   background-color: ${(props) =>
-    props.met ? "#e0ffe0" : "var(--gray-color2)"};
+    props.met ? "var(--yellow-color1)" : "var(--gray-color2)"};
   border: 2px solid
     ${(props) => (props.met ? "var(--green-color)" : "var(--gray-color3)")};
   border-radius: 8px;
@@ -49,7 +49,7 @@ const ChallengeItem = styled.div`
 const ChallengeText = styled.div`
   display: flex;
   align-items: center;
-  font-family: "PretendardR";
+  font-family: "PretendardM";
   font-size: 15px;
 `;
 
@@ -66,8 +66,8 @@ const ChallengeBadge = styled.div`
   justify-content: center;
   background-color: ${(props) =>
     props.met
-      ? "#32CD32"
-      : "#ffcc00"}; // 조건을 달성하면 녹색으로 색상이 바뀌도록 설정
+      ? "var(--yellow-color2)"
+      : "var(--gray-color3)"}; // 조건을 달성하면 녹색으로 색상이 바뀌도록 설정
   color: #fff;
   font-family: "PretendardS";
   padding: 6px;
