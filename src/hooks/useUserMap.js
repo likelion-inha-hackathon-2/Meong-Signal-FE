@@ -5,9 +5,11 @@ import { getDogInfo } from "../apis/getDogInfo";
 const useUserMap = (appKey, dogId, keyword = "") => {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [dogMarker, setDogMarker] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const infowindow = useRef(null);
+  // eslint-disable-next-line no-unused-vars
   const [markers, setMarkers] = useState([]);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
               center.latitude,
               center.longitude,
             ),
-            level: 3,
+            level: 7,
           };
           const mapInstance = new window.kakao.maps.Map(
             mapContainer.current,
@@ -103,7 +105,8 @@ const useUserMap = (appKey, dogId, keyword = "") => {
 
           data.forEach((place) => {
             const markerPosition = new window.kakao.maps.LatLng(
-              place.y, place.x
+              place.y,
+              place.x,
             );
             const marker = new window.kakao.maps.Marker({
               position: markerPosition,
@@ -113,14 +116,17 @@ const useUserMap = (appKey, dogId, keyword = "") => {
             bounds.extend(markerPosition);
 
             // Add event listener for marker click
-            window.kakao.maps.event.addListener(marker, 'click', () => {
-              infowindow.current.setContent(`<div style="padding:5px;font-size:12px;">${place.place_name}</div>`);
+            window.kakao.maps.event.addListener(marker, "click", () => {
+              infowindow.current.setContent(
+                `<div style="padding:5px;font-size:12px;">${place.place_name}</div>`,
+              );
               infowindow.current.open(map, marker);
             });
           });
 
           setMarkers(newMarkers);
           map.setBounds(bounds);
+          map.setLevel(7); // 지도 레벨 설정
         }
       });
     }

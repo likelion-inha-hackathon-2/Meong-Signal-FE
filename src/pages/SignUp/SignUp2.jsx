@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
-import useForm from "../../assets/hooks/useForm";
+import useForm from "../../hooks/useForm";
 import authApi from "../../apis/authApi";
 import mainImage from "../../assets/icons/icon-main-image.png";
 
