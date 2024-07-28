@@ -129,7 +129,7 @@ const ChatRoom = () => {
 
         socket.current = new WebSocket(
           "wss://" +
-            process.env.REACT_APP_BACKEND_URL +
+            process.env.REACT_APP_BACKEND_DOMAIN +
             "/ws/chat/" +
             roomId +
             "/?token=" +
