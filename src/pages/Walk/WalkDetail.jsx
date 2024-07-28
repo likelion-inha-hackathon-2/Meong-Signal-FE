@@ -11,38 +11,26 @@ import {
   deleteTrail,
 } from "../../apis/trail";
 import { getCoordinates } from "../../apis/geolocation";
-import { getChallenge } from "../../apis/getChallenge"; // getChallenge 함수 임포트
+import { getChallenge } from "../../apis/getChallenge";
 import footprintIcon from "../../assets/icons/icon-footprint.png";
-import speakerIcon from "../../assets/icons/icon-speaker.png";
 import walkingIcon from "../../assets/icons/icon-walking2.png";
 
 const WalkDetailContainer = styled.div`
+  width: 350px;
   display: flex;
   flex-direction: column;
+  padding: 20px 15px;
+  margin: 20px 0;
 `;
 
 const TitleWrapper = styled.div`
   font-size: 20px;
-  font-family: "PretendardS";
-  margin: 0 15px;
-`;
-
-const ChallengeSection = styled.div`
-  margin: 20px 15px;
-`;
-
-const ChallengeTitle = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  font-family: "PretendardS";
+  font-family: "PretendardB";
   margin-bottom: 10px;
 `;
 
-const ChallengeTitleIcon = styled.img`
-  width: 24px;
-  height: 24px;
-  margin-right: 10px;
+const ChallengeSection = styled.div`
+  margin-bottom: 20px;
 `;
 
 const ChallengeItem = styled.div`
@@ -51,7 +39,10 @@ const ChallengeItem = styled.div`
   justify-content: space-between;
   margin-bottom: 10px;
   padding: 10px;
-  background-color: #f5f5f5;
+  background-color: ${(props) =>
+    props.met ? "#e0ffe0" : "var(--gray-color2)"};
+  border: 2px solid
+    ${(props) => (props.met ? "var(--green-color)" : "var(--gray-color3)")};
   border-radius: 8px;
 `;
 
@@ -59,7 +50,7 @@ const ChallengeText = styled.div`
   display: flex;
   align-items: center;
   font-family: "PretendardR";
-  font-size: 15px; 
+  font-size: 15px;
 `;
 
 const ChallengeIcon = styled.img`
@@ -72,13 +63,15 @@ const ChallengeBadge = styled.div`
   display: flex;
   width: 75px;
   align-items: center;
-  background-color: ${props => (props.met ? "#32CD32" : "#ffcc00")}; // 조건을 달성하면 녹색으로 색상이 바뀌도록 설정  
+  justify-content: center;
+  background-color: ${(props) =>
+    props.met
+      ? "#32CD32"
+      : "#ffcc00"}; // 조건을 달성하면 녹색으로 색상이 바뀌도록 설정
   color: #fff;
   font-family: "PretendardS";
   padding: 6px;
-  padding-left: 17px;
   border-radius: 6px;
-
 `;
 
 const FootprintIcon = styled.img`
@@ -88,16 +81,24 @@ const FootprintIcon = styled.img`
 `;
 
 const IsEmptyMessage = styled.p`
-  padding-left: 20px;
   margin-top: 10px;
   font-family: "PretendardR";
   font-size: 14px;
+  color: gray;
+`;
+
+const ChallengeStatus = styled.p`
+  font-family: "PretendardR";
+  font-size: 14px;
+  color: gray;
+  margin-bottom: 10px;
 `;
 
 const WalkDetail = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [recommendedTrails, setRecommendedTrails] = useState([]);
   const [savedTrails, setSavedTrails] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [weekChallenge, setWeekChallenge] = useState({
     week_distance: 0,
     week_dogs: 0,
@@ -168,16 +169,16 @@ const WalkDetail = () => {
 
   const handleBookmarkToggle = async (trail) => {
     const isBookmarked = savedTrails.some(
-      (savedTrail) => savedTrail.name === trail.name
+      (savedTrail) => savedTrail.name === trail.name,
     );
     try {
       if (isBookmarked) {
         const savedTrail = savedTrails.find(
-          (savedTrail) => savedTrail.name === trail.name
+          (savedTrail) => savedTrail.name === trail.name,
         );
         await deleteTrail(savedTrail.id); // id로 저장하기!
         setSavedTrails((prevTrails) =>
-          prevTrails.filter((t) => t.id !== savedTrail.id)
+          prevTrails.filter((t) => t.id !== savedTrail.id),
         );
       } else {
         const data = await toggleTrail(trail);
@@ -200,27 +201,26 @@ const WalkDetail = () => {
       <Header />
       <WalkDetailContainer>
         <ChallengeSection>
-          <ChallengeTitle>
-            <ChallengeTitleIcon src={speakerIcon} alt="speaker" />
-            이번 주 챌린지
-          </ChallengeTitle>
-          <ChallengeItem>
+          <TitleWrapper>📢 이번 주 챌린지</TitleWrapper>
+          <ChallengeStatus>
+            이번주 달성현황에 따라 멍이 추가됩니다!
+          </ChallengeStatus>
+          <ChallengeItem met={isDogsChallengeMet}>
             <ChallengeText>
               <ChallengeIcon src={walkingIcon} alt="walking" />
               3마리의 강아지와 산책하기
             </ChallengeText>
             <ChallengeBadge met={isDogsChallengeMet}>
-              {weekChallenge.week_dogs}
+              15
               <FootprintIcon src={footprintIcon} alt="footprint" />
             </ChallengeBadge>
           </ChallengeItem>
-          <ChallengeItem>
+          <ChallengeItem met={isDistanceChallengeMet}>
             <ChallengeText>
-              <ChallengeIcon src={walkingIcon} alt="walking" />
-              총 30km 산책하기
+              <ChallengeIcon src={walkingIcon} alt="walking" />총 30km 산책하기
             </ChallengeText>
             <ChallengeBadge met={isDistanceChallengeMet}>
-              {weekChallenge.week_distance}
+              20
               <FootprintIcon src={footprintIcon} alt="footprint" />
             </ChallengeBadge>
           </ChallengeItem>
