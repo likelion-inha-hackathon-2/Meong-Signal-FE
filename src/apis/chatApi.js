@@ -4,7 +4,7 @@ import { getUserInfo } from "./getUserInfo";
 // 견주의 정보를 조회 (id, email, image, nickname)
 export const getOwnerInfo = async (dogId) => {
   try {
-    const response = await authApi.post("/dogs/owner", { dogId });
+    const response = await authApi.post("/dogs/owner", { dog_id: dogId });
     return response.data;
   } catch (error) {
     console.error("Failed to fetch owner user ID:", error);
@@ -35,10 +35,23 @@ export const createChatRoom = async (dogId) => {
   }
 };
 
+// room id로 채팅방 입장
+export const enterChatRoom = async (roomId) => {
+  try {
+    console.log(`채팅방에 입장하는 룸 넘버: ${roomId}`);
+    const response = await authApi.get(`/chat/rooms/${roomId}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to enter chat room:", error);
+    throw error;
+  }
+};
+
 // room id로 채팅방 메시지 반환
 export const getChatRoomMessages = async (roomId) => {
   try {
-    const response = await authApi.get(`/chat/rooms/${roomId}/messages`);
+    const response = await authApi.get(`/chat/rooms/${roomId}/data`);
     return response.data;
   } catch (error) {
     console.error("Failed to fetch chat room messages:", error);
