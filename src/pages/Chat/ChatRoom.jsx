@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
+import authApi from "../../apis/authApi";
 import { getAccessToken } from "../../apis/authApi";
 import { getUserInfo } from "../../apis/getUserInfo";
 import { enterChatRoom, getChatRoomMessages } from "../../apis/chatApi";
@@ -77,8 +78,8 @@ const ChatRoom = () => {
   const { roomId } = useParams(); // url로부터 roomId를 가져옴
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [socket, setSocket] = useState(null);
   const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
+  const socket = useRef(null); // WebSocket을 useRef로 관리
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -122,31 +123,46 @@ const ChatRoom = () => {
       }
 
       const connectWebSocket = () => {
-        const newSocket = new WebSocket(
-          "wss://meong-signal.kro.kr/ws/chat/" +
+        if (socket.current) {
+          socket.current.close();
+        }
+
+        socket.current = new WebSocket(
+          "wss://" +
+            process.env.REACT_APP_BACKEND_URL +
+            "/ws/chat/" +
             roomId +
             "/?token=" +
             encodeURIComponent(accessToken),
         );
 
-        newSocket.onmessage = (event) => {
+        socket.current.onmessage = async (event) => {
           const message = JSON.parse(event.data);
-          setMessages((prevMessages) => [...prevMessages, message]);
+
+          const response = await authApi.post("/users/profile-image", {
+            id: message.sender_id,
+          });
+
+          let nowMessage = {
+            content: message.content,
+            sender: message.sender_id,
+            timestamp: message.timestamp,
+            sender_profile_image: response.data.image,
+          };
+
+          setMessages((prevMessages) => [...prevMessages, nowMessage]);
         };
 
-        newSocket.onclose = (event) => {
+        socket.current.onclose = (event) => {
           console.error("WebSocket이 닫혔습니다: ", event);
-          setTimeout(connectWebSocket, 1000);
         };
-
-        setSocket(newSocket);
       };
 
       connectWebSocket();
 
       return () => {
-        if (socket) {
-          socket.close();
+        if (socket.current) {
+          socket.current.close();
         }
       };
     };
@@ -165,9 +181,8 @@ const ChatRoom = () => {
         read: false,
       };
 
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(message));
-        setMessages((prevMessages) => [...prevMessages, message]);
+      if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+        socket.current.send(JSON.stringify(message));
         setNewMessage("");
       } else {
         console.error("WebSocket이 아직 연결되지 않았습니다.");
