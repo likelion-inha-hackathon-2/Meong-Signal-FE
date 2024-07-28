@@ -4,8 +4,7 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import {
   getAllAchievements,
-  // eslint-disable-next-line no-unused-vars
-  setRepresentativeAchievement,
+  updateRepresentativeAchievement,
   getRepresentativeAchievement,
 } from "../../apis/achievement";
 import Achievement from "../../components/Achievement/Achievement";
@@ -49,7 +48,7 @@ const GoalStatus = () => {
   const [representativeAchievement, setRepresentativeAchievement] =
     useState(null);
   // eslint-disable-next-line no-unused-vars
-  const [message, setMessage] = useState(""); // 업적 등록 시 메시지
+  const [message, setMessage] = useState("");
 
   const fetchGoalsStatus = async () => {
     try {
@@ -75,7 +74,7 @@ const GoalStatus = () => {
   }, []);
 
   // 대표 업적 예외 처리
-  const handleSetRepresentative = async (achievement) => {
+  const handleUpdateRepresentative = async (achievement) => {
     if (achievement.is_representative === 1) {
       alert("이미 대표로 등록된 업적입니다.");
       return;
@@ -85,10 +84,8 @@ const GoalStatus = () => {
       return;
     }
     try {
-      console.log("업적 ID 포스트하는거:", achievement.id);
-      const response = await setRepresentativeAchievement(achievement.id);
+      const response = await updateRepresentativeAchievement(achievement.id);
       const message = response.message;
-      console.log("API response message:", message);
       setMessage(message);
 
       if (message === "대표로 등록되었습니다.") {
@@ -99,10 +96,10 @@ const GoalStatus = () => {
         alert(message);
       }
     } catch (error) {
-      console.error("Error setting representative achievement:", error);
       alert("대표 업적 설정 중 오류가 발생했습니다.");
     }
   };
+
   const isRepresentative = (achievement) => {
     if (!representativeAchievement) {
       return false;
@@ -131,13 +128,13 @@ const GoalStatus = () => {
         <Achievement
           title="🐶 강쥐와 친해지기"
           achievements={goalsStatus.dog}
-          handleSetRepresentative={handleSetRepresentative}
+          handleSetRepresentative={handleUpdateRepresentative}
           isRepresentative={isRepresentative}
         />
         <Achievement
           title="🏃‍♂️ 강쥐와 튼튼해지기"
           achievements={goalsStatus.walking}
-          handleSetRepresentative={handleSetRepresentative}
+          handleSetRepresentative={handleUpdateRepresentative}
           isRepresentative={isRepresentative}
         />
       </Container>
