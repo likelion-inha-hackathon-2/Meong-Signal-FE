@@ -71,7 +71,7 @@ function App() {
           <Route path="map-walking-test" element={<MapWalkingTest />} />
           <Route path="shop" element={<MeongShop />} />
           <Route path="my-goods" element={<MyGoods />} />
-          <Route path="/notfound" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>
