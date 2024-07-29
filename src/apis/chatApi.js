@@ -58,3 +58,16 @@ export const getChatRoomMessages = async (roomId) => {
     throw error;
   }
 };
+
+// 특정 사용자의 프로필 사진 확인(user_id)
+export const getProfileImage = async (userId) => {
+  try {
+    const response = await authApi.post("/users/profile-image", {
+      id: userId,
+    });
+    return response.data.image;
+  } catch (error) {
+    console.error("Failed to fetch profile image:", error);
+    throw error;
+  }
+};
