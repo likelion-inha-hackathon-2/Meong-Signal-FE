@@ -3,11 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import { getDogInfo } from "../../apis/getDogInfo";
+import { getDogInfo, getDogOwnerInfo } from "../../apis/getDogInfo";
 import { getCoordinates } from "../../apis/geolocation";
 import { getMarkedTrails } from "../../apis/trail";
 import { saveWalkData } from "../../apis/walk";
 import { getDistance } from "../../utils/getDistance";
+import { getUserInfo } from "../../apis/getUserInfo";
 import html2canvas from "html2canvas";
 import useUserMap from "../../hooks/useUserMap";
 
@@ -112,9 +113,9 @@ const MapStatusUser = () => {
   const [distance, setDistance] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [socket, setSocket] = useState(null);
-  const [ownerEmail] = useState("owner@gmail.com");
+  const [ownerId, setOwnerId] = useState(0);
   const [roomId, setRoomId] = useState(null);
-  const [walkUserEmail] = useState("walking@gmail.com");
+  const [walkUserId, setWalkUserId] = useState(0);
 
   const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
@@ -144,6 +145,34 @@ const MapStatusUser = () => {
   }, [dogId, setCurrentLocation]);
 
   useEffect(() => {
+    // ownerId 설정
+    const fetchOwnerId = async () => {
+      try {
+        const ownerInfo = await getDogOwnerInfo(dogId);
+        setOwnerId(ownerInfo.owner_id);
+      } catch (error) {
+        console.error("Error fetching owner id:", error);
+      }
+    };
+
+    fetchOwnerId();
+  }, [dogId]);
+
+  useEffect(() => {
+    // walkUserId 설정
+    const fetchWalkUserId = async () => {
+      try {
+        const data = await getUserInfo();
+        setWalkUserId(data.id);
+      } catch (error) {
+        console.error("Error fetching walkuser id:", error);
+      }
+    };
+
+    fetchWalkUserId();
+  }, [dogId]);
+
+  useEffect(() => {
     const setupRoomAndSocket = async () => {
       try {
         await CreateRoom();
@@ -153,7 +182,7 @@ const MapStatusUser = () => {
     };
 
     setupRoomAndSocket();
-  }, []);
+  }, [ownerId, walkUserId]);
 
   useEffect(() => {
     // Set up interval to send location every 3 seconds if WebSocket is connected
@@ -165,7 +194,7 @@ const MapStatusUser = () => {
       // Clean up interval on WebSocket close
       return () => clearInterval(intervalId);
     }
-  }, [socket]); // Dependency array includes socket
+  }, [socket, ownerId, walkUserId]); // Dependency array includes socket
 
   useEffect(() => {
     if (walkStage === "during") {
@@ -213,7 +242,7 @@ const MapStatusUser = () => {
     }
     const token = localStorage.getItem("accessToken");
     const response = await fetch(
-      "https://meong-signal.kro.kr/walk-status/rooms/",
+      process.env.REACT_APP_BACKEND_URL + "walk-status/rooms/",
       {
         method: "POST",
         headers: {
@@ -221,8 +250,8 @@ const MapStatusUser = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          owner_email: ownerEmail,
-          walk_user_email: walkUserEmail,
+          owner_id: ownerId,
+          walk_user_id: walkUserId,
         }),
       },
     );
@@ -273,10 +302,10 @@ const MapStatusUser = () => {
     setCurrentLocation(coordinates);
 
     const locationPayload = {
-      owner_email: ownerEmail,
-      walk_user_email: walkUserEmail,
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
+      walk_user_id: walkUserId,
+      owner_id: ownerId,
     };
 
     socket.send(JSON.stringify(locationPayload));
