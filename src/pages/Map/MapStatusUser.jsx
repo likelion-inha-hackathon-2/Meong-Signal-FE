@@ -4,7 +4,6 @@ import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { getDogInfo } from "../../apis/getDogInfo";
-import { getUserInfo } from "../../apis/getUserInfo";
 import { getCoordinates } from "../../apis/geolocation";
 import { getMarkedTrails } from "../../apis/trail";
 import { saveWalkData } from "../../apis/walk";
@@ -102,6 +101,7 @@ const MapStatusUser = () => {
   const { dogId } = useParams();
   const navigate = useNavigate();
   const [initialLocation, setInitialLocation] = useState(null);
+
   const [dogInfo, setDogInfo] = useState({ name: "", image: "" });
   const [routes, setRoutes] = useState([]);
   const [showRoutes, setShowRoutes] = useState(false);
@@ -110,12 +110,10 @@ const MapStatusUser = () => {
   const [distance, setDistance] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [socket, setSocket] = useState(null);
-  const [ownerEmail] = useState("owner@gmail.com"); // 수정 필요
-  const [walkUserEmail] = useState("walking@gmail.com"); // 수정 필요
-  const [userInfo, setUserInfo] = useState(null);
+  const [ownerEmail] = useState("owner@gmail.com");
   const [roomId, setRoomId] = useState(null);
+  const [walkUserEmail] = useState("walking@gmail.com");
 
-  // eslint-disable-next-line no-unused-vars
   const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
     dogId,
@@ -141,20 +139,6 @@ const MapStatusUser = () => {
     fetchInitialData();
   }, [dogId, setCurrentLocation]);
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const userInfo = await getUserInfo();
-        setUserInfo(userInfo);
-      } catch (error) {
-        console.error("사용자 정보를 가져오지 못했습니다: ", error);
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
-
-  // 수정할 부분
   useEffect(() => {
     const setupRoomAndSocket = async () => {
       try {

@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
-import { getChatRoomMessages, enterChatRoom } from "../../apis/chatApi";
-import { useLocation, useParams } from "react-router-dom";
+import { getAccessToken } from "../../apis/authApi";
 import { getUserInfo } from "../../apis/getUserInfo";
+import { enterChatRoom, getChatRoomMessages } from "../../apis/chatApi";
+import { useParams } from "react-router-dom"; // url 뒤에 붙은 채팅방 고유 넘버를 가져오기
 
 // 채팅 메시지 리스트
 const MessageList = styled.div`
   display: flex;
   flex-direction: column;
-  width: 350px;
   margin-top: 50px;
   height: calc(100vh - 200px);
   font-family: "PretendardR";
@@ -50,7 +50,6 @@ const ProfileImage = styled.img`
 
 const InputContainer = styled.div`
   display: flex;
-  width: 350px;
   align-items: center;
   padding: 10px 20px;
   background-color: #fff;
@@ -67,7 +66,6 @@ const TextInput = styled.input`
 `;
 
 const SendButton = styled(Button)`
-  width: 70px;
   padding: 10px 20px;
   background-color: var(--yellow-color2);
   border: none;
@@ -76,113 +74,100 @@ const SendButton = styled(Button)`
 `;
 
 const ChatRoom = () => {
-  const location = useLocation();
-  const { roomId } = useParams();
-  const [userInfo, setUserInfo] = useState(null);
+  const { roomId } = useParams(); // url로부터 roomId를 가져옴
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [roomInfo, setRoomInfo] = useState(null);
-  const socket = useRef(null);
-
-  console.log("room id:", roomId);
+  const [socket, setSocket] = useState(null);
+  const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
 
   useEffect(() => {
-    const initializeChatRoom = async () => {
-      if (!roomId) {
-        console.error("룸 id가 제공되지 않았습니다.");
-        return;
-      }
-
+    const fetchUserInfo = async () => {
       try {
-        // 사용자 정보 가져오기
-        const fetchedUserInfo = await getUserInfo();
-        setUserInfo(fetchedUserInfo);
-
-        // 채팅방 정보 가져오기
-        const fetchedRoomInfo = await enterChatRoom(roomId);
-        setRoomInfo(fetchedRoomInfo);
-
-        // 채팅방 메시지 가져오기
-        const fetchChatMessages = async () => {
-          try {
-            const response = await getChatRoomMessages(fetchedRoomInfo.room_id);
-            setMessages(response);
-          } catch (error) {
-            console.error("Failed to fetch chat messages:", error);
-          }
-        };
-
-        fetchChatMessages();
-
-        // 웹소켓 연결
-        const connectWebSocket = () => {
-          if (socket.current) {
-            socket.current.close();
-          }
-
-          socket.current = new WebSocket(fetchedRoomInfo.websocket_url); // 웹소켓 서버 주소
-
-          socket.current.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-
-            // 프사 설정
-            let senderProfileImage =
-              message.sender === userInfo.id
-                ? userInfo.profile_image
-                : fetchedRoomInfo.other_user_profile_image;
-
-            // 보낼 메시지 설정
-            let nowMessage = {
-              content: message.content,
-              sender: message.sender,
-              timestamp: message.timestamp,
-              sender_profile_image: senderProfileImage,
-            };
-
-            setMessages((prevMessages) => [...prevMessages, nowMessage]);
-          };
-
-          socket.current.onclose = (event) => {
-            console.error("WebSocket이 닫혔습니다: ", event);
-          };
-          socket.current.onerror = (error) => {
-            console.error("WebSocket 에러: ", error);
-          };
-          socket.current.onopen = () => {
-            console.log("WebSocket 연결 성공");
-          };
-        };
-
-        if (fetchedRoomInfo.websocket_url) {
-          connectWebSocket();
-        }
-
-        return () => {
-          if (socket.current) {
-            socket.current.close();
-          }
-        };
+        const userInfo = await getUserInfo();
+        setUserInfo(userInfo);
       } catch (error) {
-        console.error("Failed to initialize chat room:", error);
+        console.error("사용자 정보를 가져오지 못했습니다: ", error);
       }
     };
 
-    initializeChatRoom();
+    fetchUserInfo();
+  }, []);
+
+  useEffect(() => {
+    // 채팅방에 입장
+    const enterRoom = async () => {
+      try {
+        await enterChatRoom(roomId);
+      } catch (error) {
+        console.error("Failed to enter chat room:", error);
+        return;
+      }
+
+      // 메시지 목록 조회
+      const fetchChatMessages = async () => {
+        try {
+          const response = await getChatRoomMessages(roomId);
+          setMessages(response);
+        } catch (error) {
+          console.error("Failed to fetch chat messages:", error);
+        }
+      };
+
+      fetchChatMessages();
+
+      const accessToken = getAccessToken();
+      if (!accessToken) {
+        console.error("토큰 x");
+        return;
+      }
+
+      const connectWebSocket = () => {
+        const newSocket = new WebSocket(
+          "wss://meong-signal.kro.kr/ws/chat/" +
+            roomId +
+            "/?token=" +
+            encodeURIComponent(accessToken),
+        );
+
+        newSocket.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+          setMessages((prevMessages) => [...prevMessages, message]);
+        };
+
+        newSocket.onclose = (event) => {
+          console.error("WebSocket이 닫혔습니다: ", event);
+          setTimeout(connectWebSocket, 1000);
+        };
+
+        setSocket(newSocket);
+      };
+
+      connectWebSocket();
+
+      return () => {
+        if (socket) {
+          socket.close();
+        }
+      };
+    };
+
+    enterRoom();
   }, [roomId]);
 
   const handleSendMessage = () => {
-    if (newMessage.trim() && userInfo && roomInfo) {
+    if (newMessage.trim() && userInfo) {
       const message = {
-        room: roomInfo.room_id,
-        sender: userInfo.id,
-        sender_profile_image: userInfo.profile_image,
+        room: roomId,
+        sender: userInfo.id, // user_id로 고쳐야 함
+        sender_profile_image: userInfo.profile_image, // 사용자 프로필 이미지
         content: newMessage,
         timestamp: new Date().toISOString(),
         read: false,
       };
 
-      if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-        socket.current.send(JSON.stringify(message));
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(message));
+        setMessages((prevMessages) => [...prevMessages, message]);
         setNewMessage("");
       } else {
         console.error("WebSocket이 아직 연결되지 않았습니다.");
@@ -193,14 +178,6 @@ const ChatRoom = () => {
   return (
     <>
       <Header />
-      <div>
-        <h2>채팅방 id: {roomInfo?.room_id}</h2>
-        <h3>대화 상대: {roomInfo?.other_user_nickname}</h3>
-        <h3>타임스탬프: {roomInfo?.last_message_timestamp}</h3>
-        <h3>최근대화: {roomInfo?.last_message_content}</h3>
-        <h3>대화 상대 프로필 이미지: {roomInfo?.other_user_profile_image}</h3>
-        <h3>룸 이름: {roomInfo?.room_name}</h3>
-      </div>
       <MessageList>
         {messages.map((msg, index) => (
           <MessageContainer key={index} $isSender={msg.sender === userInfo?.id}>

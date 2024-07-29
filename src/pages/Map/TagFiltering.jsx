@@ -5,7 +5,6 @@ import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import Tag from "../../components/Tag/Tag";
 import { searchByTag } from "../../apis/searchByTag"; // 태그에 해당하는 것만
-import { getUserInfo } from "../../apis/getUserInfo";
 import { getDogInfo } from "../../apis/getDogInfo";
 import { getCoordinates } from "../../apis/geolocation";
 import { createChatRoom } from "../../apis/chatApi";
@@ -163,19 +162,15 @@ const TagFiltering = () => {
   // 유저와 보호자 간 채팅방 생성
   const handleContactButtonClick = async (dog) => {
     try {
-      const userInfo = await getUserInfo();
-      const createdRoom = await createChatRoom(
-        dog.id,
-        userInfo.id,
-        dog.owner_id,
-      );
-      navigate(`/chat/rooms/${createdRoom.id}`, {
-        state: {
-          roomInfo: createdRoom,
-          userInfo,
-          ownerInfo: { owner_id: dog.owner_id, owner_image: dog.owner_image },
-        },
-      });
+      const response = await createChatRoom(dog.id);
+      // 결과로 나온 룸 id로 접속
+      if (response && response.room_id) {
+        navigate(`/chat/rooms/${response.room_id}`, {
+          state: { dogId: dog.id },
+        });
+      } else {
+        console.error("Failed to create chat room");
+      }
     } catch (error) {
       console.error("Error creating chat room:", error);
     }
