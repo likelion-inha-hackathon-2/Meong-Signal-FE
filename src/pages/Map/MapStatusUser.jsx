@@ -101,7 +101,6 @@ const MapStatusUser = () => {
   const { dogId } = useParams();
   const navigate = useNavigate();
   const [initialLocation, setInitialLocation] = useState(null);
-
   const [dogInfo, setDogInfo] = useState({ name: "", image: "" });
   const [routes, setRoutes] = useState([]);
   const [showRoutes, setShowRoutes] = useState(false);
@@ -128,8 +127,12 @@ const MapStatusUser = () => {
         setInitialLocation(coordinates);
 
         if (dogId) {
-          const data = await getDogInfo(dogId);
-          setDogInfo(data.dog);
+          const response = await getDogInfo(dogId);
+          setDogInfo({
+            dog_id: response.data.id,
+            name: response.data.name,
+            image: response.data.image,
+          });
         }
       } catch (error) {
         console.error("Error fetching initial data:", error);
