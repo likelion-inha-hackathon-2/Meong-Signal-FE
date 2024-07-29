@@ -3,11 +3,8 @@ import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
-import authApi from "../../apis/authApi";
-import { getAccessToken } from "../../apis/authApi";
-import { getUserInfo } from "../../apis/getUserInfo";
-import { enterChatRoom, getChatRoomMessages } from "../../apis/chatApi";
-import { useParams } from "react-router-dom"; // url 뒤에 붙은 채팅방 고유 넘버를 가져오기
+import { getChatRoomMessages, enterChatRoom } from "../../apis/chatApi";
+import { useLocation, useParams } from "react-router-dom";
 
 // 채팅 메시지 리스트
 const MessageList = styled.div`
@@ -75,107 +72,95 @@ const SendButton = styled(Button)`
 `;
 
 const ChatRoom = () => {
-  const { roomId } = useParams(); // url로부터 roomId를 가져옴
+  const location = useLocation();
+  const { id } = useParams();
+  const { roomInfo, userInfo } = location.state || {}; // location.state가 null인 경우 기본값 설정
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
-  const socket = useRef(null); // WebSocket을 useRef로 관리
+  const socket = useRef(null);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const initializeChatRoom = async () => {
       try {
-        const userInfo = await getUserInfo();
-        setUserInfo(userInfo);
-      } catch (error) {
-        console.error("사용자 정보를 가져오지 못했습니다: ", error);
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
-
-  useEffect(() => {
-    // 채팅방에 입장
-    const enterRoom = async () => {
-      try {
-        await enterChatRoom(roomId);
-      } catch (error) {
-        console.error("Failed to enter chat room:", error);
-        return;
-      }
-
-      // 메시지 목록 조회
-      const fetchChatMessages = async () => {
-        try {
-          const response = await getChatRoomMessages(roomId);
-          setMessages(response);
-        } catch (error) {
-          console.error("Failed to fetch chat messages:", error);
-        }
-      };
-
-      fetchChatMessages();
-
-      const accessToken = getAccessToken();
-      if (!accessToken) {
-        console.error("토큰 x");
-        return;
-      }
-
-      const connectWebSocket = () => {
-        if (socket.current) {
-          socket.current.close();
+        let fetchedRoomInfo = roomInfo;
+        if (!fetchedRoomInfo) {
+          fetchedRoomInfo = await enterChatRoom(id);
         }
 
-        socket.current = new WebSocket(
-          "wss://" +
-            process.env.REACT_APP_BACKEND_DOMAIN +
-            "/ws/chat/" +
-            roomId +
-            "/?token=" +
-            encodeURIComponent(accessToken),
-        );
+        // 채팅방 메시지 가져오기
+        const fetchChatMessages = async () => {
+          try {
+            const response = await getChatRoomMessages(fetchedRoomInfo.id);
+            setMessages(response);
+          } catch (error) {
+            console.error("Failed to fetch chat messages:", error);
+          }
+        };
 
-        socket.current.onmessage = async (event) => {
-          const message = JSON.parse(event.data);
+        fetchChatMessages();
 
-          const response = await authApi.post("/users/profile-image", {
-            id: message.sender_id,
-          });
+        // 웹소켓 연결
+        const connectWebSocket = () => {
+          if (socket.current) {
+            socket.current.close();
+          }
 
-          let nowMessage = {
-            content: message.content,
-            sender: message.sender_id,
-            timestamp: message.timestamp,
-            sender_profile_image: response.data.image,
+          socket.current = new WebSocket(fetchedRoomInfo.websocket_url);
+
+          socket.current.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+
+            let senderProfileImage =
+              message.sender === userInfo.id
+                ? userInfo.profile_image
+                : fetchedRoomInfo.other_user_profile_image;
+
+            let nowMessage = {
+              content: message.content,
+              sender: message.sender,
+              timestamp: message.timestamp,
+              sender_profile_image: senderProfileImage,
+            };
+
+            setMessages((prevMessages) => [...prevMessages, nowMessage]);
           };
 
-          setMessages((prevMessages) => [...prevMessages, nowMessage]);
+          socket.current.onclose = (event) => {
+            console.error("WebSocket이 닫혔습니다: ", event);
+          };
+
+          socket.current.onerror = (error) => {
+            console.error("WebSocket 에러: ", error);
+          };
+
+          socket.current.onopen = () => {
+            console.log("WebSocket 연결 성공");
+          };
         };
 
-        socket.current.onclose = (event) => {
-          console.error("WebSocket이 닫혔습니다: ", event);
-        };
-      };
-
-      connectWebSocket();
-
-      return () => {
-        if (socket.current) {
-          socket.current.close();
+        if (fetchedRoomInfo.websocket_url) {
+          connectWebSocket();
         }
-      };
+
+        return () => {
+          if (socket.current) {
+            socket.current.close();
+          }
+        };
+      } catch (error) {
+        console.error("Failed to initialize chat room:", error);
+      }
     };
 
-    enterRoom();
-  }, [roomId]);
+    initializeChatRoom();
+  }, [id, roomInfo, userInfo]);
 
   const handleSendMessage = () => {
-    if (newMessage.trim() && userInfo) {
+    if (newMessage.trim() && userInfo && roomInfo) {
       const message = {
-        room: roomId,
-        sender: userInfo.id, // user_id로 고쳐야 함
-        sender_profile_image: userInfo.profile_image, // 사용자 프로필 이미지
+        room: roomInfo.id,
+        sender: userInfo.id,
+        sender_profile_image: userInfo.profile_image,
         content: newMessage,
         timestamp: new Date().toISOString(),
         read: false,
@@ -193,6 +178,13 @@ const ChatRoom = () => {
   return (
     <>
       <Header />
+      <div>
+        <h2>채팅방 id: {roomInfo?.id}</h2>
+        <h3>대화 상대: {roomInfo?.other_user_nickname}</h3>
+        <h3>타임스탬프: {roomInfo?.last_message_timestamp}</h3>
+        <h3>최근대화: {roomInfo?.last_message_content}</h3>
+        <h3>대화 상대 프로필 이미지: {roomInfo?.other_user_profile_image}</h3>
+      </div>
       <MessageList>
         {messages.map((msg, index) => (
           <MessageContainer key={index} $isSender={msg.sender === userInfo?.id}>

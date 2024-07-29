@@ -6,7 +6,13 @@ import tagsData from "../Tag/tagsData.json";
 import Button from "../Button/Button";
 import authApi from "../../apis/authApi";
 import { useNavigate } from "react-router-dom";
-import { createChatRoom } from "../../apis/chatApi";
+import {
+  getOwnerInfo,
+  createChatRoom,
+  enterChatRoom,
+  getProfileImage,
+} from "../../apis/chatApi";
+import { getUserInfo } from "../../apis/getUserInfo";
 import defaultDogImage from "../../assets/images/add-dog.png"; // 디폴트 이미지 예외처리
 
 const TooltipContainer = styled.div`
@@ -58,6 +64,8 @@ const CloseButton = styled.button`
 const DogMoreInfo = ({ dogId, onClose }) => {
   const [dog, setDog] = useState(null);
   const [tags, setTags] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
+  const [ownerInfo, setOwnerInfo] = useState(null); // 견주 정보를 저장할 상태
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   useEffect(() => {
@@ -68,6 +76,24 @@ const DogMoreInfo = ({ dogId, onClose }) => {
         const tagsResponse = await authApi.get(`/dogs/${dogId}/tags`);
         setDog(dogResponse.data.dog);
         setTags(tagsResponse.data.tags);
+
+        // 견주 정보 조회
+        const ownerInfoResponse = await getOwnerInfo(dogId);
+        const ownerProfileImage = await getProfileImage(
+          ownerInfoResponse.owner_id,
+        );
+        setOwnerInfo({
+          ...ownerInfoResponse,
+          owner_image: ownerProfileImage.image,
+        });
+
+        // 본인 유저 아이디 조회
+        const userInfoResponse = await getUserInfo();
+        const userProfileImage = await getProfileImage(userInfoResponse.id);
+        setUserInfo({
+          ...userInfoResponse,
+          profile_image: userProfileImage.image,
+        });
       } catch (error) {
         console.error("Error fetching dog info:", error);
       }
@@ -76,7 +102,7 @@ const DogMoreInfo = ({ dogId, onClose }) => {
     fetchDogInfo();
   }, [dogId]);
 
-  if (!dog) {
+  if (!dog || !userInfo || !ownerInfo) {
     return null;
   }
 
@@ -86,12 +112,22 @@ const DogMoreInfo = ({ dogId, onClose }) => {
   // 유저와 보호자 간 채팅방 생성
   const handleContactButtonClick = async () => {
     try {
-      // console.log("Creating chat room for dog ID:", dogId);
-      const response = await createChatRoom(dogId);
-      // 결과로 나온 룸 id로 접속
-      if (response && response.id) {
-        navigate(`/chat/rooms/${response.id}`, {
-          state: { dogId: dog.id },
+      const createdRoom = await createChatRoom(
+        dogId,
+        userInfo.id,
+        ownerInfo.owner_id,
+      );
+      const roomId = createdRoom.id;
+
+      if (roomId) {
+        const roomInfo = await enterChatRoom(roomId);
+        console.log("Room Info:", roomInfo);
+        navigate(`/chat/rooms/${roomInfo.id}`, {
+          state: {
+            roomInfo,
+            userInfo,
+            ownerInfo,
+          },
         });
       } else {
         console.error("Failed to create chat room");
