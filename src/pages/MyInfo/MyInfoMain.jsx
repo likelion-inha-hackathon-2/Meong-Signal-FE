@@ -8,10 +8,13 @@ import DogInfo from "../../components/Dog/DogInfo";
 import { getUserInfo } from "../../apis/getUserInfo";
 import authApi from "../../apis/authApi";
 import { useNavigate } from "react-router-dom";
+import LogoutButton from "../../components/Button/LogoutButton";
 
 const StyledImage = styled(Image)`
+  margin-top: 10px;
   justify-content: center;
   align-items: center;
+  border-radius: 50%;
 `;
 
 const UserInfo = styled.div`
@@ -41,7 +44,7 @@ const MyInfoButtonContainer = styled.div`
 
 // 강아지 목록 컨테이너
 const MyDogInfoWrapper = styled.div`
-  margin: 20px 0;
+  margin: 10px 0;
   display: flex;
   flex-direction: column;
 `;
@@ -212,7 +215,7 @@ const MyInfoMain = () => {
           ))
         )}
       </MyDogInfoWrapper>
-
+      <LogoutButton />
       <Footer />
     </>
   );
