@@ -4,10 +4,10 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import Tag from "../../components/Tag/Tag";
-import { searchByTag } from "../../apis/searchByTag"; // 태그에 해당하는 것만
+import { searchByTag } from "../../apis/searchByTag";
 import { getDogInfo } from "../../apis/getDogInfo";
 import { getCoordinates } from "../../apis/geolocation";
-import { createChatRoom } from "../../apis/chatApi";
+import { createChatRoom, enterChatRoom } from "../../apis/chatApi";
 import { useNavigate } from "react-router-dom";
 
 // 강아지 여러마리 컨테이너
@@ -134,7 +134,6 @@ const TagFiltering = () => {
             newDogInfos[dogsByTags[index].id] = info.dog;
           }
         });
-
         setDogs(dogsByTags);
         setDogInfos(newDogInfos);
       } else {
@@ -163,9 +162,9 @@ const TagFiltering = () => {
   const handleContactButtonClick = async (dog) => {
     try {
       const response = await createChatRoom(dog.id);
-      // 결과로 나온 룸 id로 접속
-      if (response && response.room_id) {
-        navigate(`/chat/rooms/${response.room_id}`, {
+      if (response && response.id) {
+        await enterChatRoom(response.id);
+        navigate(`/chat/rooms/${response.id}`, {
           state: { dogId: dog.id },
         });
       } else {
