@@ -10,6 +10,17 @@ import { getUserInfo } from "../../apis/getUserInfo";
 import { enterChatRoom, getChatRoomMessages } from "../../apis/chatApi";
 import { useParams } from "react-router-dom"; // url 뒤에 붙은 채팅방 고유 넘버를 가져오기
 
+const ChatRoomHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: "PretendardB";
+`;
+
 // 채팅 메시지 리스트
 const MessageList = styled.div`
   display: flex;
@@ -91,6 +102,7 @@ const ChatRoom = () => {
   const [newMessage, setNewMessage] = useState("");
   const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
   const socket = useRef(null); // WebSocket을 useRef로 관리
+  const [otherUserNickname, setOtherUserNickname] = useState(""); // 상대방 닉네임 상태
   // other_user_nickname
 
   useEffect(() => {
@@ -110,7 +122,8 @@ const ChatRoom = () => {
     // 채팅방에 입장
     const enterRoom = async () => {
       try {
-        await enterChatRoom(roomId);
+        const response = await enterChatRoom(roomId);
+        setOtherUserNickname(response.other_user_nickname);
       } catch (error) {
         console.error("Failed to enter chat room:", error);
         return;
@@ -205,6 +218,7 @@ const ChatRoom = () => {
   return (
     <>
       <Header />
+      <ChatRoomHeader>{otherUserNickname}</ChatRoomHeader>
       <MessageList>
         {messages.map((msg, index) => (
           <MessageContainer key={index} $isSender={msg.sender === userInfo?.id}>
