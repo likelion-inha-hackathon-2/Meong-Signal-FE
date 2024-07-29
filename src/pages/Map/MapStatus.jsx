@@ -5,30 +5,51 @@ import Footer from "../../components/Footer/Footer";
 import MapUser from "../../components/Map/MapUser";
 import { getDogInfo } from "../../apis/getDogInfo";
 import authApi from "../../apis/authApi"; // 수정된 부분
+import { fetchMyDogs } from "../../apis/myDogs";
 
 const Container = styled.div`
   font-family: "PretendardM";
 `;
 
-const MapStatus = ({ dogId }) => {
+const MapStatus = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [dogName, setDogName] = useState(""); // 강아지 이름 상태 추가
   const [walkUserEmail, setWalkUserEmail] = useState("walking@gmail.com"); // 고정 산책자 이메일
   const [ownerEmail, setOwnerEmail] = useState("owner@gmail.com"); // 고정 견주 이메일
   const [socket, setSocket] = useState(null);
   const [roomId, setRoomId] = useState(null);
+  const [dogId, setDogId] = useState(null); // dogId 상태 추가
 
   useEffect(() => {
-    const fetchDogInfo = async () => {
+    const fetchWalkingDog = async () => {
       try {
-        const data = await getDogInfo(`/dogs/${dogId}`);
-        setDogName(data.dog.name);
+        const data = await fetchMyDogs();
+        const walkingDog = data.dogs.find((dog) => dog.status === "W");
+        if (walkingDog) {
+          setDogId(walkingDog.id);
+        }
       } catch (error) {
-        console.error("Error fetching dog info:", error);
+        console.error("Failed to fetch walking dog:", error);
       }
     };
 
-    fetchDogInfo();
+    fetchWalkingDog();
+  }, []);
+
+  useEffect(() => {
+    if (dogId) {
+      const fetchDogInfo = async () => {
+        try {
+          const data = await getDogInfo(dogId);
+          setDogName(data.dog.name);
+          console.log(data);
+        } catch (error) {
+          console.error("Error fetching dog info:", error);
+        }
+      };
+
+      fetchDogInfo();
+    }
   }, [dogId]);
 
   useEffect(() => {
@@ -41,7 +62,7 @@ const MapStatus = ({ dogId }) => {
     };
 
     setupRoomAndSocket();
-  }, []); // 마운트 시 한 번만 실행
+  }, []);
 
   const createRoom = async () => {
     if (socket) {
