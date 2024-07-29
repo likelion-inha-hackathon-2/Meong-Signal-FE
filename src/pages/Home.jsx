@@ -16,7 +16,7 @@ const HomeContainer = styled.div`
 `;
 
 const BoldText = styled.div`
-  font-family: "pretendardB";
+  font-family: "PretendardB";
   font-size: 24px;
   font-weight: 700;
   line-height: 28px;
@@ -26,7 +26,7 @@ const BoldText = styled.div`
 `;
 
 const NormalText = styled.div`
-  font-family: "pretendardR";
+  font-family: "PretendardR";
   font-size: 18px;
   font-weight: 400;
   line-height: 28px;

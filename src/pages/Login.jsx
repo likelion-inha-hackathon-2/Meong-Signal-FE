@@ -12,17 +12,24 @@ import KaKaoIcon from "../assets/icons/social-login/icon-kakao.png";
 import NaverIcon from "../assets/icons/social-login/icon-naver.png";
 import GoogleIcon from "../assets/icons/social-login/icon-google.png";
 
+const LoginContainer = styled.div`
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 const TitleSection = styled.h1`
   text-align: center;
   font-family: "PretendardB";
   font-size: 20px;
   font-style: normal;
-  font-weight: 700;
-  line-height: 28px;
+  line-height: 10px;
 `;
 
 const StyledLink = styled(Link)`
-  font-family: "pretendardS";
+  font-family: "PretendardS";
   font-size: 16px;
   padding: 4px;
   text-decoration: none;
@@ -169,37 +176,39 @@ const Login = () => {
 
   return (
     <>
-      <TitleSection>멍멍! 같이 산책해요!</TitleSection>
-      <img src={LogoImage} alt="로고 이미지" />
-      <form onSubmit={handleLogin}>
-        <Input
-          label="이메일"
-          type="text"
-          name="email"
-          value={values.email}
-          onChange={handleChange}
-          placeholder="이메일을 입력하세요"
-          style={{ marginBottom: "10px" }}
-        />
-        <Input
-          label="비밀번호"
-          type="password"
-          name="password"
-          value={values.password}
-          onChange={handleChange}
-          placeholder="비밀번호를 입력하세요"
-          style={{ marginBottom: "10px" }}
-        />
-        <Button text="로그인" type="submit" />
-      </form>
-      <StyledLink to="/signup1" onClick={handleSignupNavigate}>
-        회원가입
-      </StyledLink>
-      <SocialLoginIconContainer>
-        <IconImage src={KaKaoIcon} onClick={handleKakaoLogin} />
-        <IconImage src={NaverIcon} onClick={handleNaverLogin} />
-        <IconImage src={GoogleIcon} onClick={handleGoogleLogin} />
-      </SocialLoginIconContainer>
+      <LoginContainer>
+        <TitleSection>멍멍! 같이 산책해요!</TitleSection>
+        <Image src={LogoImage} alt="로고 이미지" width="250px" />
+        <form onSubmit={handleLogin}>
+          <Input
+            label="이메일"
+            type="text"
+            name="email"
+            value={values.email}
+            onChange={handleChange}
+            placeholder="이메일을 입력하세요"
+            style={{ marginBottom: "10px" }}
+          />
+          <Input
+            label="비밀번호"
+            type="password"
+            name="password"
+            value={values.password}
+            onChange={handleChange}
+            placeholder="비밀번호를 입력하세요"
+            style={{ marginBottom: "10px" }}
+          />
+          <Button text="로그인" type="submit" />
+        </form>
+        <StyledLink to="/signup1" onClick={handleSignupNavigate}>
+          회원가입
+        </StyledLink>
+        <SocialLoginIconContainer>
+          <IconImage src={KaKaoIcon} onClick={handleKakaoLogin} />
+          <IconImage src={NaverIcon} onClick={handleNaverLogin} />
+          <IconImage src={GoogleIcon} onClick={handleGoogleLogin} />
+        </SocialLoginIconContainer>
+      </LoginContainer>
     </>
   );
 };
