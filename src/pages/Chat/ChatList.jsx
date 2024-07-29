@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import authApi from "../../apis/authApi";
+import { getChatRooms } from "../../apis/chatApi";
 import Chat from "../../components/Chat/Chat";
 
 // 채팅방 컴포넌트 리스트
@@ -30,15 +30,15 @@ const ChatList = () => {
   useEffect(() => {
     const fetchChatRooms = async () => {
       try {
-        const response = await authApi.get("/chat/rooms");
-        const rooms = response.data.map((room) => ({
+        const rooms = await getChatRooms();
+        const formattedRooms = rooms.map((room) => ({
           ...room,
           last_message_content:
             room.last_message_content || "메시지가 없습니다.",
           last_message_timestamp:
             room.last_message_timestamp || "시간 정보가 없습니다.",
         }));
-        setChatRooms(rooms);
+        setChatRooms(formattedRooms);
       } catch (error) {
         console.error("Error fetching chat rooms:", error);
       } finally {
