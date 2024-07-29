@@ -21,3 +21,16 @@ export const getDogWalkInfo = async (id) => {
     throw error;
   }
 };
+
+// 특정 강아지의 견주 정보 조회
+export const getDogOwnerInfo = async (dogId) => {
+  try {
+    const response = await authApi.post("/dogs/owner", {
+      dog_id: dogId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching dog info:", error);
+    throw error;
+  }
+};

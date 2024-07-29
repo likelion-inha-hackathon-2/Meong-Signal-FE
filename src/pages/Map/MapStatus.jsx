@@ -5,6 +5,7 @@ import Footer from "../../components/Footer/Footer";
 import MapUser from "../../components/Map/MapUser";
 import authApi from "../../apis/authApi"; // 수정된 부분
 import { fetchMyDogs } from "../../apis/myDogs";
+import { getUserInfo } from "../../apis/getUserInfo";
 
 const Container = styled.div`
   font-family: "PretendardM";
@@ -35,8 +36,8 @@ const MapStatus = () => {
   const [walkingDogs, setWalkingDogs] = useState([]); // 산책 중인 강아지 목록 상태 추가
   const [selectedDogId, setSelectedDogId] = useState(null); // 선택한 강아지의 id
   const [selectedDogName, setSelectedDogName] = useState(""); // 선택된 강아지 이름 상태 추가
-  const [walkUserEmail, setWalkUserEmail] = useState("walking@gmail.com"); // 고정 산책자 이메일
-  const [ownerEmail, setOwnerEmail] = useState("owner@gmail.com"); // 고정 견주 이메일
+  const [walkUserEmail, setWalkUserEmail] = useState(""); // 고정 산책자 이메일
+  const [ownerEmail, setOwnerEmail] = useState(""); // 고정 견주 이메일
   const [socket, setSocket] = useState(null);
   const [roomId, setRoomId] = useState(null);
 
@@ -53,6 +54,27 @@ const MapStatus = () => {
     };
 
     fetchWalkingDogs();
+  }, []);
+
+  useEffect(() => {
+    // walkUserEmail 설정
+    const fetchWalkUserEmail = async () => {};
+
+    fetchWalkUserEmail();
+  }, []);
+
+  useEffect(() => {
+    // ownerEmail 설정
+    const fetchOwnerEmail = async () => {
+      try {
+        const data = await getUserInfo();
+        setOwnerEmail(data.email);
+      } catch (error) {
+        console.error("Error fetching owner eamil:", error);
+      }
+    };
+
+    fetchOwnerEmail();
   }, []);
 
   useEffect(() => {

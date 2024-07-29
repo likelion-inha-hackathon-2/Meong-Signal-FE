@@ -3,11 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import { getDogInfo } from "../../apis/getDogInfo";
+import { getDogInfo, getDogOwnerInfo } from "../../apis/getDogInfo";
 import { getCoordinates } from "../../apis/geolocation";
 import { getMarkedTrails } from "../../apis/trail";
 import { saveWalkData } from "../../apis/walk";
 import { getDistance } from "../../utils/getDistance";
+import { getUserInfo } from "../../apis/getUserInfo";
 import html2canvas from "html2canvas";
 import useUserMap from "../../hooks/useUserMap";
 
@@ -112,9 +113,9 @@ const MapStatusUser = () => {
   const [distance, setDistance] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [socket, setSocket] = useState(null);
-  const [ownerEmail] = useState("owner@gmail.com");
+  const [ownerEmail, setOwnerEmail] = useState("");
   const [roomId, setRoomId] = useState(null);
-  const [walkUserEmail] = useState("walking@gmail.com");
+  const [walkUserEmail, setWalkUserEmail] = useState("");
 
   const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
@@ -142,6 +143,34 @@ const MapStatusUser = () => {
     };
     fetchInitialData();
   }, [dogId, setCurrentLocation]);
+
+  useEffect(() => {
+    // ownerEmail 설정
+    const fetchOwnerEmail = async () => {
+      try {
+        const ownerInfo = await getDogOwnerInfo(dogId);
+        setOwnerEmail(ownerInfo.owner_email);
+      } catch (error) {
+        console.error("Error fetching owner eamil:", error);
+      }
+    };
+
+    fetchOwnerEmail();
+  }, []);
+
+  useEffect(() => {
+    // walkUserEmail 설정
+    const fetchWalkUserEmail = async () => {
+      try {
+        const data = await getUserInfo();
+        setWalkUserEmail(data.email);
+      } catch (error) {
+        console.error("Error fetching walkuser eamil:", error);
+      }
+    };
+
+    fetchWalkUserEmail();
+  }, []);
 
   useEffect(() => {
     const setupRoomAndSocket = async () => {
