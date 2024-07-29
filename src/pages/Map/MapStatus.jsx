@@ -67,7 +67,7 @@ const MapStatus = ({ dogId }) => {
 
   const setUpWebSocket = (roomId) => {
     const newSocket = new WebSocket(
-      `wss://meong-signal.kro.kr/ws/room/${roomId}/locations`,
+      `wss://meong-signal.kro.kr/ws/walkroom/${roomId}/locations`,
     );
 
     newSocket.onopen = () => {
