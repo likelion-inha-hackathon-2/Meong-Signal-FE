@@ -29,6 +29,7 @@ const TextContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   margin-left: 5px;
+  font-family: 'PretendardM';
 `;
 
 const DogName = styled.div`
@@ -36,6 +37,7 @@ const DogName = styled.div`
   font-weight: bold;
   color: #333;
   margin-bottom: 5px;
+  font-family: 'PretendardM';
 `;
 
 const DateInfo = styled.div`
@@ -43,6 +45,7 @@ const DateInfo = styled.div`
   align-items: center;
   color: #888;
   margin-bottom: 2px; 
+  font-family: 'PretendardM';
 `;
 
 const CalendarIcon = styled.img`
@@ -62,6 +65,7 @@ const Button = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 14px;
+  font-family: 'PretendardM';
   cursor: pointer;
   &.chat {
     background-color: #6BBE6F;
