@@ -40,9 +40,10 @@ const ChallengeItem = styled.div`
   margin-bottom: 10px;
   padding: 10px;
   background-color: ${(props) =>
-    props.met ? "var(--yellow-color1)" : "var(--gray-color2)"};
+    props.met === "true" ? "var(--yellow-color1)" : "var(--gray-color2)"};
   border: 2px solid
-    ${(props) => (props.met ? "var(--green-color)" : "var(--gray-color3)")};
+    ${(props) =>
+      props.met === "true" ? "var(--green-color)" : "var(--gray-color3)"};
   border-radius: 8px;
 `;
 
@@ -65,9 +66,7 @@ const ChallengeBadge = styled.div`
   align-items: center;
   justify-content: center;
   background-color: ${(props) =>
-    props.met
-      ? "var(--yellow-color2)"
-      : "var(--gray-color3)"}; // 조건을 달성하면 녹색으로 색상이 바뀌도록 설정
+    props.met === "true" ? "var(--yellow-color2)" : "var(--gray-color3)"};
   color: #fff;
   font-family: "PretendardS";
   padding: 6px;
@@ -82,13 +81,13 @@ const FootprintIcon = styled.img`
 
 const IsEmptyMessage = styled.p`
   margin-top: 10px;
-  font-family: "PretendardR";
+  font-family: "PretendardM";
   font-size: 14px;
   color: gray;
 `;
 
 const ChallengeStatus = styled.p`
-  font-family: "PretendardR";
+  font-family: "PretendardM";
   font-size: 14px;
   color: gray;
   margin-bottom: 10px;
@@ -149,7 +148,6 @@ const WalkDetail = () => {
     const fetchWeekChallenge = async () => {
       try {
         const data = await getChallenge();
-        console.log("Week challenge data:", data);
         setWeekChallenge(data);
 
         if (data.week_distance >= 30) {
@@ -203,23 +201,23 @@ const WalkDetail = () => {
         <ChallengeSection>
           <TitleWrapper>📢 이번 주 챌린지</TitleWrapper>
           <ChallengeStatus>
-            이번주 달성현황에 따라 멍이 추가됩니다!
+            주간 챌린지 달성 현황에 따라 멍을 획득할 수 있어요.
           </ChallengeStatus>
-          <ChallengeItem met={isDogsChallengeMet}>
+          <ChallengeItem met={isDogsChallengeMet.toString()}>
             <ChallengeText>
               <ChallengeIcon src={walkingIcon} alt="walking" />
               3마리의 강아지와 산책하기
             </ChallengeText>
-            <ChallengeBadge met={isDogsChallengeMet}>
+            <ChallengeBadge met={isDogsChallengeMet.toString()}>
               15
               <FootprintIcon src={footprintIcon} alt="footprint" />
             </ChallengeBadge>
           </ChallengeItem>
-          <ChallengeItem met={isDistanceChallengeMet}>
+          <ChallengeItem met={isDistanceChallengeMet.toString()}>
             <ChallengeText>
               <ChallengeIcon src={walkingIcon} alt="walking" />총 30km 산책하기
             </ChallengeText>
-            <ChallengeBadge met={isDistanceChallengeMet}>
+            <ChallengeBadge met={isDistanceChallengeMet.toString()}>
               20
               <FootprintIcon src={footprintIcon} alt="footprint" />
             </ChallengeBadge>
