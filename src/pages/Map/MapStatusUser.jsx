@@ -266,12 +266,9 @@ const MapStatusUser = () => {
     setUpWebSocket(roomData.id);
   };
 
-  //
-  ///
-  ///여기바꿔
   const setUpWebSocket = (roomId) => {
     const newSocket = new WebSocket(
-      `ws://localhost:8000/ws/walkroom/${roomId}/locations`,
+      `wss://meong-signal.kro.kr/ws/walkroom/${roomId}/locations`,
     );
 
     newSocket.onopen = () => {
