@@ -1,4 +1,5 @@
 import authApi from "./authApi";
+// import { getUserInfo } from "./getUserInfo";
 
 // 견주의 정보를 조회 (id, email, image, nickname)
 export const getOwnerInfo = async (dogId) => {
@@ -38,11 +39,11 @@ export const createChatRoom = async (dogId, userId, ownerId) => {
 
 // room id로 채팅방 입장하여 룸 정보 조회하는 부분
 /*{
-  "room_id": 3,
-  "room_name": "영주2 - 영주감자",
-  "other_user_nickname": "영주2",
-  "other_user_profile_image": "https://meong-signal-s3-bucket.s3.ap-northeast-2.amazonaws.com/users/dI_J0HxnTwCXubn4dkYszQ.png",
-  "websocket_url": "wss://meong-signal.kro.kr/ws/chat/3/?token=b'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIyMTk4NjQwLCJpYXQiOjE3MjIxOTE0NDAsImp0aSI6ImE5OTFhMjg4MzE1YTQxYjlhM2QwNjU5NDk3ZjVlNDY0IiwidXNlcl9pZCI6M30.71muBfdkU6vHdCkEJt1MmUU_d5bKesdf3ZWDueswKIc'"
+  "room_id": 
+  "room_name":
+  "other_user_nickname": 
+  "other_user_profile_image": 
+  "websocket_url":
 }*/
 export const enterChatRoom = async (roomId) => {
   try {

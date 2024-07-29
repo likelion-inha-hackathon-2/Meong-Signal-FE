@@ -5,11 +5,13 @@ import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import { getChatRoomMessages, enterChatRoom } from "../../apis/chatApi";
 import { useLocation, useParams } from "react-router-dom";
+import { getUserInfo } from "../../apis/getUserInfo";
 
 // 채팅 메시지 리스트
 const MessageList = styled.div`
   display: flex;
   flex-direction: column;
+  width: 350px;
   margin-top: 50px;
   height: calc(100vh - 200px);
   font-family: "PretendardR";
@@ -48,6 +50,7 @@ const ProfileImage = styled.img`
 
 const InputContainer = styled.div`
   display: flex;
+  width: 350px;
   align-items: center;
   padding: 10px 20px;
   background-color: #fff;
@@ -64,6 +67,7 @@ const TextInput = styled.input`
 `;
 
 const SendButton = styled(Button)`
+  width: 70px;
   padding: 10px 20px;
   background-color: var(--yellow-color2);
   border: none;
@@ -73,24 +77,35 @@ const SendButton = styled(Button)`
 
 const ChatRoom = () => {
   const location = useLocation();
-  const { id } = useParams();
-  const { roomInfo, userInfo } = location.state || {}; // location.state가 null인 경우 기본값 설정
+  const { roomId } = useParams();
+  const [userInfo, setUserInfo] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [roomInfo, setRoomInfo] = useState(null);
   const socket = useRef(null);
+
+  console.log("room id:", roomId);
 
   useEffect(() => {
     const initializeChatRoom = async () => {
+      if (!roomId) {
+        console.error("룸 id가 제공되지 않았습니다.");
+        return;
+      }
+
       try {
-        let fetchedRoomInfo = roomInfo;
-        if (!fetchedRoomInfo) {
-          fetchedRoomInfo = await enterChatRoom(id);
-        }
+        // 사용자 정보 가져오기
+        const fetchedUserInfo = await getUserInfo();
+        setUserInfo(fetchedUserInfo);
+
+        // 채팅방 정보 가져오기
+        const fetchedRoomInfo = await enterChatRoom(roomId);
+        setRoomInfo(fetchedRoomInfo);
 
         // 채팅방 메시지 가져오기
         const fetchChatMessages = async () => {
           try {
-            const response = await getChatRoomMessages(fetchedRoomInfo.id);
+            const response = await getChatRoomMessages(fetchedRoomInfo.room_id);
             setMessages(response);
           } catch (error) {
             console.error("Failed to fetch chat messages:", error);
@@ -105,16 +120,18 @@ const ChatRoom = () => {
             socket.current.close();
           }
 
-          socket.current = new WebSocket(fetchedRoomInfo.websocket_url);
+          socket.current = new WebSocket(fetchedRoomInfo.websocket_url); // 웹소켓 서버 주소
 
           socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data);
 
+            // 프사 설정
             let senderProfileImage =
               message.sender === userInfo.id
                 ? userInfo.profile_image
                 : fetchedRoomInfo.other_user_profile_image;
 
+            // 보낼 메시지 설정
             let nowMessage = {
               content: message.content,
               sender: message.sender,
@@ -128,11 +145,9 @@ const ChatRoom = () => {
           socket.current.onclose = (event) => {
             console.error("WebSocket이 닫혔습니다: ", event);
           };
-
           socket.current.onerror = (error) => {
             console.error("WebSocket 에러: ", error);
           };
-
           socket.current.onopen = () => {
             console.log("WebSocket 연결 성공");
           };
@@ -153,12 +168,12 @@ const ChatRoom = () => {
     };
 
     initializeChatRoom();
-  }, [id, roomInfo, userInfo]);
+  }, [roomId]);
 
   const handleSendMessage = () => {
     if (newMessage.trim() && userInfo && roomInfo) {
       const message = {
-        room: roomInfo.id,
+        room: roomInfo.room_id,
         sender: userInfo.id,
         sender_profile_image: userInfo.profile_image,
         content: newMessage,
@@ -179,11 +194,12 @@ const ChatRoom = () => {
     <>
       <Header />
       <div>
-        <h2>채팅방 id: {roomInfo?.id}</h2>
+        <h2>채팅방 id: {roomInfo?.room_id}</h2>
         <h3>대화 상대: {roomInfo?.other_user_nickname}</h3>
         <h3>타임스탬프: {roomInfo?.last_message_timestamp}</h3>
         <h3>최근대화: {roomInfo?.last_message_content}</h3>
         <h3>대화 상대 프로필 이미지: {roomInfo?.other_user_profile_image}</h3>
+        <h3>룸 이름: {roomInfo?.room_name}</h3>
       </div>
       <MessageList>
         {messages.map((msg, index) => (
