@@ -12,10 +12,10 @@ const StyledMap = styled.div`
   flex-shrink: 0;
 `;
 
-const MapUser = ({ latitude, longitude, width, height }) => {
+const MapUser = ({ latitude, longitude, width, height, dogId }) => {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
-  const dogId = query.get("dogId");
+  //const dogId = query.get("dogId");
   const keyword = query.get("keyword");
 
   const initialLocation = { latitude, longitude };
@@ -23,7 +23,7 @@ const MapUser = ({ latitude, longitude, width, height }) => {
   const { mapContainer, map, selectedDog, setSelectedDog, markers } =
     useUserMap(
       process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
-      initialLocation,
+      //initialLocation,
       dogId,
       keyword,
     );

@@ -77,7 +77,7 @@ const MapStatus = () => {
     const response = await authApi.post("/walk-status/rooms/", {
       owner_email: ownerEmail,
       walk_user_email: walkUserEmail,
-      dog_id: dogId,
+      //dog_id: dogId,
     });
 
     if (response.status !== 200) {
@@ -154,6 +154,7 @@ const MapStatus = () => {
                 longitude={currentLocation.longitude}
                 width="300px"
                 height="300px"
+                dogId={selectedDogId}
               />
             ) : (
               <p>위치를 불러오는 중...</p>
