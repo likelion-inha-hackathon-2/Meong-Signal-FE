@@ -8,7 +8,9 @@ import CalenderIcon from "../../assets/icons/icon-calender-button.png";
 import { getAccessToken } from "../../apis/authApi";
 import { getUserInfo } from "../../apis/getUserInfo";
 import { enterChatRoom, getChatRoomMessages } from "../../apis/chatApi";
-import { useParams } from "react-router-dom"; // url 뒤에 붙은 채팅방 고유 넘버를 가져오기
+import { useParams } from "react-router-dom";
+import Calendar from "../../components/Calendar/Calendar";
+import Reservation from "../../components/Reservation/Reservation";
 
 const ChatRoomHeader = styled.div`
   display: flex;
@@ -21,7 +23,6 @@ const ChatRoomHeader = styled.div`
   font-family: "PretendardB";
 `;
 
-// 채팅 메시지 리스트
 const MessageList = styled.div`
   display: flex;
   width: 350px;
@@ -72,13 +73,12 @@ const InputContainer = styled.div`
   margin-bottom: 20px;
 `;
 
-// 캘린더 버튼
 const CalenderIconWrapper = styled.img`
   cursor: pointer;
   margin-right: 5px;
+  position: relative;
 `;
 
-// 메시지 입력 창
 const TextInput = styled.input`
   flex: 1;
   padding: 10px;
@@ -96,14 +96,23 @@ const SendButton = styled(Button)`
   cursor: pointer;
 `;
 
+const TooltipWrapper = styled.div`
+  position: absolute;
+  top: 60%;
+  left: 10%;
+  z-index: 100;
+`;
+
 const ChatRoom = () => {
-  const { roomId } = useParams(); // url로부터 roomId를 가져옴
+  const { roomId } = useParams();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
-  const socket = useRef(null); // WebSocket을 useRef로 관리
-  const [otherUserNickname, setOtherUserNickname] = useState(""); // 상대방 닉네임 상태
-  // other_user_nickname
+  const [userInfo, setUserInfo] = useState(null);
+  const socket = useRef(null);
+  const [otherUserNickname, setOtherUserNickname] = useState("");
+  const [showCalendar, setShowCalendar] = useState(false); // 캘린더 표시 상태
+  const [reservation, setReservation] = useState(null); // 예약 상태
+  const [dogID, setDogID] = useState(null); // 강아지 ID 상태
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -119,17 +128,20 @@ const ChatRoom = () => {
   }, []);
 
   useEffect(() => {
-    // 채팅방에 입장
     const enterRoom = async () => {
       try {
         const response = await enterChatRoom(roomId);
         setOtherUserNickname(response.other_user_nickname);
+        if (response.dog_id) {
+          setDogID(response.dog_id); // 강아지 ID 설정
+        } else {
+          console.error("강아지 ID가 응답에 포함되지 않았습니다.");
+        }
       } catch (error) {
         console.error("Failed to enter chat room:", error);
         return;
       }
 
-      // 메시지 목록 조회
       const fetchChatMessages = async () => {
         try {
           const response = await getChatRoomMessages(roomId);
@@ -215,6 +227,21 @@ const ChatRoom = () => {
     }
   };
 
+  const toggleCalendar = () => {
+    setShowCalendar(!showCalendar); // 캘린더 표시 상태 토글
+  };
+
+  const handleSaveReservation = (name, date, time) => {
+    console.log("약속 이름:", name);
+    console.log("약속 날짜:", date);
+    console.log("약속 시간:", time);
+    if (dogID) {
+      setReservation({ name, date, time, dogID }); // 동적으로 받은 강아지 ID 사용
+    } else {
+      console.error("강아지 ID가 설정되지 않았습니다.");
+    }
+  };
+
   return (
     <>
       <Header />
@@ -232,9 +259,29 @@ const ChatRoom = () => {
             </MessageBubble>
           </MessageContainer>
         ))}
+        {reservation && (
+          <MessageContainer $isSender={false}>
+            <Reservation
+              dogID={reservation.dogID} // 동적으로 받은 강아지 ID 전달
+              reservationData={reservation} // 예약 데이터를 전달
+            />
+          </MessageContainer>
+        )}
       </MessageList>
       <InputContainer>
-        <CalenderIconWrapper src={CalenderIcon} alt="캘린더 아이콘" />
+        <CalenderIconWrapper
+          src={CalenderIcon}
+          alt="캘린더 아이콘"
+          onClick={toggleCalendar}
+        />
+        {showCalendar && (
+          <TooltipWrapper>
+            <Calendar
+              onClose={() => setShowCalendar(false)}
+              onSave={handleSaveReservation}
+            />
+          </TooltipWrapper>
+        )}
         <TextInput
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
