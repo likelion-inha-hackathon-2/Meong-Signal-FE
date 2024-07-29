@@ -31,6 +31,7 @@ import UserReview from "./pages/MyInfo/UserReview";
 import MoreRecordMyDogWalk from "./pages/MyInfo/MoreRecordMyDogWalk";
 import MeongShop from "./pages/MeongShop/MeongShop";
 import MyGoods from "./pages/MeongShop/MyGoods";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -70,6 +71,7 @@ function App() {
           <Route path="map-walking-test" element={<MapWalkingTest />} />
           <Route path="shop" element={<MeongShop />} />
           <Route path="my-goods" element={<MyGoods />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>

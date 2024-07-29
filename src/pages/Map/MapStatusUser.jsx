@@ -98,9 +98,12 @@ const Stat = styled.div`
 `;
 
 const MapStatusUser = () => {
-  const { dogId } = useParams();
+  const { dogId } = useParams(); // URL에서 dogId를 받아옴
   const navigate = useNavigate();
-  const [initialLocation, setInitialLocation] = useState(null);
+  const [initialLocation, setInitialLocation] = useState({
+    latitude: 37.4482020408321,
+    longitude: 126.651415033662,
+  });
   const [dogInfo, setDogInfo] = useState({ name: "", image: "" });
   const [routes, setRoutes] = useState([]);
   const [showRoutes, setShowRoutes] = useState(false);
@@ -127,18 +130,16 @@ const MapStatusUser = () => {
         setInitialLocation(coordinates);
 
         if (dogId) {
-          const response = await getDogInfo(dogId);
+          const response = await getDogInfo(dogId); // dogId를 사용해 강아지 정보를 받아옴
           setDogInfo({
-            dog_id: response.data.id,
-            name: response.data.name,
-            image: response.data.image,
+            name: response.dog.name, // 강쥐 이름 설정
+            image: response.dog.image, // 강쥐 이미지 설정
           });
         }
       } catch (error) {
         console.error("Error fetching initial data:", error);
       }
     };
-
     fetchInitialData();
   }, [dogId, setCurrentLocation]);
 
@@ -155,14 +156,16 @@ const MapStatusUser = () => {
   }, []);
 
   useEffect(() => {
+    // Set up interval to send location every 3 seconds if WebSocket is connected
     if (socket) {
       const intervalId = setInterval(() => {
-        sendLocation();
+        SendLocation();
       }, 3000);
 
+      // Clean up interval on WebSocket close
       return () => clearInterval(intervalId);
     }
-  }, [socket]);
+  }, [socket]); // Dependency array includes socket
 
   useEffect(() => {
     if (walkStage === "during") {
@@ -259,13 +262,14 @@ const MapStatusUser = () => {
     };
   };
 
-  const sendLocation = async () => {
+  const SendLocation = async () => {
     if (!socket || socket.readyState !== WebSocket.OPEN) {
       console.warn("WebSocket is not open. Skipping location send.");
       return;
     }
 
     const coordinates = await getCoordinates();
+    setInitialLocation(coordinates);
     setCurrentLocation(coordinates);
 
     const locationPayload = {
@@ -276,7 +280,7 @@ const MapStatusUser = () => {
     };
 
     socket.send(JSON.stringify(locationPayload));
-    console.log("Sent current location:", locationPayload);
+    console.log("소켓으로 send하는 현재 내 위치:", locationPayload); // 여기서 쏴주는 데이터가 내 위치 데이터입니다.
   };
 
   const handleStartWalk = (route = null) => {

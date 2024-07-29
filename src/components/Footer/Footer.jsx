@@ -35,9 +35,9 @@ const Icon = styled.img`
 
 const icons = [
   { src: iconMap, path: "/map-info" },
-  { src: iconChat, path: "/chat" },
-  { src: iconMain, path: "/home" },
   { src: iconWalk, path: "/walk" },
+  { src: iconMain, path: "/home" },
+  { src: iconChat, path: "/chat" },
   { src: iconUser, path: "/myinfo-main" },
 ];
 
