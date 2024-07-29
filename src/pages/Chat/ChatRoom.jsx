@@ -4,6 +4,7 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
 import authApi from "../../apis/authApi";
+import CalenderIcon from "../../assets/icons/icon-calender-button.png";
 import { getAccessToken } from "../../apis/authApi";
 import { getUserInfo } from "../../apis/getUserInfo";
 import { enterChatRoom, getChatRoomMessages } from "../../apis/chatApi";
@@ -12,6 +13,7 @@ import { useParams } from "react-router-dom"; // url 뒤에 붙은 채팅방 고
 // 채팅 메시지 리스트
 const MessageList = styled.div`
   display: flex;
+  width: 350px;
   flex-direction: column;
   margin-top: 50px;
   height: calc(100vh - 200px);
@@ -23,7 +25,7 @@ const MessageList = styled.div`
 
 const MessageContainer = styled.div`
   display: flex;
-  justify-content: ${(props) => (props.$isSender ? "flex-end" : "flex-start")};
+  justify-content: flex-start;
   align-items: center;
   margin-bottom: 15px;
   flex-direction: ${(props) => (props.$isSender ? "row-reverse" : "row")};
@@ -51,6 +53,7 @@ const ProfileImage = styled.img`
 
 const InputContainer = styled.div`
   display: flex;
+  width: 350px;
   align-items: center;
   padding: 10px 20px;
   background-color: #fff;
@@ -58,6 +61,13 @@ const InputContainer = styled.div`
   margin-bottom: 20px;
 `;
 
+// 캘린더 버튼
+const CalenderIconWrapper = styled.img`
+  cursor: pointer;
+  margin-right: 5px;
+`;
+
+// 메시지 입력 창
 const TextInput = styled.input`
   flex: 1;
   padding: 10px;
@@ -68,6 +78,7 @@ const TextInput = styled.input`
 
 const SendButton = styled(Button)`
   padding: 10px 20px;
+  width: 70px;
   background-color: var(--yellow-color2);
   border: none;
   border-radius: 5px;
@@ -80,6 +91,7 @@ const ChatRoom = () => {
   const [newMessage, setNewMessage] = useState("");
   const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
   const socket = useRef(null); // WebSocket을 useRef로 관리
+  // other_user_nickname
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -174,8 +186,8 @@ const ChatRoom = () => {
     if (newMessage.trim() && userInfo) {
       const message = {
         room: roomId,
-        sender: userInfo.id, // user_id로 고쳐야 함
-        sender_profile_image: userInfo.profile_image, // 사용자 프로필 이미지
+        sender: userInfo.id,
+        sender_profile_image: userInfo.profile_image,
         content: newMessage,
         timestamp: new Date().toISOString(),
         read: false,
@@ -208,6 +220,7 @@ const ChatRoom = () => {
         ))}
       </MessageList>
       <InputContainer>
+        <CalenderIconWrapper src={CalenderIcon} alt="캘린더 아이콘" />
         <TextInput
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
