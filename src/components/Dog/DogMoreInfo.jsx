@@ -6,8 +6,8 @@ import tagsData from "../Tag/tagsData.json";
 import Button from "../Button/Button";
 import authApi from "../../apis/authApi";
 import { useNavigate } from "react-router-dom";
-import { createChatRoom } from "../../apis/chatApi";
-import defaultDogImage from "../../assets/images/add-dog.png"; // 디폴트 이미지 예외처리
+import { createChatRoom, enterChatRoom } from "../../apis/chatApi";
+import defaultDogImage from "../../assets/images/add-dog.png";
 
 const TooltipContainer = styled.div`
   position: relative;
@@ -90,11 +90,10 @@ const DogMoreInfo = ({ dogId, onClose }) => {
       const response = await createChatRoom(dogId);
       // 결과로 나온 룸 id로 접속
       if (response && response.id) {
+        await enterChatRoom(response.id);
         navigate(`/chat/rooms/${response.id}`, {
           state: { dogId: dog.id },
         });
-      } else {
-        console.error("Failed to create chat room");
       }
     } catch (error) {
       console.error(
