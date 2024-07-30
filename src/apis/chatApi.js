@@ -23,12 +23,18 @@ export const createChatRoom = async (dogId) => {
     const userInfo = await getUserInfo();
     const userId = userInfo.id;
 
+    // 동일한 상대에게 채팅 못 보내도록 처리
+    if (ownerId === userId) {
+      alert("본인에게는 채팅을 보낼 수 없습니다.");
+      return;
+    }
+
     const response = await authApi.post("/chat/newroom", {
       owner_user: ownerId,
       user_user: userId,
     });
 
-    return response.data; // 여기서 romm id 나옴
+    return response.data; // 여기서 romm id 리턴
   } catch (error) {
     console.error("Failed to create chat room:", error);
     throw error;
