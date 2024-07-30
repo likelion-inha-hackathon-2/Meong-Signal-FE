@@ -11,7 +11,13 @@ const useForm = (initialValues) => {
     });
   };
 
-  // 리셋 함수 추가
+  const setValue = (name, value) => {
+    setValues({
+      ...values,
+      [name]: value,
+    });
+  };
+
   const reset = () => {
     setValues(initialValues);
   };
@@ -19,6 +25,7 @@ const useForm = (initialValues) => {
   return {
     values,
     handleChange,
+    setValue,
     reset,
   };
 };

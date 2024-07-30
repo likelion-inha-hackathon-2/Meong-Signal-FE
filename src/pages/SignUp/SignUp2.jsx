@@ -98,10 +98,9 @@ const Signup2 = () => {
         setError(response.data.message || "회원가입에 실패했습니다.");
       }
     } catch (error) {
-      console.error("Signup error:", error);
+      //console.error("Signup error:", error);
       if (error.response) {
-        // 에러가 뜨면 콘솔창에 에러 출력
-        console.log("Server response error:", error.response.data);
+        //console.log("Server response error:", error.response.data);
         if (error.response.data.message.email) {
           setError(`Error: ${error.response.data.message.email[0]}`);
         } else {
@@ -119,17 +118,15 @@ const Signup2 = () => {
     <>
       <SignupForm>
         <MainImage src={mainImage} alt="메인 이미지" />
-
         <RoadButton text="도로명 찾기" onClick={openAddressPopup} />
-
         <StyledInput
           label="집 주소"
           name="road_address"
           placeholder="도로명 주소를 입력하세요"
           value={values.road_address}
           onChange={handleChange}
+          readOnly
         />
-
         <StyledInput
           label="상세주소"
           name="detail_address"
