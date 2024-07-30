@@ -1,0 +1,16 @@
+.react-datepicker__header {
+    background-color: #FFE8AD;
+  }
+  
+  .react-datepicker__day--holiday-dot::after {
+    content: "•";
+    color: red;
+    position: absolute;
+    font-size: 1.2rem;
+    line-height: 1rem;
+  }
+  
+  .react-datepicker__day--sunday {
+    color: red;
+  }
+  
