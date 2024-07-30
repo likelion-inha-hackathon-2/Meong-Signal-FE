@@ -27,6 +27,7 @@ const UserInfo = styled.div`
 const UserImage = styled(Image)`
   border-radius: 50%;
   margin-right: 10px;
+  object-fit: cover;
 `;
 
 const UserName = styled.p`

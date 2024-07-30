@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 const StyledImage = styled.img`
   width: ${(props) => props.width};
   height: ${(props) => props.height};
-  border-radius: ${(props) => props.borderRadius || "30%"};
+  border-radius: ${(props) => props.borderRadius || "50%"};
   object-fit: cover;
   cursor: pointer;
   filter: brightness(1);

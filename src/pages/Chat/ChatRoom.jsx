@@ -8,25 +8,24 @@ import CalenderIcon from "../../assets/icons/icon-calender-button.png";
 import { getAccessToken } from "../../apis/authApi";
 import { getUserInfo } from "../../apis/getUserInfo";
 import { enterChatRoom, getChatRoomMessages } from "../../apis/chatApi";
-import { useParams } from "react-router-dom"; // url 뒤에 붙은 채팅방 고유 넘버를 가져오기
+import { useParams } from "react-router-dom";
+import { formatHourMinute } from "../../utils/time";
 
 const ChatRoomHeader = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
   margin-top: 20px;
   font-size: 18px;
   font-weight: bold;
   font-family: "PretendardB";
 `;
 
-// 채팅 메시지 리스트
 const MessageList = styled.div`
   display: flex;
   width: 350px;
   flex-direction: column;
-  margin-top: 50px;
+  margin-top: 10px;
   height: calc(100vh - 200px);
   font-family: "PretendardR";
   font-size: 14px;
@@ -38,7 +37,7 @@ const MessageContainer = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   flex-direction: ${(props) => (props.$isSender ? "row-reverse" : "row")};
   margin: 0 10px;
 `;
@@ -62,23 +61,34 @@ const ProfileImage = styled.img`
   margin: ${(props) => (props.$isSender ? "0 0 0 10px" : "0 10px 0 0")};
 `;
 
+// 타임스탬프와 읽음 상태 표시
+const MessageMeta = styled.div`
+  display: flex;
+  flex-direction: row;
+  font-size: 12px;
+  color: var(--gray-color3);
+  margin-top: 5px;
+  padding: 0 3px;
+`;
+
 const InputContainer = styled.div`
   display: flex;
+  position: fixed;
+  bottom: 50px;
   width: 350px;
   align-items: center;
+  justify-content: baseline;
   padding: 10px 20px;
   background-color: #fff;
   border-top: 1px solid #ddd;
   margin-bottom: 20px;
 `;
 
-// 캘린더 버튼
 const CalenderIconWrapper = styled.img`
   cursor: pointer;
   margin-right: 5px;
 `;
 
-// 메시지 입력 창
 const TextInput = styled.input`
   flex: 1;
   padding: 10px;
@@ -97,13 +107,12 @@ const SendButton = styled(Button)`
 `;
 
 const ChatRoom = () => {
-  const { roomId } = useParams(); // url로부터 roomId를 가져옴
+  const { roomId } = useParams();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
-  const socket = useRef(null); // WebSocket을 useRef로 관리
-  const [otherUserNickname, setOtherUserNickname] = useState(""); // 상대방 닉네임 상태
-  // other_user_nickname
+  const [userInfo, setUserInfo] = useState(null);
+  const socket = useRef(null);
+  const [otherUserNickname, setOtherUserNickname] = useState("");
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -119,7 +128,6 @@ const ChatRoom = () => {
   }, []);
 
   useEffect(() => {
-    // 채팅방에 입장
     const enterRoom = async () => {
       try {
         const response = await enterChatRoom(roomId);
@@ -129,7 +137,6 @@ const ChatRoom = () => {
         return;
       }
 
-      // 메시지 목록 조회
       const fetchChatMessages = async () => {
         try {
           const response = await getChatRoomMessages(roomId);
@@ -143,7 +150,7 @@ const ChatRoom = () => {
 
       const accessToken = getAccessToken();
       if (!accessToken) {
-        console.error("토큰 x");
+        console.error("토큰이 없습니다");
         return;
       }
 
@@ -218,7 +225,7 @@ const ChatRoom = () => {
   return (
     <>
       <Header />
-      <ChatRoomHeader>{otherUserNickname}</ChatRoomHeader>
+      <ChatRoomHeader>📪{otherUserNickname}</ChatRoomHeader>
       <MessageList>
         {messages.map((msg, index) => (
           <MessageContainer key={index} $isSender={msg.sender === userInfo?.id}>
@@ -230,6 +237,10 @@ const ChatRoom = () => {
             <MessageBubble $isSender={msg.sender === userInfo?.id}>
               {msg.content}
             </MessageBubble>
+            <MessageMeta>
+              {formatHourMinute(msg.timestamp)}
+              {msg.user_read && msg.owner_read ? "✅" : ""}
+            </MessageMeta>
           </MessageContainer>
         ))}
       </MessageList>

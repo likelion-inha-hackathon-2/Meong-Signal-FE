@@ -16,10 +16,10 @@ import footprintIcon from "../../assets/icons/icon-footprint.png";
 import walkingIcon from "../../assets/icons/icon-walking2.png";
 
 const WalkDetailContainer = styled.div`
-  width: 350px;
+  width: 340px;
   display: flex;
   flex-direction: column;
-  padding: 20px 15px;
+  padding: 10px 10px;
   margin: 20px 0;
 `;
 

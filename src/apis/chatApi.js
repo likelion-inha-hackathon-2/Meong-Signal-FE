@@ -23,12 +23,18 @@ export const createChatRoom = async (dogId) => {
     const userInfo = await getUserInfo();
     const userId = userInfo.id;
 
+    // 동일한 상대에게 채팅 못 보내도록 처리
+    if (ownerId === userId) {
+      alert("본인에게는 채팅을 보낼 수 없습니다.");
+      return;
+    }
+
     const response = await authApi.post("/chat/newroom", {
       owner_user: ownerId,
       user_user: userId,
     });
 
-    return response.data; // 여기서 romm id 나옴
+    return response.data; // 여기서 romm id 리턴
   } catch (error) {
     console.error("Failed to create chat room:", error);
     throw error;
@@ -68,6 +74,29 @@ export const getProfileImage = async (userId) => {
     return response.data.image;
   } catch (error) {
     console.error("Failed to fetch profile image:", error);
+    throw error;
+  }
+};
+
+// chat/rooms 엔드포인트에서 데이터를 가져오는 함수
+export const fetchChatRooms = async () => {
+  try {
+    const response = await authApi.get("/chat/rooms");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching chat rooms:", error);
+    throw error;
+  }
+};
+
+// 읽지 않은 메시지의 개수를 계산하는 함수
+export const countUnreadMessages = async () => {
+  try {
+    const rooms = await fetchChatRooms();
+    const unreadCount = rooms.filter((room) => !room.last_message_read).length;
+    return unreadCount;
+  } catch (error) {
+    console.error("Error counting unread messages:", error);
     throw error;
   }
 };

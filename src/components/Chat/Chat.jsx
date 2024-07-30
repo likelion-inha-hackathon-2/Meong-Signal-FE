@@ -3,7 +3,17 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import { getProfileImage } from "../../apis/chatApi"; // 프로필 이미지 API 함수 임포트
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/ko";
+import { getProfileImage } from "../../apis/chatApi";
+import { formatTimestamp } from "../../utils/time";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(relativeTime);
+dayjs.locale("ko");
 
 const ChatRoomContainer = styled.div`
   display: flex;
@@ -23,6 +33,7 @@ const ProfileImage = styled.img`
   height: 80px;
   border-radius: 50%;
   margin-right: 20px;
+  object-fit: cover;
 `;
 
 const ChatInfo = styled.div`
@@ -52,52 +63,31 @@ const RepresentativeBadge = styled.div`
   background-color: var(--white-color);
   border-radius: 4px;
   border: 2px solid var(--yellow-color2);
-  padding: 2px 4px;
-  margin-right: 5px;
+  padding: 4px 4px;
+  margin-right: 8px;
   font-size: 14px;
+  font-family: "PretendardM";
   margin-left: 5px;
 `;
 
 const LastMessage = styled.div`
-  color: #444444;
+  color: var(--black-color);
   margin: 10px 0;
+  font-size: 14px;
   padding-left: 2px;
 `;
 
 const LastTimeStamp = styled.div`
   color: var(--gray-color3);
-  font-size: 12px;
+  font-size: 10px;
   text-align: right;
 `;
-
-// 수정 필요
-const formatTimestamp = (timestamp) => {
-  if (!timestamp || isNaN(Date.parse(timestamp))) {
-    return "시간 정보가 없습니다.";
-  }
-  const now = dayjs();
-  const messageTime = dayjs(timestamp);
-  const diffMinutes = now.diff(messageTime, "minute");
-  const diffHours = now.diff(messageTime, "hour");
-  const diffDays = now.diff(messageTime, "day");
-
-  if (diffMinutes < 60) {
-    return `${diffMinutes}분 전`;
-  } else if (diffHours < 24) {
-    return `${diffHours}시간 전`;
-  } else {
-    return `${diffDays}일 전`;
-  }
-};
 
 const Chat = ({ room }) => {
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState(
-    room.other_user_profile_image,
+    room.other_user_profile_image || "",
   );
-  const lastMessageContent =
-    room.last_message_content || "대화 내용이 없습니다.";
-  const lastMessageTimestamp = formatTimestamp(room.last_message_timestamp);
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -108,14 +98,13 @@ const Chat = ({ room }) => {
         console.error("Error fetching profile image:", error);
       }
     };
-
     if (!room.other_user_profile_image) {
       fetchProfileImage();
     }
   }, [room.other_user_id, room.other_user_profile_image]);
 
   const handleClick = () => {
-    navigate(`/chat/rooms/${room.id}`); // room id로 이동
+    navigate(`/chat/rooms/${room.id}`);
   };
 
   return (
@@ -131,13 +120,19 @@ const Chat = ({ room }) => {
         <ChatHeader>
           <NicknameContainer>
             {room.other_user_representative && (
-              <RepresentativeBadge>💖업적</RepresentativeBadge>
+              <RepresentativeBadge>
+                👑{room.other_user_representative}
+              </RepresentativeBadge>
             )}
             <Nickname>{room.other_user_nickname}</Nickname>
           </NicknameContainer>
         </ChatHeader>
-        <LastMessage>{lastMessageContent}</LastMessage>
-        <LastTimeStamp>{lastMessageTimestamp}</LastTimeStamp>
+        <LastMessage>
+          {room.last_message_content || "대화 내용이 없습니다."}
+        </LastMessage>
+        <LastTimeStamp>
+          {formatTimestamp(room.last_message_timestamp)}
+        </LastTimeStamp>
       </ChatInfo>
     </ChatRoomContainer>
   );
