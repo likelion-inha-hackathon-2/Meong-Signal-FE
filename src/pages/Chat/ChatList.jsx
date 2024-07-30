@@ -4,7 +4,7 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import authApi from "../../apis/authApi";
 import Chat from "../../components/Chat/Chat";
-import dayjs from "dayjs";
+import { formatTimestamp } from "../../utils/time";
 
 // 채팅방 컴포넌트 리스트
 const ChatRoomList = styled.div`
@@ -26,16 +26,6 @@ const EmptyMessage = styled.div`
 const ChatList = () => {
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp || isNaN(Date.parse(timestamp))) {
-      return "시간 정보 없음";
-    }
-    const now = dayjs();
-    const messageTime = dayjs(timestamp);
-    const diffHours = now.diff(messageTime, "hour");
-    return `${diffHours}시간 전`;
-  };
 
   useEffect(() => {
     const fetchChatRooms = async () => {
