@@ -10,10 +10,17 @@ import authApi from "../../apis/authApi";
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "../../components/Button/LogoutButton";
 
-const StyledImage = styled(Image)`
-  margin-top: 10px;
+const InfoContainer = styled.div`
+  display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  margin: 20px 0;
+  font-family: "pretendardR";
+`;
+
+const StyledImage = styled(Image)`
+  margin-top: 10px;
   border-radius: 50%;
   object-fit: cover;
 `;
@@ -23,8 +30,6 @@ const UserInfo = styled.div`
   padding: 20px 0;
   font-family: "pretendardM";
   font-size: 14px;
-  justify-content: center;
-  align-items: center;
 `;
 
 // 메인 타이틀
@@ -62,9 +67,9 @@ const MyDogInfoContainer = styled.div`
 // 강아지 사진을 클릭해 산책 기록을 조회하세요!
 const DogInfoText = styled.div`
   margin-bottom: 10px;
-  font-size: 14px;
+  font-size: 16px;
   font-family: "pretendardM";
-  color: var(--balck-color);
+  color: var(--black-color);
 `;
 
 const StyledMyInfoButton = styled(Button)`
@@ -161,62 +166,69 @@ const MyInfoMain = () => {
   return (
     <>
       <Header />
-      <StyledImage
-        src={userInfo.profile_image}
-        alt="Profile"
-        width="150px"
-        height="150px"
-      />
-      <UserInfo>
-        <SectionTitle>{userInfo.nickname}님, 안녕하세요!</SectionTitle>
-        지금까지 총 {userInfo.total_distance}km 산책하고{" "}
-        {userInfo.total_kilocalories}kcal를 소비했네요.
-      </UserInfo>
-      <StyledLinkButton
-        text="+ 내 정보 수정"
-        onClick={() => navigate("/myinfo-edit")}
-      ></StyledLinkButton>
-
-      <MyInfoButtonContainer>
-        <StyledMyInfoButton text="내 산책현황" onClick={onClickMyWalk} />
-        <StyledMyInfoButton text="칭호관리" onClick={onClickGoalStatus} />
-        <StyledMyInfoButton
-          text="내가 남긴 리뷰"
-          onClick={onClickReviewWritten}
+      <InfoContainer>
+        <StyledImage
+          src={userInfo.profile_image}
+          alt="Profile"
+          width="140px"
+          height="140px"
         />
-        <StyledMyInfoButton
-          text="내가 받은 리뷰"
-          onClick={onClickReviewReceived}
-        />
-      </MyInfoButtonContainer>
+        <UserInfo>
+          <SectionTitle>{userInfo.nickname}님, 안녕하세요!</SectionTitle>
+          지금까지 총 {userInfo.total_distance}km 산책하고{" "}
+          {userInfo.total_kilocalories}kcal를 소비했네요.
+        </UserInfo>
+        <StyledLinkButton
+          text="+ 내 정보 수정"
+          onClick={() => navigate("/myinfo-edit")}
+        ></StyledLinkButton>
 
-      <MyDogInfoWrapper>
-        <MyDogInfoContainer>
-          <p>내가 등록한 강아지</p>
-          <StyledLinkButton
-            text="+ 강아지 등록"
-            onClick={() => navigate("/dogs-new")}
-          ></StyledLinkButton>
-        </MyDogInfoContainer>
-        <DogInfoText>강아지 사진을 클릭해 산책 기록을 조회하세요!</DogInfoText>
-        {dogs.length === 0 ? (
-          <p>등록된 강아지가 없습니다.</p>
-        ) : (
-          dogs.map((dog) => (
-            <DogInfo
-              key={dog.id}
-              id={dog.id}
-              name={dog.name}
-              gender={dog.gender}
-              age={dog.age}
-              introduction={dog.introduction}
-              status={dog.status}
-              image={dog.image}
-            />
-          ))
-        )}
-      </MyDogInfoWrapper>
-      <LogoutButton />
+        <MyInfoButtonContainer>
+          <StyledMyInfoButton text="내 산책현황" onClick={onClickMyWalk} />
+          <StyledMyInfoButton text="칭호관리" onClick={onClickGoalStatus} />
+          <StyledMyInfoButton
+            text="내가 남긴 리뷰"
+            onClick={onClickReviewWritten}
+          />
+          <StyledMyInfoButton
+            text="내가 받은 리뷰"
+            onClick={onClickReviewReceived}
+          />
+        </MyInfoButtonContainer>
+
+        <MyDogInfoWrapper>
+          <MyDogInfoContainer>
+            <p>내가 등록한 강아지</p>
+            <StyledLinkButton
+              text="+ 강아지 등록"
+              onClick={() => navigate("/dogs-new")}
+            ></StyledLinkButton>
+          </MyDogInfoContainer>
+          <DogInfoText>
+            강아지 사진을 클릭해 산책 기록을 조회하세요!
+          </DogInfoText>
+          {dogs.length === 0 ? (
+            <p style={{ color: "var(--gray-color3)" }}>
+              등록된 강아지가 없습니다.
+            </p>
+          ) : (
+            dogs.map((dog) => (
+              <DogInfo
+                key={dog.id}
+                id={dog.id}
+                name={dog.name}
+                gender={dog.gender}
+                age={dog.age}
+                introduction={dog.introduction}
+                status={dog.status}
+                image={dog.image}
+              />
+            ))
+          )}
+        </MyDogInfoWrapper>
+        <LogoutButton />
+      </InfoContainer>
+
       <Footer />
     </>
   );
