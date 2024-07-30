@@ -15,6 +15,7 @@ const StyledImage = styled(Image)`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
+  object-fit: cover;
 `;
 
 const UserInfo = styled.div`
