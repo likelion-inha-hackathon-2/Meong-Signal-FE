@@ -114,9 +114,11 @@ const MapStatusUser = () => {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [socket, setSocket] = useState(null);
   const [ownerId, setOwnerId] = useState(0);
+  // eslint-disable-next-line no-unused-vars
   const [roomId, setRoomId] = useState(null);
   const [walkUserId, setWalkUserId] = useState(0);
 
+  // eslint-disable-next-line no-unused-vars
   const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
     dogId,
