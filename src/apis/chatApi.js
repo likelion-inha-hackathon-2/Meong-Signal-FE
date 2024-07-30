@@ -77,3 +77,26 @@ export const getProfileImage = async (userId) => {
     throw error;
   }
 };
+
+// chat/rooms 엔드포인트에서 데이터를 가져오는 함수
+export const fetchChatRooms = async () => {
+  try {
+    const response = await authApi.get("/chat/rooms");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching chat rooms:", error);
+    throw error;
+  }
+};
+
+// 읽지 않은 메시지의 개수를 계산하는 함수
+export const countUnreadMessages = async () => {
+  try {
+    const rooms = await fetchChatRooms();
+    const unreadCount = rooms.filter((room) => !room.last_message_read).length;
+    return unreadCount;
+  } catch (error) {
+    console.error("Error counting unread messages:", error);
+    throw error;
+  }
+};
