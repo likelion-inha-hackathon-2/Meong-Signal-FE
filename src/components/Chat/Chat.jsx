@@ -7,7 +7,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import { getProfileImage } from "../../apis/chatApi";
+import { getProfileImage, getAllChatRooms } from "../../apis/chatApi";
 import { formatTimestamp } from "../../utils/time";
 
 dayjs.extend(utc);
@@ -88,6 +88,7 @@ const Chat = ({ room }) => {
   const [profileImage, setProfileImage] = useState(
     room.other_user_profile_image || "",
   );
+  const [chatRooms, setChatRooms] = useState([]);
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -103,8 +104,29 @@ const Chat = ({ room }) => {
     }
   }, [room.other_user_id, room.other_user_profile_image]);
 
+  useEffect(() => {
+    const fetchChatRooms = async () => {
+      try {
+        const chatRoomsData = await getAllChatRooms();
+        setChatRooms(chatRoomsData);
+      } catch (error) {
+        console.error("Failed to get all chat rooms:", error);
+      }
+    };
+    fetchChatRooms();
+  }, []);
+
   const handleClick = () => {
-    navigate(`/chat/rooms/${room.id}`);
+    const currentRoom = chatRooms.find((chatRoom) => chatRoom.id === room.id);
+    const ownerId = currentRoom ? currentRoom.owner_user : null;
+    const dogId = currentRoom ? currentRoom.dog_id : null;
+
+    navigate(`/chat/rooms/${room.id}`, {
+      state: {
+        ownerId: ownerId,
+        dogId: dogId,
+      },
+    });
   };
 
   return (

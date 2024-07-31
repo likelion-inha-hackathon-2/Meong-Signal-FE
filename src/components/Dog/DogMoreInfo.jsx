@@ -70,8 +70,6 @@ const DogMoreInfo = ({ dogId, onClose }) => {
         const tagsResponse = await authApi.get(`/dogs/${dogId}/tags`);
         setDog(dogResponse.data.dog);
         setTags(tagsResponse.data.tags);
-
-        // getDogOwnerInfo API 호출하여 ownerId 설정
         const ownerResponse = await getDogOwnerInfo(dogId);
         setOwnerId(ownerResponse.owner_id);
       } catch (error) {
@@ -92,9 +90,7 @@ const DogMoreInfo = ({ dogId, onClose }) => {
   // 유저와 보호자 간 채팅방 생성
   const handleContactButtonClick = async () => {
     try {
-      // console.log("Creating chat room for dog ID:", dogId);
       const response = await createChatRoom(dogId);
-      setOwnerId(response.data.owner_user);
       // 결과로 나온 룸 id로 접속
       if (response && response.id) {
         await enterChatRoom(response.id);

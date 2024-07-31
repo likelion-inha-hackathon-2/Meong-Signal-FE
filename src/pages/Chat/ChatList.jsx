@@ -5,6 +5,7 @@ import Footer from "../../components/Footer/Footer";
 import authApi from "../../apis/authApi";
 import Chat from "../../components/Chat/Chat";
 import { formatTimestamp } from "../../utils/time";
+import ReservationList from "../../components/Reservation/ReservationList";
 
 // 채팅방 컴포넌트 리스트
 const ChatRoomList = styled.div`
@@ -51,6 +52,7 @@ const ChatList = () => {
   return (
     <>
       <Header />
+      <ReservationList />
       {loading ? (
         <Loading>로딩 중...</Loading>
       ) : chatRooms.length === 0 ? (

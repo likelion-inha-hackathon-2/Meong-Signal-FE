@@ -11,11 +11,19 @@ const Container = styled.div`
   font-family: "PretendardM";
 `;
 
+const TitleDogList = styled.div`
+  font-family: "PretendardB";
+  font-size: 20px;
+  margin-bottom: 10px;
+`;
+
 const DogList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
+  font-family: "PretendardM";
+  font-size: 16px;
 `;
 
 const DogItem = styled.button`
@@ -31,50 +39,64 @@ const DogItem = styled.button`
   }
 `;
 
+const Message = styled.p`
+  font-size: 16px;
+  color: #999;
+  text-align: center;
+  margin-top: 20px;
+`;
+
 const MapStatus = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
-  const [walkingDogs, setWalkingDogs] = useState([]); // 산책 중인 강아지 목록 상태 추가
+  const [dogs, setDogs] = useState([]); // 모든 강아지 목록 상태 추가
   const [selectedDogId, setSelectedDogId] = useState(null); // 선택한 강아지의 id
   const [selectedDogName, setSelectedDogName] = useState(""); // 선택된 강아지 이름 상태 추가
-  const [walkUserEmail, setWalkUserEmail] = useState(""); // 고정 산책자 이메일
-  const [ownerEmail, setOwnerEmail] = useState(""); // 고정 견주 이메일
+  const [selectedDogStatus, setSelectedDogStatus] = useState(""); // 선택된 강아지 상태 추가
+  const [walkUserId, setWalkUserId] = useState(""); // 산책자 id
+  const [ownerId, setOwnerId] = useState(""); // 견주 id
   const [socket, setSocket] = useState(null);
   const [roomId, setRoomId] = useState(null);
 
-  // 내 강아지 목록 중에서 산책 중인 강아지가 있다면 불러오기
+  // 내 강아지 목록  불러오기
   useEffect(() => {
-    const fetchWalkingDogs = async () => {
+    const fetchDogs = async () => {
       try {
         const response = await fetchMyDogs();
-        const walkingDogs = response.dogs.filter((dog) => dog.status === "W");
-        setWalkingDogs(walkingDogs);
+        setDogs(response.dogs);
       } catch (error) {
-        console.error("Failed to fetch walking dogs:", error);
+        console.error("Failed to fetch dogs:", error);
       }
     };
 
-    fetchWalkingDogs();
+    fetchDogs();
   }, []);
 
   useEffect(() => {
-    // walkUserEmail 설정
-    const fetchWalkUserEmail = async () => {};
-
-    fetchWalkUserEmail();
-  }, []);
-
-  useEffect(() => {
-    // ownerEmail 설정
-    const fetchOwnerEmail = async () => {
+    // walkUserId 설정
+    const fetchWalkUserId = async () => {
       try {
         const data = await getUserInfo();
-        setOwnerEmail(data.email);
+        setWalkUserId(data.id);
       } catch (error) {
-        console.error("Error fetching owner eamil:", error);
+        console.error("Error fetching walk user id:", error);
       }
     };
 
-    fetchOwnerEmail();
+    fetchWalkUserId();
+  }, []);
+
+  useEffect(() => {
+    // ownerId 설정
+    const fetchOwnerId = async () => {
+      try {
+        const data = await getUserInfo();
+        setOwnerId(data.id);
+      } catch (error) {
+        console.error("Error fetching owner id:", error);
+      }
+    };
+
+    fetchOwnerId();
   }, []);
 
   useEffect(() => {
@@ -97,14 +119,10 @@ const MapStatus = () => {
     }
 
     const response = await authApi.post("/walk-status/rooms/", {
-      owner_email: ownerEmail,
-      walk_user_email: walkUserEmail,
-      //dog_id: dogId,
+      owner_id: ownerId,
+      walk_user_id: walkUserId,
+      dog_id: dogId,
     });
-
-    if (response.status !== 200) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
 
     const roomData = response.data;
     setRoomId(roomData.id); // roomId 상태 업데이트
@@ -116,7 +134,9 @@ const MapStatus = () => {
 
   const setUpWebSocket = (roomId) => {
     const newSocket = new WebSocket(
-      `wss://meong-signal.kro.kr/ws/walkroom/${roomId}/locations`,
+      "wss://" +
+        process.env.REACT_APP_BACKEND_DOMAIN +
+        `/ws/walk-status/${roomId}/locations`,
     );
 
     newSocket.onopen = () => {
@@ -147,20 +167,22 @@ const MapStatus = () => {
     };
   };
 
-  const handleDogClick = (dogId, dogName) => {
+  const handleDogClick = (dogId, dogName, dogStatus) => {
     setSelectedDogId(dogId);
     setSelectedDogName(dogName);
+    setSelectedDogStatus(dogStatus);
   };
 
   return (
     <>
       <Header />
       <Container>
+        <TitleDogList>🎀우리 강쥐는 어디 있을까요?</TitleDogList>
         <DogList>
-          {walkingDogs.map((dog) => (
+          {dogs.map((dog) => (
             <DogItem
               key={dog.id}
-              onClick={() => handleDogClick(dog.id, dog.name)}
+              onClick={() => handleDogClick(dog.id, dog.name, dog.status)}
             >
               {dog.name}
             </DogItem>
@@ -168,18 +190,24 @@ const MapStatus = () => {
         </DogList>
         {selectedDogName && (
           <>
-            <p>내 강아지 {selectedDogName}이(가) 산책 중이에요!</p>
-            <p>현재 여기서 산책 중이에요!</p>
-            {currentLocation ? (
-              <MapUser
-                latitude={currentLocation.latitude}
-                longitude={currentLocation.longitude}
-                width="300px"
-                height="300px"
-                dogId={selectedDogId}
-              />
+            {selectedDogStatus === "W" ? (
+              <>
+                <p>내 강아지 {selectedDogName}이(가) 산책 중이에요!</p>
+                <p>현재 여기서 산책 중이에요!</p>
+                {currentLocation ? (
+                  <MapUser
+                    latitude={currentLocation.latitude}
+                    longitude={currentLocation.longitude}
+                    width="300px"
+                    height="300px"
+                    dogId={selectedDogId}
+                  />
+                ) : (
+                  <p>위치를 불러오는 중...</p>
+                )}
+              </>
             ) : (
-              <p>위치를 불러오는 중...</p>
+              <Message>현재 강아지가 산책중인 상태가 아니에요.</Message>
             )}
           </>
         )}

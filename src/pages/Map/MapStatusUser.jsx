@@ -9,6 +9,8 @@ import { getMarkedTrails } from "../../apis/trail";
 import { saveWalkData } from "../../apis/walk";
 import { getDistance } from "../../utils/getDistance";
 import { getUserInfo } from "../../apis/getUserInfo";
+import { fetchChatRooms } from "../../apis/chatApi";
+import authApi from "../../apis/authApi";
 import html2canvas from "html2canvas";
 import useUserMap from "../../hooks/useUserMap";
 
@@ -20,6 +22,7 @@ const Container = styled.div`
 const DogInfo = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   margin-bottom: 20px;
 `;
 
@@ -93,9 +96,53 @@ const CompleteButton = styled.button`
   cursor: pointer;
 `;
 
+const ChatButton = styled.button`
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+`;
+
 const Stat = styled.div`
   margin-top: 20px;
   font-size: 18px;
+`;
+
+const InfoButton = styled.button`
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+`;
+
+const InfoModal = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 300px;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
 `;
 
 const MapStatusUser = () => {
@@ -114,11 +161,11 @@ const MapStatusUser = () => {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [socket, setSocket] = useState(null);
   const [ownerId, setOwnerId] = useState(0);
-  // eslint-disable-next-line no-unused-vars
-  const [roomId, setRoomId] = useState(null);
   const [walkUserId, setWalkUserId] = useState(0);
+  const [showInfo, setShowInfo] = useState(false);
+  const [ownerInfo, setOwnerInfo] = useState({});
+  const [roomId, setRoomId] = useState(null);
 
-  // eslint-disable-next-line no-unused-vars
   const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
     dogId,
@@ -187,16 +234,14 @@ const MapStatusUser = () => {
   }, [ownerId, walkUserId]);
 
   useEffect(() => {
-    // Set up interval to send location every 3 seconds if WebSocket is connected
     if (socket) {
       const intervalId = setInterval(() => {
         SendLocation();
       }, 3000);
 
-      // Clean up interval on WebSocket close
       return () => clearInterval(intervalId);
     }
-  }, [socket, ownerId, walkUserId]); // Dependency array includes socket
+  }, [socket, ownerId, walkUserId]);
 
   useEffect(() => {
     if (walkStage === "during") {
@@ -254,6 +299,7 @@ const MapStatusUser = () => {
         body: JSON.stringify({
           owner_id: ownerId,
           walk_user_id: walkUserId,
+          dog_id: dogId,
         }),
       },
     );
@@ -263,14 +309,15 @@ const MapStatusUser = () => {
     }
 
     const roomData = await response.json();
-    setRoomId(roomData.id); // Update roomId state
-
+    setRoomId(roomData.id);
     setUpWebSocket(roomData.id);
   };
 
   const setUpWebSocket = (roomId) => {
     const newSocket = new WebSocket(
-      `wss://meong-signal.kro.kr/ws/walkroom/${roomId}/locations`,
+      "wss://" +
+        process.env.REACT_APP_BACKEND_DOMAIN +
+        `/ws/walk-status/${roomId}/locations`,
     );
 
     newSocket.onopen = () => {
@@ -325,7 +372,6 @@ const MapStatusUser = () => {
     );
   };
 
-  // 산책로 저장된 거 받아오기
   const handleShowRoutes = async () => {
     try {
       const savedRoutes = await getMarkedTrails();
@@ -370,7 +416,39 @@ const MapStatusUser = () => {
     }
   };
 
-  const handleReview = () => navigate(`/reviews/${dogId}`);
+  const handleReview = () => navigate(`/review/user`);
+
+  // 칼로리 함수 임시로 추가. 수정 필요!
+  const calculateCalories = (distance) => {
+    return (distance * 50).toFixed(0);
+  };
+
+  const fetchOwnerInfo = async () => {
+    try {
+      const ownerResponse = await authApi.post("/dogs/owner", {
+        dog_id: dogId,
+      });
+      setOwnerInfo(ownerResponse.data.owner);
+      setShowInfo(true);
+    } catch (error) {
+      console.error("Error fetching owner info:", error);
+    }
+  };
+
+  const handleChatClick = async () => {
+    try {
+      const chatRooms = await fetchChatRooms();
+      const chatRoom = chatRooms.find((room) => room.other_user_id === ownerId);
+
+      if (chatRoom) {
+        navigate(`/chat/rooms/${chatRoom.id}`);
+      } else {
+        alert("채팅방을 찾을 수 없습니다.");
+      }
+    } catch (error) {
+      console.error("Error fetching chat rooms:", error);
+    }
+  };
 
   const renderWalkStage = () => {
     switch (walkStage) {
@@ -410,6 +488,10 @@ const MapStatusUser = () => {
             <StopButton onClick={handleEndWalk}>산책 종료</StopButton>
             <Stat>지금까지 {timeElapsed}분 동안</Stat>
             <Stat>{distance.toFixed(1)}km를 이동하셨어요!</Stat>
+            <ButtonContainer>
+              <InfoButton onClick={fetchOwnerInfo}>보호자 정보 보기</InfoButton>
+              <ChatButton onClick={handleChatClick}>채팅하기</ChatButton>
+            </ButtonContainer>
           </>
         );
       case "after":
@@ -417,7 +499,7 @@ const MapStatusUser = () => {
           <>
             <Stat>이번 산책에서 총 소요 시간: {timeElapsed}분</Stat>
             <Stat>
-              이번 산책에서 소모한 칼로리: {(distance * 50).toFixed(0)} kcal
+              이번 산책에서 소모한 칼로리: {calculateCalories(distance)} kcal
             </Stat>
             <CompleteButton onClick={handleReview}>
               후기 남기러 가기
@@ -446,6 +528,17 @@ const MapStatusUser = () => {
         </DogInfo>
         <div ref={mapContainer} style={{ width: "100%", height: "300px" }} />
         {renderWalkStage()}
+        {showInfo && (
+          <>
+            <ModalOverlay onClick={() => setShowInfo(false)} />
+            <InfoModal>
+              <h2>보호자 정보</h2>
+              <p>이메일: {ownerInfo.owner_email}</p>
+              <p>프로필 사진: {ownerInfo.owner_image}</p>
+              <button onClick={() => setShowInfo(false)}>닫기</button>
+            </InfoModal>
+          </>
+        )}
       </Container>
       <Footer />
     </>

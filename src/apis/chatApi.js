@@ -1,6 +1,17 @@
 import authApi from "./authApi";
 import { getUserInfo } from "./getUserInfo";
 
+// 모든 채팅방 정보를 조회하는 API
+export const getAllChatRooms = async () => {
+  try {
+    const response = await authApi.get("/chat/newroom");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get all chat rooms:", error);
+    throw error;
+  }
+};
+
 // 견주의 정보를 조회 (id, email, image, nickname)
 export const getOwnerInfo = async (dogId) => {
   try {
@@ -30,6 +41,7 @@ export const createChatRoom = async (dogId) => {
     }
 
     const response = await authApi.post("/chat/newroom", {
+      dog_id: dogId,
       owner_user: ownerId,
       user_user: userId,
     });

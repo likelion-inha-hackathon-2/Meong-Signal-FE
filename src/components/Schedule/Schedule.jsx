@@ -83,12 +83,6 @@ const Schedule = ({ appointment, onUpdate }) => {
         <ActionButton status="R" onClick={() => handleStatusChange("R")}>
           수락
         </ActionButton>
-        <ActionButton status="W" onClick={() => handleStatusChange("W")}>
-          수정
-        </ActionButton>
-        <ActionButton status="F" onClick={() => handleStatusChange("F")}>
-          거절
-        </ActionButton>
       </ButtonGroup>
     </ScheduleContainer>
   );

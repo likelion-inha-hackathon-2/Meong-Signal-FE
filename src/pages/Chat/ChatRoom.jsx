@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
@@ -8,7 +8,11 @@ import authApi from "../../apis/authApi";
 import CalenderIcon from "../../assets/icons/icon-calender-button.png";
 import { getAccessToken } from "../../apis/authApi";
 import { getUserInfo } from "../../apis/getUserInfo";
-import { enterChatRoom, getChatRoomMessages } from "../../apis/chatApi";
+import {
+  enterChatRoom,
+  getChatRoomMessages,
+  getAllChatRooms,
+} from "../../apis/chatApi";
 import { getDogOwnerInfo } from "../../apis/getDogInfo";
 import { formatHourMinute } from "../../utils/time";
 import Calendar from "../../components/Calendar/Calendar";
@@ -125,29 +129,38 @@ const ChatRoom = () => {
   const [otherUserNickname, setOtherUserNickname] = useState("");
   const [showCalendar, setShowCalendar] = useState(false);
   const [reservation, setReservation] = useState(null);
-  const location = useLocation();
-  const { dogId } = location.state || {};
-  const [dog, setDog] = useState(null);
+  const [dogId, setDogId] = useState(null);
   const [ownerId, setOwnerId] = useState(null);
 
   useEffect(() => {
-    const fetchDogAndOwnerInfo = async () => {
+    const fetchDogAndOwnerInfo = async (dogId) => {
       try {
-        const dogResponse = await authApi.get(`/dogs/${dogId}`);
-        setDog(dogResponse.data.dog);
-
         const ownerResponse = await getDogOwnerInfo(dogId);
-        setOwnerId(ownerResponse.owner_id);
+        return ownerResponse.owner_id;
       } catch (error) {
         console.error("Error fetching dog and owner info:", error);
       }
     };
 
-    if (dogId) {
-      fetchDogAndOwnerInfo();
-    }
-  }, [dogId]);
+    const fetchAllChatRooms = async () => {
+      try {
+        const chatRoomsData = await getAllChatRooms();
+        const currentRoom = chatRoomsData.find(
+          (room) => room.id === parseInt(roomId),
+        );
 
+        if (currentRoom) {
+          const ownerID = await fetchDogAndOwnerInfo(currentRoom.dog_id);
+          setDogId(currentRoom.dog_id);
+          setOwnerId(ownerID);
+        }
+      } catch (error) {
+        console.error("Failed to fetch all chat rooms:", error);
+      }
+    };
+
+    fetchAllChatRooms();
+  }, [roomId]);
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -166,11 +179,7 @@ const ChatRoom = () => {
       try {
         const response = await enterChatRoom(roomId);
         setOtherUserNickname(response.other_user_nickname);
-        if (response.dog_id) {
-          setDog(response.dog_id);
-        } else {
-          console.error("강아지 ID가 응답에 포함되지 않았습니다.");
-        }
+        setDogId(response.dog_id);
       } catch (error) {
         console.error("Failed to enter chat room:", error);
         return;
@@ -313,7 +322,7 @@ const ChatRoom = () => {
         <TooltipWrapper>
           <Calendar
             dogId={dogId}
-            userId={userInfo.id}
+            userId={userInfo?.id}
             ownerId={ownerId}
             onClose={() => setShowCalendar(false)}
             onSave={handleSaveReservation}

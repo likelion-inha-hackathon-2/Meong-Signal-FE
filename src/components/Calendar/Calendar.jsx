@@ -7,9 +7,9 @@ const Calendar = ({ dogId, userId, ownerId, onClose, onSave }) => {
     user_id: userId,
     owner_id: ownerId,
     dog_id: dogId,
-    name: "", // 수정 가능
-    time: "", // 수정 가능
-    status: "W", // 기본값으로 설정
+    name: "", // 약속 이름
+    time: "", // 약속 날짜와 시간
+    status: "W", // W, R, F (Waiting, Running, Finish) - 대기중 상태로 기본 설정
   });
 
   const handleChange = (e) => {
@@ -24,7 +24,8 @@ const Calendar = ({ dogId, userId, ownerId, onClose, onSave }) => {
     e.preventDefault();
     try {
       const data = await createAppointment(appointment);
-      onSave(data); // 약속 ID를 포함한 데이터를 전달합니다.
+      onSave(data);
+      console.log("약속 생성:", data);
       onClose();
     } catch (error) {
       console.error("Error submitting appointment:", error);
