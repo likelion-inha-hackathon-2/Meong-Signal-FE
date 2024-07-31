@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
+import { useParams, useLocation } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
@@ -8,8 +9,10 @@ import CalenderIcon from "../../assets/icons/icon-calender-button.png";
 import { getAccessToken } from "../../apis/authApi";
 import { getUserInfo } from "../../apis/getUserInfo";
 import { enterChatRoom, getChatRoomMessages } from "../../apis/chatApi";
-import { useParams } from "react-router-dom";
+import { getDogOwnerInfo } from "../../apis/getDogInfo";
 import { formatHourMinute } from "../../utils/time";
+import Calendar from "../../components/Calendar/Calendar";
+import Schedule from "../../components/Schedule/Schedule";
 
 const ChatRoomHeader = styled.div`
   display: flex;
@@ -61,7 +64,6 @@ const ProfileImage = styled.img`
   margin: ${(props) => (props.$isSender ? "0 0 0 10px" : "0 10px 0 0")};
 `;
 
-// 타임스탬프와 읽음 상태 표시
 const MessageMeta = styled.div`
   display: flex;
   flex-direction: row;
@@ -87,6 +89,7 @@ const InputContainer = styled.div`
 const CalenderIconWrapper = styled.img`
   cursor: pointer;
   margin-right: 5px;
+  position: relative;
 `;
 
 const TextInput = styled.input`
@@ -106,6 +109,13 @@ const SendButton = styled(Button)`
   cursor: pointer;
 `;
 
+const TooltipWrapper = styled.div`
+  position: absolute;
+  top: 60%;
+  left: 10%;
+  z-index: 100;
+`;
+
 const ChatRoom = () => {
   const { roomId } = useParams();
   const [messages, setMessages] = useState([]);
@@ -113,6 +123,30 @@ const ChatRoom = () => {
   const [userInfo, setUserInfo] = useState(null);
   const socket = useRef(null);
   const [otherUserNickname, setOtherUserNickname] = useState("");
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [reservation, setReservation] = useState(null);
+  const location = useLocation();
+  const { dogId } = location.state || {};
+  const [dog, setDog] = useState(null);
+  const [ownerId, setOwnerId] = useState(null);
+
+  useEffect(() => {
+    const fetchDogAndOwnerInfo = async () => {
+      try {
+        const dogResponse = await authApi.get(`/dogs/${dogId}`);
+        setDog(dogResponse.data.dog);
+
+        const ownerResponse = await getDogOwnerInfo(dogId);
+        setOwnerId(ownerResponse.owner_id);
+      } catch (error) {
+        console.error("Error fetching dog and owner info:", error);
+      }
+    };
+
+    if (dogId) {
+      fetchDogAndOwnerInfo();
+    }
+  }, [dogId]);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -132,6 +166,11 @@ const ChatRoom = () => {
       try {
         const response = await enterChatRoom(roomId);
         setOtherUserNickname(response.other_user_nickname);
+        if (response.dog_id) {
+          setDog(response.dog_id);
+        } else {
+          console.error("강아지 ID가 응답에 포함되지 않았습니다.");
+        }
       } catch (error) {
         console.error("Failed to enter chat room:", error);
         return;
@@ -222,6 +261,18 @@ const ChatRoom = () => {
     }
   };
 
+  const toggleCalendar = () => {
+    setShowCalendar(!showCalendar);
+  };
+
+  const handleSaveReservation = (appointment) => {
+    setReservation(appointment);
+  };
+
+  const handleUpdateReservation = (updatedAppointment) => {
+    setReservation(updatedAppointment);
+  };
+
   return (
     <>
       <Header />
@@ -245,7 +296,12 @@ const ChatRoom = () => {
         ))}
       </MessageList>
       <InputContainer>
-        <CalenderIconWrapper src={CalenderIcon} alt="캘린더 아이콘" />
+        <CalenderIconWrapper
+          src={CalenderIcon}
+          alt="캘린더 아이콘"
+          onClick={toggleCalendar}
+        />
+
         <TextInput
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
@@ -253,6 +309,23 @@ const ChatRoom = () => {
         />
         <SendButton text="전송" onClick={handleSendMessage} />
       </InputContainer>
+      {showCalendar && (
+        <TooltipWrapper>
+          <Calendar
+            dogId={dogId}
+            userId={userInfo.id}
+            ownerId={ownerId}
+            onClose={() => setShowCalendar(false)}
+            onSave={handleSaveReservation}
+          />
+        </TooltipWrapper>
+      )}
+      {reservation && (
+        <Schedule
+          appointment={reservation}
+          onUpdate={handleUpdateReservation}
+        />
+      )}
       <Footer />
     </>
   );

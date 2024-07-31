@@ -147,7 +147,10 @@ Chat.propTypes = {
     last_message_content: PropTypes.string,
     last_message_timestamp: PropTypes.string,
     last_message_read: PropTypes.bool.isRequired,
-    other_user_representative: PropTypes.bool,
+    other_user_representative: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.string,
+    ]),
   }).isRequired,
 };
 

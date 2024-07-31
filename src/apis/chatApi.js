@@ -34,7 +34,7 @@ export const createChatRoom = async (dogId) => {
       user_user: userId,
     });
 
-    return response.data; // 여기서 romm id 리턴
+    return response.data; // 여기서 room id 리턴
   } catch (error) {
     console.error("Failed to create chat room:", error);
     throw error;

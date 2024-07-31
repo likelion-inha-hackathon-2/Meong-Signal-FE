@@ -7,6 +7,7 @@ import Button from "../Button/Button";
 import authApi from "../../apis/authApi";
 import { useNavigate } from "react-router-dom";
 import { createChatRoom, enterChatRoom } from "../../apis/chatApi";
+import { getDogOwnerInfo } from "../../apis/getDogInfo";
 import defaultDogImage from "../../assets/images/add-dog.png";
 
 const TooltipContainer = styled.div`
@@ -58,6 +59,7 @@ const CloseButton = styled.button`
 const DogMoreInfo = ({ dogId, onClose }) => {
   const [dog, setDog] = useState(null);
   const [tags, setTags] = useState([]);
+  const [ownerId, setOwnerId] = useState(null);
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   useEffect(() => {
@@ -68,6 +70,10 @@ const DogMoreInfo = ({ dogId, onClose }) => {
         const tagsResponse = await authApi.get(`/dogs/${dogId}/tags`);
         setDog(dogResponse.data.dog);
         setTags(tagsResponse.data.tags);
+
+        // getDogOwnerInfo API 호출하여 ownerId 설정
+        const ownerResponse = await getDogOwnerInfo(dogId);
+        setOwnerId(ownerResponse.owner_id);
       } catch (error) {
         console.error("Error fetching dog info:", error);
       }
@@ -88,11 +94,12 @@ const DogMoreInfo = ({ dogId, onClose }) => {
     try {
       // console.log("Creating chat room for dog ID:", dogId);
       const response = await createChatRoom(dogId);
+      setOwnerId(response.data.owner_user);
       // 결과로 나온 룸 id로 접속
       if (response && response.id) {
         await enterChatRoom(response.id);
         navigate(`/chat/rooms/${response.id}`, {
-          state: { dogId: dog.id },
+          state: { dogId: dogId, ownerId: ownerId },
         });
       }
     } catch (error) {

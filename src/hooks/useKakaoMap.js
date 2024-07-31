@@ -6,12 +6,12 @@ import { getBoringDogs } from "../apis/getBoringDogs";
 const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
-  const [currentLocation, setCurrentLocation] = useState(initialLocation); // 현재 위치
+  const [currentLocation, setCurrentLocation] = useState(initialLocation);
   const [marker, setMarker] = useState(null);
-  const [dogMarkers, setDogMarkers] = useState([]); // 강아지 마커들 상태 추가
-  const [selectedDog, setSelectedDog] = useState(null); // 선택된 강아지 상태 추가
+  const [dogMarkers, setDogMarkers] = useState([]);
+  const [selectedDog, setSelectedDog] = useState(null);
   // eslint-disable-next-line no-unused-vars
-  const [positionArr, setPositionArr] = useState([]); // 위치 배열 상태 추가
+  const [positionArr, setPositionArr] = useState([]);
 
   const makeLine = useCallback(
     (position) => {
@@ -25,7 +25,6 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
         strokeStyle: "solid",
       });
 
-      // 지도에 선을 표시합니다
       polyline.setMap(map);
     },
     [map],
@@ -64,29 +63,34 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     script.async = true;
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${appKey}&libraries=services,clusterer,drawing&autoload=false`;
     document.head.appendChild(script);
-    script.onload = initializeMap;
+    script.onload = () => {
+      initializeMap();
+      script.onload = null; // 스크립트 로드 이벤트 핸들러 제거
+    };
     return script;
   };
 
   const initializeMap = () => {
-    window.kakao.maps.load(() => {
-      loadKakaoMap();
-      if (mapContainer.current) {
-        const options = {
-          center: new window.kakao.maps.LatLng(
-            currentLocation.latitude,
-            currentLocation.longitude,
-          ),
-          level: 7,
-        };
-        const mapInstance = new window.kakao.maps.Map(
-          mapContainer.current,
-          options,
-        );
-        setMap(mapInstance);
-        createMarker(mapInstance, currentLocation);
-      }
-    });
+    if (window.kakao && window.kakao.maps) {
+      window.kakao.maps.load(() => {
+        loadKakaoMap();
+        if (mapContainer.current) {
+          const options = {
+            center: new window.kakao.maps.LatLng(
+              currentLocation.latitude,
+              currentLocation.longitude,
+            ),
+            level: 7,
+          };
+          const mapInstance = new window.kakao.maps.Map(
+            mapContainer.current,
+            options,
+          );
+          setMap(mapInstance);
+          createMarker(mapInstance, currentLocation);
+        }
+      });
+    }
   };
 
   const createMarker = (mapInstance, location) => {
@@ -110,7 +114,9 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     const script = createScript();
 
     return () => {
-      document.head.removeChild(script);
+      if (script) {
+        document.head.removeChild(script);
+      }
     };
   }, [appKey, currentLocation.latitude, currentLocation.longitude]);
 
@@ -132,7 +138,6 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
         const dogs = await fetchDogs();
         console.log("useKakaoMap에서 받아오는 dogs:", dogs);
 
-        // 기존 마커 제거
         dogMarkers.forEach((dogMarker) => {
           dogMarker.setMap(null);
         });
@@ -175,7 +180,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           overlayContent
             .querySelector(`#overlay-${dog.id}`)
             .addEventListener("click", () => {
-              setSelectedDog(dog); // 강아지 선택
+              setSelectedDog(dog);
             });
 
           const overlay = new window.kakao.maps.CustomOverlay({
@@ -185,7 +190,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           });
 
           window.kakao.maps.event.addListener(dogMarker, "click", () => {
-            setSelectedDog(dog); // 강아지 선택
+            setSelectedDog(dog);
           });
 
           window.kakao.maps.event.addListener(dogMarker, "mouseover", () => {
@@ -197,7 +202,6 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
           });
         }
 
-        // 새로운 마커들 상태 업데이트
         setDogMarkers(newMarkers);
       } catch (error) {
         console.error("Error adding dog markers and overlays:", error);
@@ -231,6 +235,12 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
       map.setCenter(center);
     }
   }, [map, isBoring]);
+
+  useEffect(() => {
+    if (window.kakao && window.kakao.maps) {
+      initializeMap();
+    }
+  }, [isBoring]);
 
   return { mapContainer, map, currentLocation, selectedDog, setSelectedDog };
 };
