@@ -25,7 +25,6 @@ import GoogleAuth from "./pages/SocialLogin/GoogleAuth";
 import MyWalk from "./pages/MyInfo/MyWalk";
 import RecordMyDogWalk from "./pages/MyInfo/RecordMyDogWalk";
 import MapStatusUser from "./pages/Map/MapStatusUser";
-import MapWalkingTest from "./pages/Map/MapWalkingTest"; // 웹소켓 테스트 페이지
 import OwnerReview from "./pages/MyInfo/OwnerReview";
 import UserReview from "./pages/MyInfo/UserReview";
 import MoreRecordMyDogWalk from "./pages/MyInfo/MoreRecordMyDogWalk";
@@ -68,7 +67,6 @@ function App() {
           <Route path="kakao/auth" element={<KakaoAuth />} />
           <Route path="naver/auth" element={<NaverAuth />} />
           <Route path="google/auth" element={<GoogleAuth />} />
-          <Route path="map-walking-test" element={<MapWalkingTest />} />
           <Route path="shop" element={<MeongShop />} />
           <Route path="my-goods" element={<MyGoods />} />
           <Route path="*" element={<NotFound />} />
