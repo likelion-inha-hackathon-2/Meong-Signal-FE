@@ -8,7 +8,10 @@ import WalkItem from "../../components/Walk/WalkItem";
 
 const Container = styled.div`
   display: flex;
+  width: 300px;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 20px;
   padding: 20px;
   font-family: "PretendardR";
@@ -27,6 +30,12 @@ const WalkTitle = styled.h2`
   font-size: 20px;
   font-family: "PretendardB";
   font-weight: 700;
+`;
+
+const NoWalksMessage = styled.p`
+  color: gray;
+  font-size: 16px;
+  text-align: center;
 `;
 
 const MyWalk = () => {
@@ -74,15 +83,21 @@ const MyWalk = () => {
           <p>총 거리: {walkData.total_distance}km</p>
           <p>총 칼로리 소모: {walkData.total_kilocalories}kcal</p>
         </WalkRecordBox>
-        {walkData.recent_walks.map((walk) => (
-          <WalkItem
-            key={walk.id}
-            image={walk.image}
-            distance={walk.distance}
-            time={walk.time}
-            date={new Date(walk.date).toLocaleDateString()}
-          />
-        ))}
+        {walkData.recent_walks.length === 0 ? (
+          <NoWalksMessage>
+            최근 한 달 간의 산책 기록이 존재하지 않습니다.
+          </NoWalksMessage>
+        ) : (
+          walkData.recent_walks.map((walk) => (
+            <WalkItem
+              key={walk.id}
+              image={walk.image}
+              distance={walk.distance}
+              time={walk.time}
+              date={new Date(walk.date).toLocaleDateString()}
+            />
+          ))
+        )}
       </Container>
       <Footer />
     </>

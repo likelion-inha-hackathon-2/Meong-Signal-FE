@@ -40,10 +40,10 @@ const ChallengeItem = styled.div`
   margin-bottom: 10px;
   padding: 10px;
   background-color: ${(props) =>
-    props.met === "true" ? "var(--yellow-color1)" : "var(--gray-color2)"};
+    props.$met === "true" ? "var(--yellow-color1)" : "var(--gray-color2)"};
   border: 2px solid
     ${(props) =>
-      props.met === "true" ? "var(--green-color)" : "var(--gray-color3)"};
+      props.$met === "true" ? "var(--green-color)" : "var(--gray-color3)"};
   border-radius: 8px;
 `;
 
@@ -66,7 +66,7 @@ const ChallengeBadge = styled.div`
   align-items: center;
   justify-content: center;
   background-color: ${(props) =>
-    props.met === "true" ? "var(--yellow-color2)" : "var(--gray-color3)"};
+    props.$met === "true" ? "var(--yellow-color2)" : "var(--gray-color3)"};
   color: #fff;
   font-family: "PretendardS";
   padding: 6px;
@@ -203,21 +203,21 @@ const WalkDetail = () => {
           <ChallengeStatus>
             주간 챌린지 달성 현황에 따라 멍을 획득할 수 있어요.
           </ChallengeStatus>
-          <ChallengeItem met={isDogsChallengeMet.toString()}>
+          <ChallengeItem $met={isDogsChallengeMet.toString()}>
             <ChallengeText>
               <ChallengeIcon src={walkingIcon} alt="walking" />
               3마리의 강아지와 산책하기
             </ChallengeText>
-            <ChallengeBadge met={isDogsChallengeMet.toString()}>
+            <ChallengeBadge $met={isDogsChallengeMet.toString()}>
               15
               <FootprintIcon src={footprintIcon} alt="footprint" />
             </ChallengeBadge>
           </ChallengeItem>
-          <ChallengeItem met={isDistanceChallengeMet.toString()}>
+          <ChallengeItem $met={isDistanceChallengeMet.toString()}>
             <ChallengeText>
               <ChallengeIcon src={walkingIcon} alt="walking" />총 30km 산책하기
             </ChallengeText>
-            <ChallengeBadge met={isDistanceChallengeMet.toString()}>
+            <ChallengeBadge $met={isDistanceChallengeMet.toString()}>
               20
               <FootprintIcon src={footprintIcon} alt="footprint" />
             </ChallengeBadge>

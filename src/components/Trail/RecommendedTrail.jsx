@@ -4,8 +4,8 @@ import styled from "styled-components";
 import Trail from "./Trail";
 
 const ListContainer = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 2px;
   margin-bottom: 20px;
 `;
