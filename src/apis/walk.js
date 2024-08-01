@@ -51,9 +51,11 @@ export const getUserImageAndName = async (walkId) => {
 };
 
 // 산책 정보와 그에 달린 리뷰 조회
-export const getWalkReviewInfo = async () => {
+export const getWalkReviewInfo = async (walkId) => {
   try {
-    const response = await authApi.get("/schedule/walking-dog");
+    const response = await authApi.post("/walks/walk-review-info", {
+      walk_id: walkId,
+    });
     return response.data;
   } catch (error) {
     console.error(error.response);

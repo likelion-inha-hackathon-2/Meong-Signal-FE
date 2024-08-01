@@ -70,11 +70,11 @@ const RecordMyDogWalk = () => {
   const navigate = useNavigate();
 
   const handleReviewClick = (walkId) => {
-    navigate(`/review/owner`, { state: { walkId } });
+    navigate(`/review/owner`, { state: { walkId: walkId } });
   };
 
   const handleRecordClick = (walkId) => {
-    navigate(`/more-record-my-dog-walk`, { state: { walkId } });
+    navigate(`/more-record-my-dog-walk`, { state: { walkId: walkId } });
   };
 
   useEffect(() => {
