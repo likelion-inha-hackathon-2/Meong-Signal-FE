@@ -136,7 +136,7 @@ const MapStatus = () => {
     const newSocket = new WebSocket(
       "wss://" +
         process.env.REACT_APP_BACKEND_DOMAIN +
-        `/ws/walk-status/${roomId}/locations`,
+        `/ws/walkroom/${roomId}/locations`,
     );
 
     newSocket.onopen = () => {
