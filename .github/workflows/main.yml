@@ -3,6 +3,9 @@ name: dev branch auto ci process script
 on: # 아래 job을 실행시킬 상황
   push:
     branches: [ main ]
+  pull_request:
+    branches:
+      - main
 
 jobs:
   deploy:
