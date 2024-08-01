@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
@@ -14,11 +14,12 @@ import authApi from "../../apis/authApi";
 import html2canvas from "html2canvas";
 import useUserMap from "../../hooks/useUserMap";
 import { updateDogStatus } from "../../apis/updateDogStatus";
-import { updateAppointment } from "../../apis/appointment"; // 추가된 부분
+import { updateAppointment } from "../../apis/appointment";
 
 const Container = styled.div`
   padding: 20px;
   text-align: center;
+  font-family: "PretendardM";
 `;
 
 const DogInfo = styled.div`
@@ -29,14 +30,14 @@ const DogInfo = styled.div`
 `;
 
 const DogImage = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 15px;
 `;
 
 const DogName = styled.div`
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
 `;
 
@@ -68,6 +69,7 @@ const RouteButton = styled.button`
 
 const RouteList = styled.div`
   margin-top: 20px;
+  text-align: left;
 `;
 
 const RouteItem = styled.div`
@@ -103,8 +105,35 @@ const Stat = styled.div`
   font-size: 18px;
 `;
 
+const OwnerInfoContainer = styled.div`
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  text-align: left;
+`;
+
+const OwnerImage = styled.img`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+`;
+
+const OwnerDetails = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const OwnerNickname = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+`;
+
 const MapStatusUser = () => {
-  const { dogId } = useParams(); // URL에서 dogId를 받아옴
+  const { dogId } = useParams();
   const navigate = useNavigate();
   const [initialLocation, setInitialLocation] = useState({
     latitude: 37.4482020408321,
@@ -119,12 +148,14 @@ const MapStatusUser = () => {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [socket, setSocket] = useState(null);
   const [ownerId, setOwnerId] = useState(0);
+  const [ownerNickname, setOwnerNickname] = useState("");
+  const [ownerImage, setOwnerImage] = useState("");
   const [walkUserId, setWalkUserId] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
-  const [ownerInfo, setOwnerInfo] = useState({});
   const [roomId, setRoomId] = useState(null);
-  const [appointmentId, setAppointmentId] = useState(null); // 추가된 부분
-  const [walkId, setWalkId] = useState(null); // 추가된 부분
+  const [appointmentId, setAppointmentId] = useState(null);
+  const [walkId, setWalkId] = useState(null);
+  const previousLocation = useRef(initialLocation);
 
   const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
@@ -138,15 +169,15 @@ const MapStatusUser = () => {
         const coordinates = await getCoordinates();
         setCurrentLocation(coordinates);
         setInitialLocation(coordinates);
+        previousLocation.current = coordinates;
 
         if (dogId) {
-          const response = await getDogInfo(dogId); // dogId를 사용해 강아지 정보를 받아옴
+          const response = await getDogInfo(dogId);
           setDogInfo({
-            name: response.dog.name, // 강쥐 이름 설정
-            image: response.dog.image, // 강쥐 이미지 설정
+            name: response.dog.name,
+            image: response.dog.image,
           });
 
-          // 약속 정보 가져오기
           const appointmentResponse = await authApi.get("/schedule/upcoming");
           const appointmentList = appointmentResponse.data;
           const appointment = appointmentList.find(
@@ -164,11 +195,12 @@ const MapStatusUser = () => {
   }, [dogId, setCurrentLocation]);
 
   useEffect(() => {
-    // ownerId 설정
     const fetchOwnerId = async () => {
       try {
-        const ownerInfo = await getDogOwnerInfo(dogId);
-        setOwnerId(ownerInfo.owner_id);
+        const ownerData = await getDogOwnerInfo(dogId);
+        setOwnerId(ownerData.owner_id);
+        setOwnerNickname(ownerData.owner_nickname);
+        setOwnerImage(ownerData.owner_image);
       } catch (error) {
         console.error("Error fetching owner id:", error);
       }
@@ -178,7 +210,6 @@ const MapStatusUser = () => {
   }, [dogId]);
 
   useEffect(() => {
-    // walkUserId 설정
     const fetchWalkUserId = async () => {
       try {
         const data = await getUserInfo();
@@ -238,7 +269,8 @@ const MapStatusUser = () => {
           };
           setCurrentLocation(newCurrentLocation);
 
-          const dist = getDistance(initialLocation, newCurrentLocation);
+          const dist = getDistance(previousLocation.current, newCurrentLocation);
+          previousLocation.current = newCurrentLocation;
           setDistance((prevDistance) => {
             const newDistance = prevDistance + dist;
             localStorage.setItem("walkDistance", newDistance.toString());
@@ -251,7 +283,7 @@ const MapStatusUser = () => {
 
       return () => navigator.geolocation.clearWatch(watchId);
     }
-  }, [walkStage, initialLocation, setCurrentLocation]);
+  }, [walkStage, setCurrentLocation]);
 
   const CreateRoom = async () => {
     if (socket) {
@@ -328,7 +360,6 @@ const MapStatusUser = () => {
     };
 
     socket.send(JSON.stringify(locationPayload));
-    // 여기서 쏴주는 데이터가 내 위치 데이터입니다.
     console.log("소켓으로 send하는 현재 내 위치:", locationPayload);
   };
 
@@ -336,15 +367,17 @@ const MapStatusUser = () => {
     setSelectedRoute(route);
     setWalkStage("during");
     localStorage.setItem("startTime", new Date().toISOString());
-    await updateDogStatus(dogId, "W"); // 강아지 상태를 산책 중으로 변경
+    await updateDogStatus(dogId, "W");
     if (appointmentId) {
-      await updateAppointment(appointmentId, { status: "R" }); // 약속 상태 산책중으로 변경
+      await updateAppointment(appointmentId, { status: "R" });
     }
     alert(
       route
         ? `${route.name}을 목표 지점으로 산책을 시작합니다!`
         : "산책을 시작합니다!",
     );
+
+    fetchOwnerInfo();
   };
 
   const handleShowRoutes = async () => {
@@ -364,9 +397,9 @@ const MapStatusUser = () => {
 
   const handleEndWalk = async () => {
     setWalkStage("after");
-    await updateDogStatus(dogId, "B"); // 강아지 상태 리셋
+    await updateDogStatus(dogId, "B");
     if (appointmentId) {
-      await updateAppointment(appointmentId, { status: "F" }); // 스케줄 상태 변경
+      await updateAppointment(appointmentId, { status: "F" });
     }
 
     try {
@@ -403,7 +436,6 @@ const MapStatusUser = () => {
   const handleReview = () =>
     navigate(`/review/user`, { state: { walkId: walkId } });
 
-  // 칼로리 함수 임시로 추가. 수정 필요!
   const calculateCalories = (distance) => {
     return (distance * 50).toFixed(0);
   };
@@ -413,25 +445,12 @@ const MapStatusUser = () => {
       const ownerResponse = await authApi.post("/dogs/owner", {
         dog_id: dogId,
       });
-      setOwnerInfo(ownerResponse.data.owner);
+      setOwnerId(ownerResponse.data.owner_id);
+      setOwnerNickname(ownerResponse.data.owner_nickname);
+      setOwnerImage(ownerResponse.data.owner_image);
       setShowInfo(true);
     } catch (error) {
       console.error("Error fetching owner info:", error);
-    }
-  };
-
-  const handleChatClick = async () => {
-    try {
-      const chatRooms = await fetchChatRooms();
-      const chatRoom = chatRooms.find((room) => room.other_user_id === ownerId);
-
-      if (chatRoom) {
-        navigate(`/chat/rooms/${chatRoom.id}`);
-      } else {
-        alert("채팅방을 찾을 수 없습니다.");
-      }
-    } catch (error) {
-      console.error("Error fetching chat rooms:", error);
     }
   };
 
@@ -450,7 +469,7 @@ const MapStatusUser = () => {
             </ButtonContainer>
             {showRoutes && (
               <RouteList>
-                <h1>산책로 선택</h1>
+                <h2>산책로 선택</h2>
                 {routes.length > 0 ? (
                   routes.map((route, index) => (
                     <RouteItem
@@ -473,11 +492,15 @@ const MapStatusUser = () => {
             <StopButton onClick={handleEndWalk}>산책 종료</StopButton>
             <Stat>지금까지 {timeElapsed}분 동안</Stat>
             <Stat>{distance.toFixed(1)}km를 이동하셨어요!</Stat>
-            <ButtonContainer>
-              <h2>보호자 정보</h2>
-              <p>이메일: {ownerInfo.owner_email}</p>
-              <p>프로필 사진: {ownerInfo.owner_image}</p>
-            </ButtonContainer>
+            {showInfo && (
+              <OwnerInfoContainer>
+                <p>보호자 정보</p>
+                <OwnerDetails>
+                  <OwnerImage src={ownerImage} alt="Owner" />
+                  <OwnerNickname>닉네임: {ownerNickname}</OwnerNickname>
+                </OwnerDetails>
+              </OwnerInfoContainer>
+            )}
           </>
         );
       case "after":
@@ -508,8 +531,8 @@ const MapStatusUser = () => {
             {walkStage === "during"
               ? "와 산책중입니다!"
               : walkStage === "before"
-                ? "과 산책을 시작합니다."
-                : "와의 산책이 종료되었습니다."}
+              ? "과 산책을 시작합니다."
+              : "와의 산책이 종료되었습니다."}
           </DogName>
         </DogInfo>
         <div ref={mapContainer} style={{ width: "100%", height: "300px" }} />
