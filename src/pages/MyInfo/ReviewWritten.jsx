@@ -60,7 +60,7 @@ const SentReview = () => {
         <TitleWrapper>🖋 내가 작성한 후기</TitleWrapper>
         <ReviewSection>
           <SectionTitle>사용자 후기</SectionTitle>
-          {userReviews.length == 0 ? (
+          {userReviews.length === 0 ? (
             <p>아직 작성된 리뷰가 없습니다😢</p>
           ) : (
             userReviews.map((review, index) => (
@@ -70,7 +70,7 @@ const SentReview = () => {
         </ReviewSection>
         <ReviewSection>
           <SectionTitle>산책 후기</SectionTitle>
-          {walkingReviews.length == 0 ? (
+          {walkingReviews.length === 0 ? (
             <p>아직 작성된 리뷰가 없습니다😢</p>
           ) : (
             walkingReviews.map((review, index) => (

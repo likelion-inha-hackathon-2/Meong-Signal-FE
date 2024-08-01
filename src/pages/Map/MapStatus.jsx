@@ -54,6 +54,7 @@ const MapStatus = () => {
   const [walkUserId, setWalkUserId] = useState("");
   const [ownerId, setOwnerId] = useState("");
   const [socket, setSocket] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [roomId, setRoomId] = useState(null);
 
   // ownerId 설정

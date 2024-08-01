@@ -18,6 +18,7 @@ const MapUser = ({ latitude, longitude, width, height, dogId }) => {
   //const dogId = query.get("dogId");
   const keyword = query.get("keyword");
 
+  // eslint-disable-next-line no-unused-vars
   const initialLocation = { latitude, longitude };
   // eslint-disable-next-line no-unused-vars
   const { mapContainer, map, selectedDog, setSelectedDog, markers } =
@@ -89,6 +90,7 @@ const MapUser = ({ latitude, longitude, width, height, dogId }) => {
 };
 
 MapUser.propTypes = {
+  dogId: PropTypes.number.isRequired,
   latitude: PropTypes.number.isRequired,
   longitude: PropTypes.number.isRequired,
   width: PropTypes.string,

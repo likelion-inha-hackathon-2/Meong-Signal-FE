@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+// eslint-disable-next-line no-unused-vars
 import { getCoordinates } from "../apis/geolocation";
 import { getAllDogs } from "../apis/getAllDogs";
 import { getBoringDogs } from "../apis/getBoringDogs";
@@ -11,6 +12,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
   const [marker, setMarker] = useState(null);
   const [dogMarkers, setDogMarkers] = useState([]);
   const [selectedDog, setSelectedDog] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]);
 
   const makeLine = useCallback(

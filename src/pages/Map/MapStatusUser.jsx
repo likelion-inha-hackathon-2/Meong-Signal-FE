@@ -9,6 +9,7 @@ import { getMarkedTrails } from "../../apis/trail";
 import { saveWalkData } from "../../apis/walk";
 import { getDistance } from "../../utils/getDistance";
 import { getUserInfo } from "../../apis/getUserInfo";
+// eslint-disable-next-line no-unused-vars
 import { fetchChatRooms } from "../../apis/chatApi";
 import authApi from "../../apis/authApi";
 import html2canvas from "html2canvas";
@@ -152,11 +153,13 @@ const MapStatusUser = () => {
   const [ownerImage, setOwnerImage] = useState("");
   const [walkUserId, setWalkUserId] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [roomId, setRoomId] = useState(null);
   const [appointmentId, setAppointmentId] = useState(null);
   const [walkId, setWalkId] = useState(null);
   const previousLocation = useRef(initialLocation);
 
+  // eslint-disable-next-line no-unused-vars
   const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
     dogId,
@@ -269,7 +272,10 @@ const MapStatusUser = () => {
           };
           setCurrentLocation(newCurrentLocation);
 
-          const dist = getDistance(previousLocation.current, newCurrentLocation);
+          const dist = getDistance(
+            previousLocation.current,
+            newCurrentLocation,
+          );
           previousLocation.current = newCurrentLocation;
           setDistance((prevDistance) => {
             const newDistance = prevDistance + dist;
@@ -531,8 +537,8 @@ const MapStatusUser = () => {
             {walkStage === "during"
               ? "와 산책중입니다!"
               : walkStage === "before"
-              ? "과 산책을 시작합니다."
-              : "와의 산책이 종료되었습니다."}
+                ? "과 산책을 시작합니다."
+                : "와의 산책이 종료되었습니다."}
           </DogName>
         </DogInfo>
         <div ref={mapContainer} style={{ width: "100%", height: "300px" }} />

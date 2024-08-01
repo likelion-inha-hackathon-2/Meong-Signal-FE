@@ -60,7 +60,7 @@ const ReceivedReview = () => {
         <ReviewSection>
           <TitleWrapper>💌 내가 받은 리뷰</TitleWrapper>
           <SectionTitle>산책 후기</SectionTitle>
-          {walkingReviews.length == 0 ? (
+          {walkingReviews.length === 0 ? (
             <p>아직 작성된 리뷰가 없습니다😢</p>
           ) : (
             walkingReviews.map((review, index) => (
@@ -70,7 +70,7 @@ const ReceivedReview = () => {
         </ReviewSection>
         <ReviewSection>
           <SectionTitle>사용자 후기</SectionTitle>
-          {userReviews.length == 0 ? (
+          {userReviews.length === 0 ? (
             <p>아직 작성된 리뷰가 없습니다😢</p>
           ) : (
             userReviews.map((review, index) => (
