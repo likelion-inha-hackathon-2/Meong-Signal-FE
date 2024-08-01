@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { getCoordinates } from "../apis/geolocation";
 import { getAllDogs } from "../apis/getAllDogs";
 import { getBoringDogs } from "../apis/getBoringDogs";
+import { convertRoadAddressToCoordinates } from "../apis/walk";
 
 const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
   const mapContainer = useRef(null);
@@ -10,7 +11,6 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
   const [marker, setMarker] = useState(null);
   const [dogMarkers, setDogMarkers] = useState([]);
   const [selectedDog, setSelectedDog] = useState(null);
-  // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]);
 
   const makeLine = useCallback(
@@ -80,7 +80,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
               currentLocation.latitude,
               currentLocation.longitude,
             ),
-            level: 7,
+            level: 6,
           };
           const mapInstance = new window.kakao.maps.Map(
             mapContainer.current,
@@ -147,7 +147,8 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
 
         for (const dog of dogs) {
           await delay(1000);
-          const { latitude, longitude } = await getCoordinates(
+          // 강아지 집 주소로 마커 설정
+          const { latitude, longitude } = await convertRoadAddressToCoordinates(
             dog.road_address,
           );
           const markerPosition = new window.kakao.maps.LatLng(

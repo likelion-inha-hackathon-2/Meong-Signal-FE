@@ -13,6 +13,8 @@ import { fetchChatRooms } from "../../apis/chatApi";
 import authApi from "../../apis/authApi";
 import html2canvas from "html2canvas";
 import useUserMap from "../../hooks/useUserMap";
+import { updateDogStatus } from "../../apis/updateDogStatus";
+import { updateAppointment } from "../../apis/appointment"; // 추가된 부분
 
 const Container = styled.div`
   padding: 20px;
@@ -88,17 +90,7 @@ const StopButton = styled.button`
 
 const CompleteButton = styled.button`
   padding: 10px 20px;
-  background-color: #ff9900;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-`;
-
-const ChatButton = styled.button`
-  padding: 10px 20px;
-  background-color: #007bff;
+  background-color: var(--yellow-color2);
   color: white;
   border: none;
   border-radius: 5px;
@@ -109,40 +101,6 @@ const ChatButton = styled.button`
 const Stat = styled.div`
   margin-top: 20px;
   font-size: 18px;
-`;
-
-const InfoButton = styled.button`
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 20px;
-`;
-
-const InfoModal = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  width: 300px;
-`;
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
 `;
 
 const MapStatusUser = () => {
@@ -165,6 +123,8 @@ const MapStatusUser = () => {
   const [showInfo, setShowInfo] = useState(false);
   const [ownerInfo, setOwnerInfo] = useState({});
   const [roomId, setRoomId] = useState(null);
+  const [appointmentId, setAppointmentId] = useState(null); // 추가된 부분
+  const [walkId, setWalkId] = useState(null); // 추가된 부분
 
   const { mapContainer, map, currentLocation, setCurrentLocation } = useUserMap(
     process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY,
@@ -185,6 +145,16 @@ const MapStatusUser = () => {
             name: response.dog.name, // 강쥐 이름 설정
             image: response.dog.image, // 강쥐 이미지 설정
           });
+
+          // 약속 정보 가져오기
+          const appointmentResponse = await authApi.get("/schedule/upcoming");
+          const appointmentList = appointmentResponse.data;
+          const appointment = appointmentList.find(
+            (appt) => appt.dog_id === parseInt(dogId),
+          );
+          if (appointment) {
+            setAppointmentId(appointment.id);
+          }
         }
       } catch (error) {
         console.error("Error fetching initial data:", error);
@@ -358,13 +328,18 @@ const MapStatusUser = () => {
     };
 
     socket.send(JSON.stringify(locationPayload));
-    console.log("소켓으로 send하는 현재 내 위치:", locationPayload); // 여기서 쏴주는 데이터가 내 위치 데이터입니다.
+    // 여기서 쏴주는 데이터가 내 위치 데이터입니다.
+    console.log("소켓으로 send하는 현재 내 위치:", locationPayload);
   };
 
-  const handleStartWalk = (route = null) => {
+  const handleStartWalk = async (route = null) => {
     setSelectedRoute(route);
     setWalkStage("during");
     localStorage.setItem("startTime", new Date().toISOString());
+    await updateDogStatus(dogId, "W"); // 강아지 상태를 산책 중으로 변경
+    if (appointmentId) {
+      await updateAppointment(appointmentId, { status: "R" }); // 약속 상태 산책중으로 변경
+    }
     alert(
       route
         ? `${route.name}을 목표 지점으로 산책을 시작합니다!`
@@ -389,6 +364,10 @@ const MapStatusUser = () => {
 
   const handleEndWalk = async () => {
     setWalkStage("after");
+    await updateDogStatus(dogId, "B"); // 강아지 상태 리셋
+    if (appointmentId) {
+      await updateAppointment(appointmentId, { status: "F" }); // 스케줄 상태 변경
+    }
 
     try {
       const formData = new FormData();
@@ -403,12 +382,14 @@ const MapStatusUser = () => {
             formData.append("image", blob, "walk_image.png");
           }
 
-          await saveWalkData(formData);
+          const response = await saveWalkData(formData);
           alert("산책 데이터가 성공적으로 저장되었습니다.");
+          setWalkId(response.id);
         }, "image/png");
       } else {
-        await saveWalkData(formData);
+        const response = await saveWalkData(formData);
         alert("산책 데이터가 성공적으로 저장되었습니다.");
+        setWalkId(response.id);
       }
     } catch (error) {
       console.error("Error saving walk data:", error);
@@ -416,7 +397,8 @@ const MapStatusUser = () => {
     }
   };
 
-  const handleReview = () => navigate(`/review/user`);
+  const handleReview = () =>
+    navigate(`/review/user`, { state: { walkId: walkId } });
 
   // 칼로리 함수 임시로 추가. 수정 필요!
   const calculateCalories = (distance) => {
@@ -489,8 +471,9 @@ const MapStatusUser = () => {
             <Stat>지금까지 {timeElapsed}분 동안</Stat>
             <Stat>{distance.toFixed(1)}km를 이동하셨어요!</Stat>
             <ButtonContainer>
-              <InfoButton onClick={fetchOwnerInfo}>보호자 정보 보기</InfoButton>
-              <ChatButton onClick={handleChatClick}>채팅하기</ChatButton>
+              <h2>보호자 정보</h2>
+              <p>이메일: {ownerInfo.owner_email}</p>
+              <p>프로필 사진: {ownerInfo.owner_image}</p>
             </ButtonContainer>
           </>
         );
@@ -528,17 +511,6 @@ const MapStatusUser = () => {
         </DogInfo>
         <div ref={mapContainer} style={{ width: "100%", height: "300px" }} />
         {renderWalkStage()}
-        {showInfo && (
-          <>
-            <ModalOverlay onClick={() => setShowInfo(false)} />
-            <InfoModal>
-              <h2>보호자 정보</h2>
-              <p>이메일: {ownerInfo.owner_email}</p>
-              <p>프로필 사진: {ownerInfo.owner_image}</p>
-              <button onClick={() => setShowInfo(false)}>닫기</button>
-            </InfoModal>
-          </>
-        )}
       </Container>
       <Footer />
     </>

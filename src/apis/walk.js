@@ -1,5 +1,16 @@
 import authApi from "./authApi";
 
+// 산책중인 내 강아지와 산책자의 정보 조회
+export const getMyWalkingDogInfo = async () => {
+  try {
+    const response = await authApi.get("/schedule/walking-dogs");
+    return response.data;
+  } catch (error) {
+    console.error(error.response);
+    throw error;
+  }
+};
+
 // 내 정보에서 산책 기록을 조회
 export const getWalksRecord = async () => {
   try {
@@ -40,14 +51,25 @@ export const getUserImageAndName = async (walkId) => {
 };
 
 // 산책 정보와 그에 달린 리뷰 조회
-export const getWalkReviewInfo = async (walkId) => {
+export const getWalkReviewInfo = async () => {
   try {
-    const response = await authApi.post("/walks/walk-review-info", {
-      walk_id: walkId,
-    });
+    const response = await authApi.get("/schedule/walking-dog");
     return response.data;
   } catch (error) {
     console.error(error.response);
+    throw error;
+  }
+};
+
+// 도로명 주소를 위도, 경도로 변환
+export const convertRoadAddressToCoordinates = async (roadAddress) => {
+  try {
+    const response = await authApi.post("/walks/coordinate", {
+      road_address: roadAddress,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching coordinates:", error);
     throw error;
   }
 };
