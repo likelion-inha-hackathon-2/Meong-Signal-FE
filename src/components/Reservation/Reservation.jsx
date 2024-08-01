@@ -105,7 +105,11 @@ const Reservation = ({ appointment }) => {
     try {
       const chatRooms = await getAllChatRooms();
       const matchingRoom = chatRooms.find(
-        (room) => room.dog_id === appointment.dog_id,
+        (room) =>
+          (room.owner_user === appointment.user_id &&
+            room.dog_id === appointment.dog_id) ||
+          (room.user_user === appointment.user_id &&
+            room.dog_id === appointment.dog_id),
       );
       if (matchingRoom) {
         navigate(`/chat/rooms/${matchingRoom.id}`);
@@ -160,6 +164,7 @@ Reservation.propTypes = {
   appointment: PropTypes.shape({
     id: PropTypes.number.isRequired,
     dog_id: PropTypes.number.isRequired,
+    user_id: PropTypes.number.isRequired,
     time: PropTypes.string.isRequired,
   }).isRequired,
 };
