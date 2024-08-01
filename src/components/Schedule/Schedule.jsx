@@ -46,12 +46,12 @@ const ActionButton = styled.button`
   font-size: 14px;
   color: white;
   background-color: ${(props) =>
-    props.status === "R" ? "green" : props.status === "W" ? "orange" : "red"};
+    props.status === "W" ? "green" : props.status === "R" ? "orange" : "red"};
   &:hover {
     background-color: ${(props) =>
-      props.status === "R"
+      props.status === "W"
         ? "#2bb14a"
-        : props.status === "W"
+        : props.status === "R"
           ? "#ffc107"
           : "#ff3348"};
   }
@@ -80,8 +80,8 @@ const Schedule = ({ appointment, onUpdate }) => {
         <strong>약속 시간과 날짜:</strong> {appointment.time}
       </Detail>
       <ButtonGroup>
-        <ActionButton status="F" onClick={() => handleStatusChange("F")}>
-          산책 종료
+        <ActionButton status="W" onClick={() => handleStatusChange("W")}>
+          약속 잡기
         </ActionButton>
       </ButtonGroup>
     </ScheduleContainer>

@@ -81,7 +81,6 @@ const MapStatus = () => {
         console.error("Error fetching walk user id:", error);
       }
     };
-
     fetchWalkUserId();
   }, []);
 

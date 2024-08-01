@@ -4,6 +4,7 @@ import styled from "styled-components";
 import calendarIcon from "../../assets/icons/icon-calender.png";
 import Image from "../Image/Image";
 import { getDogInfo } from "../../apis/getDogInfo";
+import { getUserInfo } from "../../apis/getUserInfo";
 import { useNavigate } from "react-router-dom";
 import defaultDogImage from "../../assets/images/add-dog.png";
 import { getAllChatRooms } from "../../apis/chatApi";
@@ -84,6 +85,7 @@ const Button = styled.button`
 
 const Reservation = ({ appointment }) => {
   const [dog, setDog] = useState(null);
+  const [user, setUser] = useState(null); // 유저 정보를 위한 상태를 추가합니다.
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -96,8 +98,18 @@ const Reservation = ({ appointment }) => {
       }
     };
 
+    const fetchUserInfo = async () => {
+      try {
+        const userInfo = await getUserInfo(); // 본인의 유저 정보를 받아옵니다.
+        setUser(userInfo);
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+
     if (appointment && appointment.dog_id) {
       fetchDogInfo();
+      fetchUserInfo(); // 컴포넌트가 마운트될 때 유저 정보를 가져옵니다.
     }
   }, [appointment]);
 
@@ -126,8 +138,8 @@ const Reservation = ({ appointment }) => {
     navigate(`/map-status/${appointment.dog_id}`);
   };
 
-  if (!dog) {
-    return null;
+  if (!dog || !user) {
+    return null; // dog와 user 정보가 모두 준비될 때까지 null을 반환합니다.
   }
 
   return (
@@ -152,9 +164,12 @@ const Reservation = ({ appointment }) => {
         <Button className="chat" onClick={handleChatNavigate}>
           채팅방 바로가기
         </Button>
-        <Button className="start" onClick={handleWalkNavigate}>
-          산책 시작
-        </Button>
+        {user.id === appointment.user_id &&
+          user.id !== appointment.owner_id && (
+            <Button className="start" onClick={handleWalkNavigate}>
+              산책 시작하기
+            </Button>
+          )}
       </ButtonsContainer>
     </ReservationContainer>
   );
@@ -165,6 +180,7 @@ Reservation.propTypes = {
     id: PropTypes.number.isRequired,
     dog_id: PropTypes.number.isRequired,
     user_id: PropTypes.number.isRequired,
+    owner_id: PropTypes.number.isRequired,
     time: PropTypes.string.isRequired,
   }).isRequired,
 };
