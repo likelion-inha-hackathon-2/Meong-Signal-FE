@@ -131,6 +131,7 @@ const ChatRoom = () => {
   const [reservation, setReservation] = useState(null);
   const [dogId, setDogId] = useState(null);
   const [ownerId, setOwnerId] = useState(null);
+  const [userId, setUserId] = useState(null); // 유저 id 추가
 
   useEffect(() => {
     const fetchDogAndOwnerInfo = async (dogId) => {
@@ -150,9 +151,11 @@ const ChatRoom = () => {
         );
 
         if (currentRoom) {
+          // eslint-disable-next-line no-unused-vars
           const ownerID = await fetchDogAndOwnerInfo(currentRoom.dog_id);
           setDogId(currentRoom.dog_id);
-          setOwnerId(ownerID);
+          setOwnerId(currentRoom.owner_user); // owner_user를 ownerId로 설정
+          setUserId(currentRoom.user_user); // user_user를 userId로 설정
         }
       } catch (error) {
         console.error("Failed to fetch all chat rooms:", error);
@@ -322,7 +325,7 @@ const ChatRoom = () => {
         <TooltipWrapper>
           <Calendar
             dogId={dogId}
-            userId={userInfo?.id}
+            userId={userId}
             ownerId={ownerId}
             onClose={() => setShowCalendar(false)}
             onSave={handleSaveReservation}

@@ -23,7 +23,18 @@ const Calendar = ({ dogId, userId, ownerId, onClose, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = await createAppointment(appointment);
+      // KST로 시간 변환
+      const kstTime = new Date(appointment.time);
+      kstTime.setHours(kstTime.getHours() + 9); // KST는 UTC+9
+
+      const formattedTime = kstTime.toISOString();
+
+      const appointmentWithKST = {
+        ...appointment,
+        time: formattedTime,
+      };
+
+      const data = await createAppointment(appointmentWithKST);
       onSave(data);
       console.log("약속 생성:", data);
       onClose();

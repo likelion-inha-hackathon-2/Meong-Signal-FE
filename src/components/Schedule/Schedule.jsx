@@ -80,8 +80,8 @@ const Schedule = ({ appointment, onUpdate }) => {
         <strong>약속 시간과 날짜:</strong> {appointment.time}
       </Detail>
       <ButtonGroup>
-        <ActionButton status="R" onClick={() => handleStatusChange("R")}>
-          수락
+        <ActionButton status="F" onClick={() => handleStatusChange("F")}>
+          산책 종료
         </ActionButton>
       </ButtonGroup>
     </ScheduleContainer>
