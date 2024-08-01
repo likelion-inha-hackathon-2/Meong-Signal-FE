@@ -151,8 +151,8 @@ const OwnerReview = () => {
               onChange={(e) => setMeong(Number(e.target.value))}
             >
               {[...Array(20).keys()].map((i) => (
-                <option key={i} value={(i + 1) * 5}>
-                  {(i + 1) * 5}멍
+                <option key={i} value={i * 5}>
+                  {i * 5}멍
                 </option>
               ))}
             </Select>
