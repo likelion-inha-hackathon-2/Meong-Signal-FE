@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import calendarIcon from "../../assets/icons/icon-calender.png";
 import Image from "../Image/Image";
 import { getDogInfo } from "../../apis/getDogInfo";
-import defaultDogImage from "../../assets/images/add-dog.png"; // 디폴트 이미지 예외처리
+import { useNavigate } from "react-router-dom";
+import defaultDogImage from "../../assets/images/add-dog.png";
+import { getAllChatRooms } from "../../apis/chatApi";
 
 const ReservationContainer = styled.div`
   display: flex;
@@ -22,6 +25,7 @@ const DogImageContainer = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  pointer-events: none;
 `;
 
 const TextContainer = styled.div`
@@ -80,12 +84,13 @@ const Button = styled.button`
 
 const Reservation = ({ appointment }) => {
   const [dog, setDog] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDogInfo = async () => {
       try {
         const data = await getDogInfo(appointment.dog_id);
-        setDog(data);
+        setDog(data.dog);
       } catch (error) {
         console.error("Error fetching dog info:", error);
       }
@@ -95,6 +100,27 @@ const Reservation = ({ appointment }) => {
       fetchDogInfo();
     }
   }, [appointment]);
+
+  const handleChatNavigate = async () => {
+    try {
+      const chatRooms = await getAllChatRooms();
+      const matchingRoom = chatRooms.find(
+        (room) => room.dog_id === appointment.dog_id,
+      );
+      if (matchingRoom) {
+        navigate(`/chat/rooms/${matchingRoom.id}`);
+      } else {
+        alert("채팅방이 개설되지 않았습니다.");
+        console.error("Matching chat room not found");
+      }
+    } catch (error) {
+      console.error("Failed to navigate to chat room:", error);
+    }
+  };
+
+  const handleWalkNavigate = () => {
+    navigate(`/map-status/${appointment.dog_id}`);
+  };
 
   if (!dog) {
     return null;
@@ -119,11 +145,23 @@ const Reservation = ({ appointment }) => {
         </TextContainer>
       </DogImageContainer>
       <ButtonsContainer>
-        <Button className="chat">채팅방 바로가기</Button>
-        <Button className="start">산책 시작</Button>
+        <Button className="chat" onClick={handleChatNavigate}>
+          채팅방 바로가기
+        </Button>
+        <Button className="start" onClick={handleWalkNavigate}>
+          산책 시작
+        </Button>
       </ButtonsContainer>
     </ReservationContainer>
   );
+};
+
+Reservation.propTypes = {
+  appointment: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    dog_id: PropTypes.number.isRequired,
+    time: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default Reservation;
