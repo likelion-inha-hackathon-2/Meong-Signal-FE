@@ -8,6 +8,7 @@ import { getUserInfo } from "../../apis/getUserInfo";
 import { useNavigate } from "react-router-dom";
 import defaultDogImage from "../../assets/images/add-dog.png";
 import { getAllChatRooms } from "../../apis/chatApi";
+import { deleteAppointment } from "../../apis/appointment";
 
 const ReservationContainer = styled.div`
   display: flex;
@@ -15,10 +16,10 @@ const ReservationContainer = styled.div`
   align-items: flex-start;
   padding: 20px;
   background-color: #fff;
-  border: 1px solid #eee;
+  border: 3px solid #eee;
   border-radius: 10px;
   margin-bottom: 5px;
-  width: 300px;
+  width: 350px;
   height: 125px;
 `;
 
@@ -42,12 +43,14 @@ const DogName = styled.div`
   font-weight: bold;
   color: #333;
   margin-bottom: 5px;
+  padding-left: 5px;
   font-family: "PretendardM";
 `;
 
 const DateInfo = styled.div`
   display: flex;
   align-items: center;
+  padding-left: 3px;
   color: #888;
   margin-bottom: 2px;
   font-family: "PretendardM";
@@ -66,26 +69,33 @@ const ButtonsContainer = styled.div`
 `;
 
 const Button = styled.button`
-  padding: 7px 15px;
+  padding: 7px 10px;
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 8px;
+  font-size: 12px;
   font-family: "PretendardM";
   cursor: pointer;
+  // 채팅 버튼
   &.chat {
     background-color: #6bbe6f;
     color: #fff;
     flex-grow: 1;
   }
+  // 산책 시작
   &.start {
     background-color: #f0ad4e;
     color: #fff;
   }
+  // 약속 취소
+  &.cancel {
+    background-color: #d9534f;
+    color: #fff;
+  }
 `;
 
-const Reservation = ({ appointment }) => {
+const Reservation = ({ appointment, onCancel }) => {
   const [dog, setDog] = useState(null);
-  const [user, setUser] = useState(null); // 유저 정보를 위한 상태를 추가합니다.
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -100,7 +110,7 @@ const Reservation = ({ appointment }) => {
 
     const fetchUserInfo = async () => {
       try {
-        const userInfo = await getUserInfo(); // 본인의 유저 정보를 받아옵니다.
+        const userInfo = await getUserInfo();
         setUser(userInfo);
       } catch (error) {
         console.error("Error fetching user info:", error);
@@ -109,7 +119,7 @@ const Reservation = ({ appointment }) => {
 
     if (appointment && appointment.dog_id) {
       fetchDogInfo();
-      fetchUserInfo(); // 컴포넌트가 마운트될 때 유저 정보를 가져옵니다.
+      fetchUserInfo();
     }
   }, [appointment]);
 
@@ -138,8 +148,19 @@ const Reservation = ({ appointment }) => {
     navigate(`/map-status/${appointment.dog_id}`);
   };
 
+  const handleCancel = async () => {
+    try {
+      await deleteAppointment(appointment.id);
+      alert("약속을 거절했습니다.");
+      onCancel(appointment.id); // 부모 컴포넌트로 스케쥴 id를 전달
+    } catch (error) {
+      console.error("Failed to cancel the appointment:", error);
+      alert("약속을 거절하는데 실패했습니다.");
+    }
+  };
+
   if (!dog || !user) {
-    return null; // dog와 user 정보가 모두 준비될 때까지 null을 반환합니다.
+    return null;
   }
 
   return (
@@ -170,6 +191,9 @@ const Reservation = ({ appointment }) => {
               산책 시작하기
             </Button>
           )}
+        <Button className="cancel" onClick={handleCancel}>
+          약속 취소하기
+        </Button>
       </ButtonsContainer>
     </ReservationContainer>
   );
@@ -183,6 +207,7 @@ Reservation.propTypes = {
     owner_id: PropTypes.number.isRequired,
     time: PropTypes.string.isRequired,
   }).isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default Reservation;

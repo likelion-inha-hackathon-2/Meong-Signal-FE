@@ -22,6 +22,17 @@ export const updateAppointment = async (id, appointment) => {
   }
 };
 
+// 약속 정보 삭제
+export const deleteAppointment = async (id, appointment) => {
+  try {
+    const response = await authApi.delete(`/schedule/del/${id}`, appointment);
+    return response.data;
+  } catch (error) {
+    console.error("Error delete appointment:", error);
+    throw error;
+  }
+};
+
 // 남은 시간이 3일 이하인 약속 목록 조회
 export const getUpcomingAppointment = async () => {
   try {
