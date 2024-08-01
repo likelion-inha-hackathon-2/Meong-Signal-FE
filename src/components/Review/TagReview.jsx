@@ -28,6 +28,7 @@ const ReviewImage = styled.img`
   border-radius: 50%;
   width: 70px;
   height: 70px;
+  object-fit: cover;
 `;
 
 const Tag = styled.span`
