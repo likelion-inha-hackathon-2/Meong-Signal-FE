@@ -24,6 +24,15 @@ const EmptyMessage = styled.div`
   font-family: "PretendardM";
 `;
 
+const TitleWrapper = styled.div`
+  display: flex;
+  padding: 10px;
+  font-family: "PretendardB";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+`;
+
 const ChatList = () => {
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +62,7 @@ const ChatList = () => {
     <>
       <Header />
       <ReservationList />
+      <TitleWrapper>💌 채팅 기록</TitleWrapper>
       {loading ? (
         <Loading>로딩 중...</Loading>
       ) : chatRooms.length === 0 ? (

@@ -8,19 +8,19 @@ import { getUserInfo } from "../../apis/getUserInfo";
 import { useNavigate } from "react-router-dom";
 import defaultDogImage from "../../assets/images/add-dog.png";
 import { getAllChatRooms } from "../../apis/chatApi";
-import { deleteAppointment } from "../../apis/appointment";
+import { deleteAppointment, updateAppointment } from "../../apis/appointment";
 
 const ReservationContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 20px;
+  padding: 10px;
   background-color: #fff;
   border: 3px solid #eee;
-  border-radius: 10px;
-  margin-bottom: 5px;
+  border-radius: 15px;
+  margin: 10px;
   width: 350px;
-  height: 125px;
+  height: auto;
 `;
 
 const DogImageContainer = styled.div`
@@ -47,6 +47,14 @@ const DogName = styled.div`
   font-family: "PretendardM";
 `;
 
+const PromiseName = styled.div`
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+  padding-left: 5px;
+  font-family: "PretendardM";
+`;
+
 const DateInfo = styled.div`
   display: flex;
   align-items: center;
@@ -64,29 +72,109 @@ const CalendarIcon = styled.img`
 `;
 
 const ButtonsContainer = styled.div`
-  display: flex;
+  display: ${(props) => (props.buttonCount > 3 ? "grid" : "flex")};
+  grid-template-columns: ${(props) =>
+    props.buttonCount > 3 ? "1fr 1fr" : "none"};
   gap: 10px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Button = styled.button`
-  padding: 7px 10px;
+  width: 130px;
+  height: 30px;
+  padding: 7px 4px;
   border: none;
   border-radius: 8px;
   font-size: 12px;
   font-family: "PretendardM";
   cursor: pointer;
-  // 채팅 버튼
   &.chat {
     background-color: #6bbe6f;
     color: #fff;
-    flex-grow: 1;
   }
-  // 산책 시작
   &.start {
     background-color: #f0ad4e;
     color: #fff;
   }
-  // 약속 취소
+  &.cancel {
+    background-color: #d9534f;
+    color: #fff;
+  }
+  &.edit {
+    background-color: #5bc0de;
+    color: #fff;
+  }
+`;
+
+const ModalContainer = styled.div`
+  position: fixed;
+  font-family: "PretendardM";
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 350px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+`;
+
+const ModalTitle = styled.h2`
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 20px;
+  font-family: "PretendardB";
+`;
+
+const ModalForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ModalLabel = styled.label`
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+  width: 100%;
+  text-align: left;
+  font-family: "PretendardM";
+`;
+
+const ModalInput = styled.input`
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  font-family: "PretendardM";
+`;
+
+const ModalButton = styled.button`
+  width: 100px;
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  &.confirm {
+    background-color: #5bc0de;
+    color: #fff;
+  }
   &.cancel {
     background-color: #d9534f;
     color: #fff;
@@ -96,6 +184,8 @@ const Button = styled.button`
 const Reservation = ({ appointment, onCancel }) => {
   const [dog, setDog] = useState(null);
   const [user, setUser] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({ name: "", time: "" });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -159,43 +249,123 @@ const Reservation = ({ appointment, onCancel }) => {
     }
   };
 
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditData({ name: appointment.name, time: appointment.time });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await updateAppointment(appointment.id, editData);
+      alert("약속을 수정했습니다.");
+      setIsEditing(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to update the appointment:", error);
+      alert("약속을 수정하는데 실패했습니다.");
+    }
+  };
+
   if (!dog || !user) {
     return null;
   }
 
+  // 버튼 카운트 동적 계산
+  const buttons = [
+    <Button key="chat" className="chat" onClick={handleChatNavigate}>
+      채팅방 바로가기
+    </Button>,
+    user.id === appointment.user_id && user.id !== appointment.owner_id && (
+      <Button key="start" className="start" onClick={handleWalkNavigate}>
+        산책 시작하기
+      </Button>
+    ),
+    <Button key="cancel" className="cancel" onClick={handleCancel}>
+      약속 취소하기
+    </Button>,
+    <Button key="edit" className="edit" onClick={handleEdit}>
+      약속 수정하기
+    </Button>,
+  ].filter(Boolean);
+
+  const buttonCount = buttons.length;
+
   return (
-    <ReservationContainer>
-      <DogImageContainer>
-        <Image
-          src={dog.image || defaultDogImage}
-          width="50px"
-          height="50px"
-          alt={`${dog.name}`}
-          borderRadius="50%"
-        />
-        <TextContainer>
-          <DogName>{dog.name}랑 만나는 날!</DogName>
-          <DateInfo>
-            <CalendarIcon src={calendarIcon} alt="calendar icon" />
-            {new Date(appointment.time).toLocaleString()}
-          </DateInfo>
-        </TextContainer>
-      </DogImageContainer>
-      <ButtonsContainer>
-        <Button className="chat" onClick={handleChatNavigate}>
-          채팅방 바로가기
-        </Button>
-        {user.id === appointment.user_id &&
-          user.id !== appointment.owner_id && (
-            <Button className="start" onClick={handleWalkNavigate}>
-              산책 시작하기
-            </Button>
-          )}
-        <Button className="cancel" onClick={handleCancel}>
-          약속 취소하기
-        </Button>
-      </ButtonsContainer>
-    </ReservationContainer>
+    <>
+      <ReservationContainer>
+        <DogImageContainer>
+          <Image
+            src={dog.image || defaultDogImage}
+            width="50px"
+            height="50px"
+            alt={`${dog.name}`}
+            borderRadius="50%"
+          />
+          <TextContainer>
+            <DogName>{dog.name}랑 만나는 날!</DogName>
+            <PromiseName>약속 이름: {appointment.name}</PromiseName>
+            <DateInfo>
+              <CalendarIcon src={calendarIcon} alt="calendar icon" />
+              {new Date(appointment.time).toLocaleString()}
+            </DateInfo>
+          </TextContainer>
+        </DogImageContainer>
+        <ButtonsContainer buttonCount={buttonCount}>{buttons}</ButtonsContainer>
+      </ReservationContainer>
+
+      {isEditing && (
+        <ModalContainer>
+          <ModalContent>
+            <ModalTitle>약속 수정하기</ModalTitle>
+            <ModalForm onSubmit={handleEditSubmit}>
+              <ModalLabel>
+                변경할 약속 이름:
+                <ModalInput
+                  type="text"
+                  name="name"
+                  value={editData.name}
+                  onChange={handleEditChange}
+                  minLength="1"
+                  maxLength="20"
+                  required
+                />
+              </ModalLabel>
+              <ModalLabel>
+                변경할 약속 시간:
+                <ModalInput
+                  type="datetime-local"
+                  name="time"
+                  value={editData.time}
+                  onChange={handleEditChange}
+                  required
+                />
+              </ModalLabel>
+              <div>
+                <ModalButton className="confirm" type="submit">
+                  확인
+                </ModalButton>
+                <ModalButton
+                  className="cancel"
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                >
+                  취소
+                </ModalButton>
+              </div>
+            </ModalForm>
+          </ModalContent>
+        </ModalContainer>
+      )}
+    </>
   );
 };
 
@@ -206,6 +376,7 @@ Reservation.propTypes = {
     user_id: PropTypes.number.isRequired,
     owner_id: PropTypes.number.isRequired,
     time: PropTypes.string.isRequired,
+    name: PropTypes.string,
   }).isRequired,
   onCancel: PropTypes.func.isRequired,
 };
