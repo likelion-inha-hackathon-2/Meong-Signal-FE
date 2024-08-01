@@ -376,7 +376,10 @@ const MapStatusUser = () => {
       formData.append("distance", distance.toFixed(1));
 
       if (mapContainer.current) {
-        const canvas = await html2canvas(mapContainer.current);
+        const canvas = await html2canvas(mapContainer.current, {
+          allowTaint: true,
+          useCORS: true,
+        });
         canvas.toBlob(async (blob) => {
           if (blob) {
             formData.append("image", blob, "walk_image.png");
