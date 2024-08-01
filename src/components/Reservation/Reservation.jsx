@@ -71,7 +71,9 @@ const CalendarIcon = styled.img`
   margin-top: 3px;
 `;
 
-const ButtonsContainer = styled.div`
+const ButtonsContainer = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "buttonCount",
+})`
   display: ${(props) => (props.buttonCount > 3 ? "grid" : "flex")};
   grid-template-columns: ${(props) =>
     props.buttonCount > 3 ? "1fr 1fr" : "none"};
@@ -297,7 +299,7 @@ const Reservation = ({ appointment, onCancel }) => {
     </Button>,
   ].filter(Boolean);
 
-  const buttonCount = buttons.length;
+  const button_count = buttons.length;
 
   return (
     <>
@@ -319,7 +321,9 @@ const Reservation = ({ appointment, onCancel }) => {
             </DateInfo>
           </TextContainer>
         </DogImageContainer>
-        <ButtonsContainer buttonCount={buttonCount}>{buttons}</ButtonsContainer>
+        <ButtonsContainer buttonCount={button_count}>
+          {buttons}
+        </ButtonsContainer>
       </ReservationContainer>
 
       {isEditing && (
