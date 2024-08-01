@@ -60,15 +60,23 @@ const ReceivedReview = () => {
         <ReviewSection>
           <TitleWrapper>💌 내가 받은 리뷰</TitleWrapper>
           <SectionTitle>산책 후기</SectionTitle>
-          {walkingReviews.map((review, index) => (
-            <TagReview key={index} review={review} />
-          ))}
+          {userReviews.length == 0 ? (
+            <p>아직 작성된 리뷰가 없습니다😢</p>
+          ) : (
+            userReviews.map((review, index) => (
+              <StarReview key={index} review={review} />
+            ))
+          )}
         </ReviewSection>
         <ReviewSection>
           <SectionTitle>사용자 후기</SectionTitle>
-          {userReviews.map((review, index) => (
-            <StarReview key={index} review={review} />
-          ))}
+          {userReviews.length == 0 ? (
+            <p>아직 작성된 리뷰가 없습니다😢</p>
+          ) : (
+            userReviews.map((review, index) => (
+              <StarReview key={index} review={review} />
+            ))
+          )}
         </ReviewSection>
       </Container>
       <Footer />
