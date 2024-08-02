@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 const WalkItemContainer = styled.div`
   display: flex;
+  width: 300px;
   justify-content: space-between;
   align-items: center;
   background-color: var(--yellow-color1);
