@@ -103,7 +103,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
     const dogMarkerElement = document.createElement("div");
     dogMarkerElement.style.width = "50px";
     dogMarkerElement.style.height = "50px";
-    dogMarkerElement.style.backgroundImage = `url(강아지 이미지 URL)`;
+    dogMarkerElement.style.backgroundImage = `url`;
     dogMarkerElement.style.backgroundSize = "cover";
     dogMarkerElement.style.borderRadius = "50%";
 
