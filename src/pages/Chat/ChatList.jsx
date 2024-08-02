@@ -11,7 +11,7 @@ import ReservationList from "../../components/Reservation/ReservationList";
 const ChatRoomList = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 10px;
   align-items: center;
   justify-content: center;
 `;
