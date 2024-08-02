@@ -8,9 +8,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
   const [dogMarker, setDogMarker] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const infowindow = useRef(null);
-  // eslint-disable-next-line no-unused-vars
   const [markers, setMarkers] = useState([]);
-  // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]);
 
   const makeLine = useCallback(
@@ -73,7 +71,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
               center.latitude,
               center.longitude,
             ),
-            level: 5,
+            level: 7,
           };
           const mapInstance = new window.kakao.maps.Map(
             mapContainer.current,
@@ -91,6 +89,32 @@ const useUserMap = (appKey, dogId, keyword = "") => {
       document.head.removeChild(script);
     };
   }, [appKey]);
+
+  const updateDogMarker = (position) => {
+    if (dogMarker) {
+      dogMarker.setMap(null); // 이전 마커 제거
+    }
+
+    const markerPosition = new window.kakao.maps.LatLng(
+      position.coords.latitude,
+      position.coords.longitude,
+    );
+
+    const dogMarkerElement = document.createElement("div");
+    dogMarkerElement.style.width = "50px";
+    dogMarkerElement.style.height = "50px";
+    dogMarkerElement.style.backgroundImage = `url(강아지 이미지 URL)`;
+    dogMarkerElement.style.backgroundSize = "cover";
+    dogMarkerElement.style.borderRadius = "50%";
+
+    const customOverlay = new window.kakao.maps.CustomOverlay({
+      position: markerPosition,
+      content: dogMarkerElement,
+      map: map,
+    });
+
+    setDogMarker(customOverlay);
+  };
 
   useEffect(() => {
     const fetchDogInfo = async () => {
@@ -158,7 +182,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
 
           setMarkers(newMarkers);
           map.setBounds(bounds);
-          map.setLevel(5);
+          map.setLevel(7);
         }
       });
     }
@@ -169,17 +193,11 @@ const useUserMap = (appKey, dogId, keyword = "") => {
       const interval = setInterval(() => {
         navigator.geolocation.getCurrentPosition((position) => {
           setLinePathArr(position);
-          const moveLatLon = new window.kakao.maps.LatLng(
-            position.coords.latitude,
-            position.coords.longitude,
-          );
           setCurrentLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-          if (dogMarker) {
-            dogMarker.setPosition(moveLatLon);
-          }
+          updateDogMarker(position); // 강아지 마커 업데이트
         });
       }, 5000);
 
@@ -187,7 +205,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
         clearInterval(interval);
       };
     }
-  }, [map, setLinePathArr, dogMarker]);
+  }, [map, setLinePathArr]);
 
   return { mapContainer, map, currentLocation, setCurrentLocation };
 };
