@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { getCoordinates } from "../apis/geolocation";
 import { getDogInfo } from "../apis/getDogInfo";
 
@@ -11,6 +11,40 @@ const useUserMap = (appKey, dogId, keyword = "") => {
   const infowindow = useRef(null);
   // eslint-disable-next-line no-unused-vars
   const [markers, setMarkers] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [positionArr, setPositionArr] = useState([]);
+
+  const makeLine = useCallback(
+    (position) => {
+      let linePath = position;
+
+      var polyline = new window.kakao.maps.Polyline({
+        path: linePath,
+        strokeWeight: 5,
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.7,
+        strokeStyle: "solid",
+      });
+
+      polyline.setMap(map);
+    },
+    [map],
+  );
+
+  const setLinePathArr = useCallback(
+    (position) => {
+      const moveLatLon = new window.kakao.maps.LatLng(
+        position.coords.latitude,
+        position.coords.longitude,
+      );
+      setPositionArr((prevArr) => {
+        const newPosition = [...prevArr, moveLatLon];
+        makeLine(newPosition);
+        return newPosition;
+      });
+    },
+    [makeLine],
+  );
 
   useEffect(() => {
     const loadKakaoMap = async () => {
@@ -115,7 +149,6 @@ const useUserMap = (appKey, dogId, keyword = "") => {
             newMarkers.push(marker);
             bounds.extend(markerPosition);
 
-            // Add event listener for marker click
             window.kakao.maps.event.addListener(marker, "click", () => {
               infowindow.current.setContent(
                 `<div style="padding:5px;font-size:12px;">${place.place_name}</div>`,
@@ -126,11 +159,23 @@ const useUserMap = (appKey, dogId, keyword = "") => {
 
           setMarkers(newMarkers);
           map.setBounds(bounds);
-          map.setLevel(7); // 지도 레벨 설정
+          map.setLevel(7);
         }
       });
     }
   }, [map, keyword]);
+
+  useEffect(() => {
+    if (map) {
+      const interval = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(setLinePathArr);
+      }, 5000);
+
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [map, setLinePathArr]);
 
   return { mapContainer, map, currentLocation, setCurrentLocation };
 };
