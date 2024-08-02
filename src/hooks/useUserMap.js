@@ -8,7 +8,9 @@ const useUserMap = (appKey, dogId, keyword = "") => {
   const [dogMarker, setDogMarker] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const infowindow = useRef(null);
+  // eslint-disable-next-line no-unused-vars
   const [markers, setMarkers] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]);
 
   const makeLine = useCallback(

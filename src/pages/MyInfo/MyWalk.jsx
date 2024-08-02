@@ -8,7 +8,6 @@ import WalkItem from "../../components/Walk/WalkItem";
 
 const Container = styled.div`
   display: flex;
-  width: 300px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -20,6 +19,7 @@ const Container = styled.div`
 const WalkRecordBox = styled.div`
   display: flex;
   flex-direction: column;
+  width: 300px;
   gap: 10px;
   padding: 10px;
   border-radius: 8px;
@@ -77,8 +77,8 @@ const MyWalk = () => {
       <Header />
       <Container>
         <WalkRecordBox>
-          <WalkTitle>최근 산책 기록</WalkTitle>
-          최근 한달간 {walkData.recent_walks.length} 번의 산책을 하셨습니다.
+          <WalkTitle>🎯 최근 산책 기록</WalkTitle>
+          최근 한 달간 {walkData.recent_walks.length} 번의 산책을 하셨습니다.
           <Graph recentWalks={walkData.recent_walks} />
           <p>총 거리: {walkData.total_distance}km</p>
           <p>총 칼로리 소모: {walkData.total_kilocalories}kcal</p>

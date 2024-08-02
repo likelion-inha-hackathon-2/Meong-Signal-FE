@@ -67,7 +67,7 @@ const TitleWrapper = styled.h1`
 `;
 
 const TextWrapper = styled.div`
-  font-size: 16px;
+  font-size: 14px;
   font-family: "PretendardM";
   margin: 10px;
   color: var(--gray-color3);
@@ -113,14 +113,16 @@ const TagFiltering = () => {
   useEffect(() => {
     const fetchDogsByTags = async () => {
       if (selectedTags.length > 0 && location) {
-        let dogsByTags = [];
+        let dogsByTags = new Map(); // 강아지를 저장할 Map
         let dogInfoPromises = [];
         for (const tag of selectedTags) {
           const response = await searchByTag(tag.id, location);
           if (response && Array.isArray(response.dogs)) {
-            dogsByTags = [...dogsByTags, ...response.dogs];
             for (const dog of response.dogs) {
-              dogInfoPromises.push(getDogInfo(dog.id));
+              if (!dogsByTags.has(dog.id)) {
+                dogsByTags.set(dog.id, dog);
+                dogInfoPromises.push(getDogInfo(dog.id));
+              }
             }
           } else {
             console.error("Expected response to be an array, got:", response);
@@ -131,10 +133,10 @@ const TagFiltering = () => {
         let newDogInfos = {};
         dogInfosResponse.forEach((info, index) => {
           if (info && info.dog) {
-            newDogInfos[dogsByTags[index].id] = info.dog;
+            newDogInfos[Array.from(dogsByTags.values())[index].id] = info.dog;
           }
         });
-        setDogs(dogsByTags);
+        setDogs(Array.from(dogsByTags.values())); // Map을 배열로 변환
         setDogInfos(newDogInfos);
       } else {
         setDogs([]); // 태그를 해제하면 강아지 목록을 초기화
@@ -193,7 +195,7 @@ const TagFiltering = () => {
                 <DogInfo>
                   <div>성별: {dogInfos[dog.id].gender}</div>
                   <div>나이: {dogInfos[dog.id].age}</div>
-                  <div>{dogInfos[dog.id].introduction}</div>
+                  <div>소개: {dogInfos[dog.id].introduction}</div>
                 </DogInfo>
               )}
               <DogAddress>
@@ -201,7 +203,7 @@ const TagFiltering = () => {
                 <p>{dog.road_address}에 있어요.</p>
               </DogAddress>
               <ContactButton
-                text="💌보호자와 채팅하기"
+                text="💌 보호자와 채팅하기"
                 onClick={() => handleContactButtonClick(dog)}
               />
             </DogItem>
