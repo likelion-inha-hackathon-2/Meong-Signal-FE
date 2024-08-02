@@ -57,7 +57,17 @@ const ActionButton = styled.button`
   }
 `;
 
-const Schedule = ({ appointment, onUpdate }) => {
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+`;
+
+const Schedule = ({ appointment, onUpdate, onClose }) => {
   const handleStatusChange = async (status) => {
     try {
       const updatedAppointment = await updateAppointment(appointment.id, {
@@ -84,6 +94,7 @@ const Schedule = ({ appointment, onUpdate }) => {
           약속 잡기
         </ActionButton>
       </ButtonGroup>
+      <CloseButton onClick={onClose}>×</CloseButton>
     </ScheduleContainer>
   );
 };
@@ -96,6 +107,7 @@ Schedule.propTypes = {
     status: PropTypes.string.isRequired,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default Schedule;
