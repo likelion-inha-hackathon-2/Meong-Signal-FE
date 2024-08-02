@@ -22,7 +22,7 @@ const ChatRoomHeader = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 30px;
   font-size: 18px;
   font-weight: bold;
   font-family: "PretendardB";
@@ -32,12 +32,17 @@ const MessageList = styled.div`
   display: flex;
   width: 350px;
   flex-direction: column;
-  margin-top: 10px;
-  height: calc(100vh - 200px);
+  margin-top: 20px;
   font-family: "PretendardR";
   font-size: 14px;
   overflow-y: auto;
   gap: 10px;
+  height: calc(100vh - 240px); // 데탑
+
+  // iPhone SE
+  @media (max-width: 375px) {
+    height: calc(120vh - 240px);
+  }
 `;
 
 const MessageContainer = styled.div`
@@ -80,7 +85,7 @@ const MessageMeta = styled.div`
 const InputContainer = styled.div`
   display: flex;
   position: fixed;
-  bottom: 50px;
+  bottom: 40px;
   width: 350px;
   align-items: center;
   justify-content: baseline;
@@ -105,11 +110,9 @@ const TextInput = styled.input`
 `;
 
 const SendButton = styled(Button)`
-  padding: 10px 20px;
-  width: 70px;
+  width: 80px;
   background-color: var(--yellow-color2);
-  border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
 `;
 
@@ -313,7 +316,6 @@ const ChatRoom = () => {
           alt="캘린더 아이콘"
           onClick={toggleCalendar}
         />
-
         <TextInput
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
