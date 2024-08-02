@@ -8,8 +8,9 @@ const ReservationsContainer = styled.div`
   width: 300px;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
   width: 100%;
+  padding: 10px 0;
+  line-height: 20px;
 `;
 
 const NoReservationsMessage = styled.p`
@@ -18,6 +19,7 @@ const NoReservationsMessage = styled.p`
   color: #7a7a7a;
   margin-bottom: 10px;
   text-align: center;
+  white-space: pre-wrap;
 `;
 
 const ReservationList = () => {
@@ -55,6 +57,8 @@ const ReservationList = () => {
       ) : (
         <NoReservationsMessage>
           현재 예약된 산책 일정이 없습니다.
+          <br />
+          3일 이내로 예정된 약속만 조회할 수 있어요!
         </NoReservationsMessage>
       )}
     </ReservationsContainer>
