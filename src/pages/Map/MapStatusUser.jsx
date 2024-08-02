@@ -442,8 +442,11 @@ const MapStatusUser = () => {
   const handleReview = () =>
     navigate(`/review/user`, { state: { walkId: walkId } });
 
-  const calculateCalories = (distance) => {
-    return (distance * 50).toFixed(0);
+  // 칼로리 계산 함수 (기본 70kg)
+  const calculateCalories = (distance, time, weight_kg = 70) => {
+    const METs = 3.5;
+    const caloriesBurned = (METs * time * weight_kg * 3) / 200;
+    return caloriesBurned.toFixed(0);
   };
 
   const fetchOwnerInfo = async () => {
