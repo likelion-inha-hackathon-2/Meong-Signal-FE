@@ -12,7 +12,7 @@ import { getUserInfo } from "../../apis/getUserInfo";
 // eslint-disable-next-line no-unused-vars
 import { fetchChatRooms } from "../../apis/chatApi";
 import authApi from "../../apis/authApi";
-import html2canvas from "html2canvas";
+// import html2canvas from "html2canvas";
 import useUserMap from "../../hooks/useUserMap";
 import { updateDogStatus } from "../../apis/updateDogStatus";
 import { updateAppointment } from "../../apis/appointment";
@@ -411,6 +411,7 @@ const MapStatusUser = () => {
   const handleEndWalk = async () => {
     setWalkStage("after");
     await updateDogStatus(dogId, "B");
+
     if (appointmentId) {
       await updateAppointment(appointmentId, { status: "F" });
     }
@@ -420,26 +421,11 @@ const MapStatusUser = () => {
       formData.append("dog_id", dogId);
       formData.append("time", timeElapsed.toString());
       formData.append("distance", distance.toFixed(1));
+      formData.append("dog_image.png", dogInfo.image);
 
-      if (mapContainer.current) {
-        const canvas = await html2canvas(mapContainer.current, {
-          allowTaint: true,
-          useCORS: true,
-        });
-        canvas.toBlob(async (blob) => {
-          if (blob) {
-            formData.append("image", blob, "walk_image.png");
-          }
-
-          const response = await saveWalkData(formData);
-          alert("산책 데이터가 성공적으로 저장되었습니다.");
-          setWalkId(response.id);
-        }, "image/png");
-      } else {
-        const response = await saveWalkData(formData);
-        alert("산책 데이터가 성공적으로 저장되었습니다.");
-        setWalkId(response.id);
-      }
+      const response = await saveWalkData(formData);
+      alert("산책 데이터가 성공적으로 저장되었습니다.");
+      setWalkId(response.id);
     } catch (error) {
       console.error("Error saving walk data:", error);
       alert("산책 데이터를 저장하는 중에 오류가 발생했습니다.");
