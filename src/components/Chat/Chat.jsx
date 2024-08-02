@@ -25,7 +25,7 @@ const ChatRoomContainer = styled.div`
     props.$read === "true" ? "var(--gray-color1)" : "var(--yellow-color1)"};
   width: 350px;
   font-family: "PretendardM";
-  cursor: pointer; /* 클릭 가능하게 커서 변경 */
+  cursor: pointer;
 `;
 
 const ProfileImage = styled.img`
@@ -41,6 +41,7 @@ const ChatInfo = styled.div`
   flex-direction: column;
   color: black;
   flex: 1;
+  min-width: 0; // 텍스트 넘침 방지
 `;
 
 const ChatHeader = styled.div`
@@ -61,12 +62,12 @@ const Nickname = styled.div`
 
 const RepresentativeBadge = styled.div`
   background-color: var(--white-color);
-  border-radius: 4px;
+  border-radius: 8px;
   border: 2px solid var(--yellow-color2);
   padding: 4px 4px;
-  margin-right: 8px;
+  margin-left: 2px;
   font-size: 14px;
-  font-family: "PretendardM";
+  font-family: "PretendardS";
   margin-left: 5px;
 `;
 
@@ -75,6 +76,10 @@ const LastMessage = styled.div`
   margin: 10px 0;
   font-size: 14px;
   padding-left: 2px;
+  flex-shrink: 1;
+  overflow: hidden; // 텍스트 넘침 방지
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const LastTimeStamp = styled.div`
@@ -141,12 +146,12 @@ const Chat = ({ room }) => {
       <ChatInfo>
         <ChatHeader>
           <NicknameContainer>
+            <Nickname>{room.other_user_nickname}</Nickname>
             {room.other_user_representative && (
               <RepresentativeBadge>
                 👑{room.other_user_representative}
               </RepresentativeBadge>
             )}
-            <Nickname>{room.other_user_nickname}</Nickname>
           </NicknameContainer>
         </ChatHeader>
         <LastMessage>

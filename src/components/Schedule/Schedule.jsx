@@ -1,13 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { updateAppointment } from "../../apis/appointment";
+import { useNavigate } from "react-router-dom";
+import Button from "../Button/Button";
+import { formatTimestamp } from "../../utils/time";
 
 const ScheduleContainer = styled.div`
   position: fixed;
-  bottom: 100px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -15,7 +17,6 @@ const ScheduleContainer = styled.div`
   padding: 20px;
   width: 300px;
   font-family: "PretendardM";
-  text-align: center;
 `;
 
 const Title = styled.h3`
@@ -23,21 +24,36 @@ const Title = styled.h3`
   font-size: 20px;
   font-weight: bold;
   color: #333;
+  text-align: center;
 `;
 
-const Detail = styled.p`
+const Detail = styled.div`
+  display: flex;
+  flex-direction: column;
   margin: 5px 0;
-  font-size: 14px;
+  font-size: 16px;
   color: #666;
 `;
 
-const ButtonGroup = styled.div`
+const DetailRow = styled.div`
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 10px 0;
 `;
 
-const ActionButton = styled.button`
+const Label = styled.div`
+  font-weight: bold;
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 5px;
+`;
+
+const Value = styled.div`
+  color: #666;
+`;
+
+const ActionButton = styled(Button)`
   padding: 10px 15px;
   border: none;
   border-radius: 4px;
@@ -45,45 +61,36 @@ const ActionButton = styled.button`
   font-family: "PretendardM";
   font-size: 14px;
   color: white;
-  background-color: ${(props) =>
-    props.status === "W" ? "green" : props.status === "R" ? "orange" : "red"};
+  background-color: var(--yellow-color2);
   &:hover {
-    background-color: ${(props) =>
-      props.status === "W"
-        ? "#2bb14a"
-        : props.status === "R"
-          ? "#ffc107"
-          : "#ff3348"};
+    background-color: var(--yellow-color3);
   }
+  margin-top: 20px;
 `;
 
+// eslint-disable-next-line no-unused-vars
 const Schedule = ({ appointment, onUpdate }) => {
-  const handleStatusChange = async (status) => {
-    try {
-      const updatedAppointment = await updateAppointment(appointment.id, {
-        ...appointment,
-        status,
-      });
-      onUpdate(updatedAppointment); // 채팅방에 전달
-    } catch (error) {
-      console.error("Error updating appointment:", error);
-    }
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    alert("약속을 성공적으로 전송했어요!");
+    navigate("/chat"); // 다시 채팅방 목록으로 이동하기
   };
 
   return (
     <ScheduleContainer>
-      <Title>약속내용</Title>
+      <Title>약속 내용</Title>
       <Detail>
-        <strong>약속 이름: </strong> {appointment.name}
+        <DetailRow>
+          <Label>약속 이름:</Label>
+          <Value>{appointment.name}</Value>
+        </DetailRow>
+        <DetailRow>
+          <Label>약속 시간과 날짜:</Label>
+          <Value>{formatTimestamp(appointment.time)}</Value>
+        </DetailRow>
       </Detail>
-      <Detail>
-        <strong>약속 시간과 날짜:</strong> {appointment.time}
-      </Detail>
-      <ButtonGroup>
-        <ActionButton status="W" onClick={() => handleStatusChange("W")}>
-          약속 잡기
-        </ActionButton>
-      </ButtonGroup>
+      <ActionButton text="확인" onClick={handleClose}></ActionButton>
     </ScheduleContainer>
   );
 };
