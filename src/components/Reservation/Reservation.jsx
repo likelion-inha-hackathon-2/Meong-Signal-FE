@@ -61,6 +61,7 @@ const DateInfo = styled.div`
   padding-left: 3px;
   color: #888;
   margin-bottom: 2px;
+  font-size: 14px;
   font-family: "PretendardM";
 `;
 

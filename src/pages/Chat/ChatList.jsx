@@ -7,13 +7,20 @@ import Chat from "../../components/Chat/Chat";
 import { formatTimestamp } from "../../utils/time";
 import ReservationList from "../../components/Reservation/ReservationList";
 
+const ChatRoomContainer = styled.div`
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  margin: 20px 0;
+  align-items: center;
+  justify-content: center;
+`;
+
 // 채팅방 컴포넌트 리스트
 const ChatRoomList = styled.div`
   display: flex;
   flex-direction: column;
   padding: 10px;
-  align-items: center;
-  justify-content: center;
 `;
 
 const Loading = styled.div`
@@ -25,12 +32,10 @@ const EmptyMessage = styled.div`
 `;
 
 const TitleWrapper = styled.div`
+  font-size: 20px;
   display: flex;
-  padding: 10px;
   font-family: "PretendardB";
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
+  margin-top: 10px;
 `;
 
 const ChatList = () => {
@@ -61,19 +66,22 @@ const ChatList = () => {
   return (
     <>
       <Header />
-      <ReservationList />
-      <TitleWrapper>💌 채팅 기록</TitleWrapper>
-      {loading ? (
-        <Loading>로딩 중...</Loading>
-      ) : chatRooms.length === 0 ? (
-        <EmptyMessage>채팅방 목록이 비어있어요.</EmptyMessage>
-      ) : (
-        <ChatRoomList>
-          {chatRooms.map((room, index) => (
-            <Chat key={index} room={room} />
-          ))}
-        </ChatRoomList>
-      )}
+      <ChatRoomContainer>
+        <TitleWrapper>📌 산책 일정</TitleWrapper>
+        <ReservationList />
+        <TitleWrapper>💌 채팅 기록</TitleWrapper>
+        {loading ? (
+          <Loading>로딩 중...</Loading>
+        ) : chatRooms.length === 0 ? (
+          <EmptyMessage>채팅방 목록이 비어있어요.</EmptyMessage>
+        ) : (
+          <ChatRoomList>
+            {chatRooms.map((room, index) => (
+              <Chat key={index} room={room} />
+            ))}
+          </ChatRoomList>
+        )}
+      </ChatRoomContainer>
       <Footer />
     </>
   );

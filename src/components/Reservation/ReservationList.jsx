@@ -5,15 +5,24 @@ import Reservation from "./Reservation";
 
 const ReservationsContainer = styled.div`
   display: flex;
+  width: 300px;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
+  width: 100%;
+`;
+
+const NoReservationsMessage = styled.p`
+  font-family: "PretendardR";
+  font-size: 16px;
+  color: #7a7a7a;
+  margin-bottom: 10px;
+  text-align: center;
 `;
 
 const ReservationList = () => {
   const [appointments, setAppointments] = useState([]);
 
-  // 약속 상태가 바뀌면 다시 렌더링
   const fetchAppointments = async () => {
     try {
       const data = await getUpcomingAppointment();
@@ -44,7 +53,9 @@ const ReservationList = () => {
           />
         ))
       ) : (
-        <p>예약이 없습니다.</p>
+        <NoReservationsMessage>
+          현재 예약된 산책 일정이 없습니다.
+        </NoReservationsMessage>
       )}
     </ReservationsContainer>
   );
