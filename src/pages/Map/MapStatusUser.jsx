@@ -20,7 +20,7 @@ import { updateAppointment } from "../../apis/appointment";
 const Container = styled.div`
   padding: 20px;
   text-align: center;
-  font-family: "PretendardM";
+  font-family: "PretendardS";
 `;
 
 const DogInfo = styled.div`
@@ -31,14 +31,15 @@ const DogInfo = styled.div`
 `;
 
 const DogImage = styled.img`
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  margin-right: 15px;
+  margin-right: 10px;
+  object-fit: cover;
 `;
 
 const DogName = styled.div`
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
 `;
 
@@ -56,6 +57,7 @@ const StartButton = styled.button`
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
+  font-family: "PretendardM";
 `;
 
 const RouteButton = styled.button`
@@ -66,6 +68,7 @@ const RouteButton = styled.button`
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
+  font-family: "PretendardM";
 `;
 
 const RouteList = styled.div`
@@ -83,12 +86,14 @@ const RouteItem = styled.div`
 
 const StopButton = styled.button`
   padding: 10px 20px;
-  background-color: #ff9900;
+  background-color: var(--yellow-color2);
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
+  font-family: "PretendardM";
+  margin-top: 10px;
 `;
 
 const CompleteButton = styled.button`
@@ -99,6 +104,8 @@ const CompleteButton = styled.button`
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
+  font-family: "PretendardM";
+  margin-top: 10px;
 `;
 
 const Stat = styled.div`
@@ -445,7 +452,12 @@ const MapStatusUser = () => {
   // 칼로리 계산 함수 (기본 70kg)
   const calculateCalories = (distance, time, weight_kg = 70) => {
     const METs = 3.5;
-    const caloriesBurned = (METs * time * weight_kg * 3) / 200;
+    const timeInMinutes = parseFloat(time);
+    const weightInKg = parseFloat(weight_kg);
+    if (isNaN(timeInMinutes) || isNaN(weightInKg)) {
+      return "0";
+    }
+    const caloriesBurned = (METs * timeInMinutes * weightInKg * 3) / 200;
     return caloriesBurned.toFixed(0);
   };
 
@@ -538,10 +550,10 @@ const MapStatusUser = () => {
           <DogName>
             {dogInfo.name}
             {walkStage === "during"
-              ? "와 산책중입니다!"
+              ? "와(과) 산책중입니다!"
               : walkStage === "before"
-                ? "과 산책을 시작합니다."
-                : "와의 산책이 종료되었습니다."}
+                ? "와(과) 산책을 시작합니다."
+                : "와(과)의 산책이 종료되었습니다."}
           </DogName>
         </DogInfo>
         <div ref={mapContainer} style={{ width: "100%", height: "300px" }} />
