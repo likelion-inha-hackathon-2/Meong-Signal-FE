@@ -5,7 +5,6 @@ import { getDogInfo } from "../apis/getDogInfo";
 const useUserMap = (appKey, dogId, keyword = "") => {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
-  // eslint-disable-next-line no-unused-vars
   const [dogMarker, setDogMarker] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const infowindow = useRef(null);
@@ -74,7 +73,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
               center.latitude,
               center.longitude,
             ),
-            level: 7,
+            level: 5,
           };
           const mapInstance = new window.kakao.maps.Map(
             mapContainer.current,
@@ -159,7 +158,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
 
           setMarkers(newMarkers);
           map.setBounds(bounds);
-          map.setLevel(7);
+          map.setLevel(5);
         }
       });
     }
@@ -168,14 +167,27 @@ const useUserMap = (appKey, dogId, keyword = "") => {
   useEffect(() => {
     if (map) {
       const interval = setInterval(() => {
-        navigator.geolocation.getCurrentPosition(setLinePathArr);
+        navigator.geolocation.getCurrentPosition((position) => {
+          setLinePathArr(position);
+          const moveLatLon = new window.kakao.maps.LatLng(
+            position.coords.latitude,
+            position.coords.longitude,
+          );
+          setCurrentLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+          if (dogMarker) {
+            dogMarker.setPosition(moveLatLon);
+          }
+        });
       }, 5000);
 
       return () => {
         clearInterval(interval);
       };
     }
-  }, [map, setLinePathArr]);
+  }, [map, setLinePathArr, dogMarker]);
 
   return { mapContainer, map, currentLocation, setCurrentLocation };
 };
