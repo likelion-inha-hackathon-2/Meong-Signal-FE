@@ -421,8 +421,6 @@ const MapStatusUser = () => {
       formData.append("dog_id", dogId);
       formData.append("time", timeElapsed.toString());
       formData.append("distance", distance.toFixed(1));
-      formData.append("dog_image.png", dogInfo.image);
-
       const response = await saveWalkData(formData);
       alert("산책 데이터가 성공적으로 저장되었습니다.");
       setWalkId(response.id);
