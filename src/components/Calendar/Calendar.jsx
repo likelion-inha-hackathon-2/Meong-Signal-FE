@@ -282,7 +282,7 @@ const Calendar = ({ dogId, userId, ownerId, onClose, onSave }) => {
                       className={
                         "react-datepicker__navigation react-datepicker__navigation--previous"
                       }
-                      style={{ visibility: "hidden" }}
+                      style={{ visibility: "visible" }}
                       onClick={decreaseMonth}
                     >
                       <span
@@ -304,7 +304,7 @@ const Calendar = ({ dogId, userId, ownerId, onClose, onSave }) => {
                       className={
                         "react-datepicker__navigation react-datepicker__navigation--next"
                       }
-                      style={{ visibility: "hidden" }}
+                      style={{ visibility: "visible" }}
                       onClick={increaseMonth}
                     >
                       <span
