@@ -51,7 +51,7 @@ const MessageContainer = styled.div`
   align-items: center;
   margin-bottom: 10px;
   flex-direction: ${(props) => (props.$isSender ? "row-reverse" : "row")};
-  margin: 0 10px;
+  margin: 0 8px;
 `;
 
 const MessageBubble = styled.div`
@@ -70,7 +70,8 @@ const ProfileImage = styled.img`
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  margin: ${(props) => (props.$isSender ? "0 0 0 10px" : "0 10px 0 0")};
+  margin: ${(props) => (props.$isSender ? "0 0 0 4px" : "0 8px 0 0")};
+  flex-shrink: 0;
 `;
 
 const MessageMeta = styled.div`
@@ -79,7 +80,7 @@ const MessageMeta = styled.div`
   font-size: 12px;
   color: var(--gray-color3);
   margin-top: 5px;
-  padding: 0 3px;
+  padding: 3px 3px;
 `;
 
 const InputContainer = styled.div`
