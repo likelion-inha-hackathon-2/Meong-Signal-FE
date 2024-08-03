@@ -79,14 +79,7 @@ const FootprintIcon = styled.img`
   margin-left: 5px;
 `;
 
-const IsEmptyMessage = styled.p`
-  margin-top: 10px;
-  font-family: "PretendardM";
-  font-size: 14px;
-  color: gray;
-`;
-
-const ChallengeStatus = styled.p`
+const GrayText = styled.p`
   font-family: "PretendardM";
   font-size: 14px;
   color: gray;
@@ -200,9 +193,9 @@ const WalkDetail = () => {
       <WalkDetailContainer>
         <ChallengeSection>
           <TitleWrapper>📢 이번 주 챌린지</TitleWrapper>
-          <ChallengeStatus>
+          <GrayText>
             주간 챌린지 달성 현황에 따라 멍을 획득할 수 있어요.
-          </ChallengeStatus>
+          </GrayText>
           <ChallengeItem $met={isDogsChallengeMet.toString()}>
             <ChallengeText>
               <ChallengeIcon src={walkingIcon} alt="walking" />
@@ -224,6 +217,7 @@ const WalkDetail = () => {
           </ChallengeItem>
         </ChallengeSection>
         <TitleWrapper>🏁 추천 산책로</TitleWrapper>
+        <GrayText>책갈피 버튼을 클릭하여 산책로를 저장해보세요.</GrayText>
         <RecommendedTrail
           trails={recommendedTrails}
           handleBookmarkToggle={handleBookmarkToggle}
@@ -236,7 +230,7 @@ const WalkDetail = () => {
             handleBookmarkToggle={handleBookmarkToggle}
           />
         ) : (
-          <IsEmptyMessage>아직 저장된 산책로가 없습니다.</IsEmptyMessage>
+          <GrayText>아직 저장된 산책로가 없습니다.</GrayText>
         )}
       </WalkDetailContainer>
       <Footer />

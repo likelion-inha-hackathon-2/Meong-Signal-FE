@@ -138,7 +138,7 @@ const useKakaoMap = (appKey, initialLocation, isBoring = false) => {
     const addDogMarkersAndOverlays = async () => {
       try {
         const dogs = await fetchDogs();
-        console.log("useKakaoMap에서 받아오는 dogs:", dogs);
+        // console.log("useKakaoMap에서 받아오는 dogs:", dogs);
 
         dogMarkers.forEach((dogMarker) => {
           dogMarker.setMap(null);

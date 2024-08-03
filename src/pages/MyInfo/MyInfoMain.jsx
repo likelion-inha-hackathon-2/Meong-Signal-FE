@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Button from "../../components/Button/Button";
-import Image from "../../components/Image/Image";
 import DogInfo from "../../components/Dog/DogInfo";
 import { getUserInfo } from "../../apis/getUserInfo";
 import authApi from "../../apis/authApi";
@@ -19,10 +18,13 @@ const InfoContainer = styled.div`
   font-family: "pretendardR";
 `;
 
-const StyledImage = styled(Image)`
+const StyledImage = styled.img`
   margin-top: 10px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
+  width: 140px;
+  height: 140px;
 `;
 
 const UserInfo = styled.div`

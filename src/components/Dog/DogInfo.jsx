@@ -22,6 +22,8 @@ const DogInfoContainer = styled.div`
 
 const DogImage = styled.img`
   margin-right: 10px;
+  flex-shrink: 0;
+  object-fit: cover;
   border-radius: 50%;
   cursor: pointer;
   transition:

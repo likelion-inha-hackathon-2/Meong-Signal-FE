@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getWalkReviewInfo } from "../../apis/walk";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import { formatDogRecordDate } from "../../utils/time";
 
 const WalkInfoContainer = styled.div`
   display: flex;
@@ -14,7 +15,7 @@ const WalkInfoContainer = styled.div`
   background-color: var(--gray-color1);
   width: 350px;
   margin: auto;
-  font-family: "PretendardR";
+  font-family: "PretendardM";
 `;
 
 const DogInfoContainer = styled.div`
@@ -30,6 +31,7 @@ const DogImage = styled.img`
   border-radius: 50%;
   margin-right: 20px;
   object-fit: cover;
+  flex-shrink: 0;
 `;
 
 const DogInfoText = styled.div`
@@ -93,6 +95,18 @@ const MyProfileImage = styled.img`
   object-fit: cover;
 `;
 
+const WalkDetails = styled.div`
+  font-family: "PretendardM";
+  font-size: 14px;
+  line-height: 1.5;
+  width: 100%;
+  margin-bottom: 20px;
+
+  p {
+    margin: 5px 0;
+  }
+`;
+
 const MoreRecordMyDogWalk = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -135,6 +149,11 @@ const MoreRecordMyDogWalk = () => {
             {walkInfo.total_distance}km를 산책했어요.. 멍멍!
           </DogInfoText>
         </DogInfoContainer>
+        <WalkDetails>
+          <p>산책한 날: {formatDogRecordDate(walkInfo.date)}</p>
+          <p>이동한 거리: {walkInfo.distance}km</p>
+          <p>이동한 시간: {walkInfo.time}분</p>
+        </WalkDetails>
         <ReviewerInfoContainer>
           <ReviewerImage
             src={walkInfo.reviewer_profile_image}

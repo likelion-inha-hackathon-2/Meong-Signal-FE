@@ -42,7 +42,7 @@ const MapInfo = () => {
       if (loading) {
         window.location.reload();
       }
-    }, 5000);
+    }, 3000);
 
     return () => clearTimeout(timeout);
   }, [loading]);

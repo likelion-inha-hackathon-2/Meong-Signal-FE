@@ -158,7 +158,9 @@ const Chat = ({ room }) => {
           {room.last_message_content || "대화 내용이 없습니다."}
         </LastMessage>
         <LastTimeStamp>
-          {formatTimestamp(room.last_message_timestamp)}
+          {room.last_message_timestamp
+            ? formatTimestamp(room.last_message_timestamp)
+            : "시간 정보가 없습니다."}
         </LastTimeStamp>
       </ChatInfo>
     </ChatRoomContainer>

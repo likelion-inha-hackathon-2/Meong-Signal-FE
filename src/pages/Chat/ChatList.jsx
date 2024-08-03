@@ -50,8 +50,18 @@ const ChatList = () => {
           ...room,
           last_message_content:
             room.last_message_content || "메시지가 없습니다.",
-          last_message_timestamp: formatTimestamp(room.last_message_timestamp),
+          formatted_last_message_timestamp:
+            formatTimestamp(room.last_message_timestamp) ||
+            "시간 정보가 없습니다.",
         }));
+
+        // 메시지 날짜 최신순으로 정렬
+        rooms.sort(
+          (a, b) =>
+            new Date(b.last_message_timestamp) -
+            new Date(a.last_message_timestamp),
+        );
+
         setChatRooms(rooms);
       } catch (error) {
         console.error("Error fetching chat rooms:", error);
