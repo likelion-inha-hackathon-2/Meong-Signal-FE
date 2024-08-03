@@ -8,20 +8,33 @@ import "../../calendarStyles.css";
 import { ko } from "date-fns/locale";
 import { format, setHours, setMinutes } from "date-fns";
 
-// 스타일 컴포넌트 정의
 const CalendarContainer = styled.div`
   background: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   width: 300px;
-  margin: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+`;
+
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 `;
 
 const Label = styled.label`
@@ -57,9 +70,40 @@ const ReactCalendarWrapper = styled.div`
   margin-bottom: 15px;
   .react-datepicker {
     width: 100%;
+    font-family: "PretendardR";
   }
   .react-datepicker__month-container {
     width: 100%;
+  }
+  .react-datepicker__header {
+    background-color: var(--yellow-color1);
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .react-datepicker__current-month {
+    font-family: "PretendardB";
+    font-size: 16px;
+  }
+  .react-datepicker__day-name,
+  .react-datepicker__day {
+    font-family: "PretendardR";
+    font-size: 12px;
+  }
+  .react-datepicker__day--selected,
+  .react-datepicker__day--keyboard-selected {
+    background-color: var(--yellow-color2);
+  }
+  .react-datepicker__day--holiday {
+    position: relative;
+  }
+  .react-datepicker__day--holiday::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    right: 2px;
   }
 `;
 
@@ -67,16 +111,6 @@ const TimePickerWrapper = styled.div`
   display: flex;
   gap: 5px;
   margin-bottom: 15px;
-`;
-
-// 공휴일을 빨간 점으로 표시하는 컴포넌트
-const HolidayDot = styled.div`
-  width: 6px;
-  height: 6px;
-  background-color: red;
-  border-radius: 50%;
-  margin: 0 auto;
-  margin-top: 0;
 `;
 
 const holidays = [
@@ -181,7 +215,7 @@ const Calendar = ({ dogId, userId, ownerId, onClose, onSave }) => {
       const data = await createAppointment(appointmentWithKST);
       onSave(data);
       console.log("약속 생성:", data);
-      setTimeout(onClose, 2000); // 약속이 생성된 후에 onClose를 2초 뒤에 호출
+      setTimeout(onClose, 2000);
     } catch (error) {
       console.error("Error submitting appointment:", error);
     }
@@ -203,60 +237,115 @@ const Calendar = ({ dogId, userId, ownerId, onClose, onSave }) => {
   const amPmOptions = ["오전", "오후"];
 
   return (
-    <CalendarContainer>
-      <Form onSubmit={handleSubmit}>
-        <Label>
-          약속 이름:
-          <Input
-            type="text"
-            name="name"
-            value={appointment.name}
-            onChange={handleInputChange}
-            minLength="1"
-            maxLength="20"
-            required
-          />
-        </Label>
-        <Label>
-          날짜:
-          <ReactCalendarWrapper>
-            <DatePicker
-              selected={date}
-              onChange={handleDateChange}
-              dateFormat="yyyy/MM/dd"
-              locale={ko}
-              inline
-              renderDayContents={(day, date) => (
-                <div>
-                  <span>{day}</span>
-                  {isHoliday(date) && <HolidayDot />}
-                </div>
-              )}
+    <>
+      <Overlay onClick={onClose} />
+      <CalendarContainer>
+        <Form onSubmit={handleSubmit}>
+          <Label>
+            약속 이름:
+            <Input
+              type="text"
+              name="name"
+              value={appointment.name}
+              onChange={handleInputChange}
+              minLength="1"
+              maxLength="20"
+              required
             />
-          </ReactCalendarWrapper>
-        </Label>
-        <Label>
-          시간:
-          <TimePickerWrapper>
-            <select onChange={handleAmPmChange} value={amPm}>
-              {amPmOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            <select onChange={handleTimeChange} value={time}>
-              {timeOptions.map((time) => (
-                <option key={time} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
-          </TimePickerWrapper>
-        </Label>
-        <Button type="submit">약속 잡기</Button>
-      </Form>
-    </CalendarContainer>
+          </Label>
+          <Label>
+            날짜:
+            <ReactCalendarWrapper>
+              <DatePicker
+                selected={date}
+                onChange={(selectedDate) => {
+                  handleDateChange(selectedDate);
+                }}
+                dateFormat="yyyy/MM/dd"
+                locale={ko}
+                popperPlacement="auto"
+                popperModifiers={{
+                  preventOverflow: {
+                    enabled: true,
+                  },
+                }}
+                renderCustomHeader={({
+                  monthDate,
+                  // eslint-disable-next-line no-unused-vars
+                  customHeaderCount,
+                  decreaseMonth,
+                  increaseMonth,
+                }) => (
+                  <div>
+                    <button
+                      aria-label="Previous Month"
+                      className={
+                        "react-datepicker__navigation react-datepicker__navigation--previous"
+                      }
+                      style={{ visibility: "hidden" }}
+                      onClick={decreaseMonth}
+                    >
+                      <span
+                        className={
+                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--previous"
+                        }
+                      >
+                        {"<"}
+                      </span>
+                    </button>
+                    <span className="react-datepicker__current-month">
+                      {monthDate.toLocaleString("ko", {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </span>
+                    <button
+                      aria-label="Next Month"
+                      className={
+                        "react-datepicker__navigation react-datepicker__navigation--next"
+                      }
+                      style={{ visibility: "hidden" }}
+                      onClick={increaseMonth}
+                    >
+                      <span
+                        className={
+                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--next"
+                        }
+                      >
+                        {">"}
+                      </span>
+                    </button>
+                  </div>
+                )}
+                dayClassName={(date) =>
+                  isHoliday(date) ? "react-datepicker__day--holiday" : undefined
+                }
+              />
+            </ReactCalendarWrapper>
+          </Label>
+          <Label>
+            시간:
+            <TimePickerWrapper>
+              <select onChange={handleAmPmChange} value={amPm}>
+                {amPmOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <select onChange={handleTimeChange} value={time}>
+                {timeOptions.map((time) => (
+                  <option key={time} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
+            </TimePickerWrapper>
+          </Label>
+          <Button type="submit">약속 잡기</Button>
+        </Form>
+      </CalendarContainer>
+    </>
   );
 };
 
