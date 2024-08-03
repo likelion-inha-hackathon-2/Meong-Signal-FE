@@ -14,14 +14,15 @@ const WalkItemContainer = styled.div`
 
 const WalkImage = styled.img`
   width: 130px;
-  height: auto;
+  height: 130px; // 높이를 고정하여 비율을 유지하도록 설정
   object-fit: cover;
+  border-radius: 8px;
 `;
 
 const WalkInfo = styled.div`
   display: flex;
   flex-direction: column;
-  text-align: right;
+  text-align: left;
 `;
 
 const WalkText = styled.p`

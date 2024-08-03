@@ -80,6 +80,7 @@ const CloseButton = styled.button`
   cursor: pointer;
 `;
 
+// eslint-disable-next-line no-unused-vars
 const Schedule = ({ appointment, onUpdate, onClose }) => {
   const navigate = useNavigate();
 

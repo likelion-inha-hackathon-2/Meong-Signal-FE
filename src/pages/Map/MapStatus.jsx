@@ -49,6 +49,7 @@ const Message = styled.p`
 const MapStatus = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [walkingDog, setWalkingDog] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [dogs, setDogs] = useState([]);
   const [selectedDog, setSelectedDog] = useState(null);
   const [walkUserId, setWalkUserId] = useState("");
@@ -128,10 +129,9 @@ const MapStatus = () => {
 
     const roomData = response.data;
     setRoomId(roomData.id);
-
-    console.log("roomId:", roomData.id);
-
     setUpWebSocket(roomData.id);
+    console.log("roomId:", roomData.id);
+    console.log(walkUserId);
   };
 
   const setUpWebSocket = (roomId) => {
@@ -187,32 +187,17 @@ const MapStatus = () => {
     <>
       <Header />
       <Container>
-        <TitleDogList>🎀우리 강쥐는 어디 있을까요?</TitleDogList>
+        <TitleDogList>우리 강쥐는 어디 있을까요?</TitleDogList>
         <DogList>
           {walkingDog ? (
             <DogItem
               key={`${walkingDog.dog_id}-${walkingDog.walk_user_id}`}
               onClick={() => handleDogClick(walkingDog)}
             >
-              {walkingDog.dog_name} - 산책 중
+              🐶 {walkingDog.dog_name}
             </DogItem>
           ) : (
             <Message>현재 산책 중인 강아지가 없습니다.</Message>
-          )}
-        </DogList>
-        <TitleDogList>🚶‍♂️산책 예정 강아지 목록</TitleDogList>
-        <DogList>
-          {dogs.length > 0 ? (
-            dogs.map((dog) => (
-              <DogItem
-                key={`${dog.dog_id}-${dog.walk_user_id || "pending"}`}
-                onClick={() => handleDogClick(dog)}
-              >
-                {dog.dog_name} - 산책 예정
-              </DogItem>
-            ))
-          ) : (
-            <Message>산책 예정인 강아지가 없습니다.</Message>
           )}
         </DogList>
         {selectedDog && (

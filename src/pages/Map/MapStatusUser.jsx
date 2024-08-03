@@ -326,6 +326,7 @@ const MapStatusUser = () => {
     const roomData = await response.json();
     setRoomId(roomData.id);
     setUpWebSocket(roomData.id);
+    console.log("roomId:", roomData.id);
   };
 
   const setUpWebSocket = (roomId) => {
@@ -424,6 +425,12 @@ const MapStatusUser = () => {
       const response = await saveWalkData(formData);
       alert("산책 데이터가 성공적으로 저장되었습니다.");
       setWalkId(response.id);
+
+      if (socket.current) {
+        socket.current.close();
+        console.log("WebSocket closed");
+        setSocket(null);
+      }
     } catch (error) {
       console.error("Error saving walk data:", error);
       alert("산책 데이터를 저장하는 중에 오류가 발생했습니다.");
