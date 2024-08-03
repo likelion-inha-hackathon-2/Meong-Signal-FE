@@ -1,0 +1,9 @@
+.react-datepicker__header {
+    background-color: #FFE8AD;
+  }
+  
+  .react-datepicker__day--holiday-dot {
+    position: relative;
+  }
+  
+  

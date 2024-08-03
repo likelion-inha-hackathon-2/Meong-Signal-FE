@@ -17,6 +17,7 @@ const ScheduleContainer = styled.div`
   padding: 20px;
   width: 300px;
   font-family: "PretendardM";
+  z-index: 1002;
 `;
 
 const Title = styled.h3`
@@ -69,7 +70,17 @@ const ActionButton = styled(Button)`
 `;
 
 // eslint-disable-next-line no-unused-vars
-const Schedule = ({ appointment, onUpdate }) => {
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+`;
+
+const Schedule = ({ appointment, onUpdate, onClose }) => {
   const navigate = useNavigate();
 
   const handleClose = () => {
@@ -103,6 +114,7 @@ Schedule.propTypes = {
     status: PropTypes.string.isRequired,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default Schedule;

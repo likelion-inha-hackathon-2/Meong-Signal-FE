@@ -118,8 +118,8 @@ const SendButton = styled(Button)`
 
 const TooltipWrapper = styled.div`
   position: absolute;
-  top: 60%;
-  left: 10%;
+  top: 8%;
+  left: 18%;
   z-index: 100;
 `;
 
@@ -167,6 +167,7 @@ const ChatRoom = () => {
 
     fetchAllChatRooms();
   }, [roomId]);
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -288,6 +289,10 @@ const ChatRoom = () => {
     setReservation(updatedAppointment);
   };
 
+  const handleCloseSchedule = () => {
+    setReservation(null);
+  };
+
   return (
     <>
       <Header />
@@ -338,6 +343,7 @@ const ChatRoom = () => {
         <Schedule
           appointment={reservation}
           onUpdate={handleUpdateReservation}
+          onClose={handleCloseSchedule}
         />
       )}
       <Footer />
