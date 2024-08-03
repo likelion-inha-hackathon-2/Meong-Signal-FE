@@ -29,20 +29,13 @@ const DogImage = styled.img`
   height: 80px;
   border-radius: 50%;
   margin-right: 20px;
+  object-fit: cover;
 `;
 
 const DogInfoText = styled.div`
   font-family: "PretendardS";
   line-height: 1.5;
   font-size: 16px;
-`;
-
-const WalkImage = styled.img`
-  width: 250px;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border: 2px solid var(--gray-color2);
 `;
 
 const ReviewerInfoContainer = styled.div`
@@ -56,6 +49,7 @@ const ReviewerImage = styled.img`
   height: 50px;
   border-radius: 50%;
   margin-right: 20px;
+  object-fit: cover;
 `;
 
 const ReviewerDetails = styled.div`
@@ -71,6 +65,7 @@ const ReviewerName = styled.div`
 const ReviewerRating = styled.div`
   font-size: 12px;
   color: gray;
+  margin-top: 4px;
 `;
 
 const ReviewerReview = styled.div`
@@ -95,6 +90,7 @@ const MyProfileImage = styled.img`
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  object-fit: cover;
 `;
 
 const MoreRecordMyDogWalk = () => {
@@ -139,7 +135,6 @@ const MoreRecordMyDogWalk = () => {
             {walkInfo.total_distance}km를 산책했어요.. 멍멍!
           </DogInfoText>
         </DogInfoContainer>
-        <WalkImage src={walkInfo.image} alt="산책 이미지" />
         <ReviewerInfoContainer>
           <ReviewerImage
             src={walkInfo.reviewer_profile_image}
