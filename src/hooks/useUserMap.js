@@ -8,10 +8,9 @@ const useUserMap = (appKey, dogId, keyword = "") => {
   const [dogMarker, setDogMarker] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const infowindow = useRef(null);
-  // eslint-disable-next-line no-unused-vars
   const [markers, setMarkers] = useState([]);
-  // eslint-disable-next-line no-unused-vars
   const [positionArr, setPositionArr] = useState([]);
+  const initialDogMarkerSet = useRef(false); // 강아지 마커가 처음에만 뜨도록 설정
 
   const makeLine = useCallback(
     (position) => {
@@ -27,14 +26,14 @@ const useUserMap = (appKey, dogId, keyword = "") => {
 
       polyline.setMap(map);
     },
-    [map],
+    [map]
   );
 
   const setLinePathArr = useCallback(
     (position) => {
       const moveLatLon = new window.kakao.maps.LatLng(
         position.coords.latitude,
-        position.coords.longitude,
+        position.coords.longitude
       );
       setPositionArr((prevArr) => {
         const newPosition = [...prevArr, moveLatLon];
@@ -42,7 +41,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
         return newPosition;
       });
     },
-    [makeLine],
+    [makeLine]
   );
 
   useEffect(() => {
@@ -71,13 +70,13 @@ const useUserMap = (appKey, dogId, keyword = "") => {
           const options = {
             center: new window.kakao.maps.LatLng(
               center.latitude,
-              center.longitude,
+              center.longitude
             ),
             level: 7,
           };
           const mapInstance = new window.kakao.maps.Map(
             mapContainer.current,
-            options,
+            options
           );
           setMap(mapInstance);
           infowindow.current = new window.kakao.maps.InfoWindow({ zIndex: 1 });
@@ -92,20 +91,16 @@ const useUserMap = (appKey, dogId, keyword = "") => {
     };
   }, [appKey]);
 
-  const updateDogMarker = (position) => {
-    if (dogMarker) {
-      dogMarker.setMap(null); // 이전 마커 제거
-    }
-
+  const addDogMarker = (position, imageUrl) => {
     const markerPosition = new window.kakao.maps.LatLng(
-      position.coords.latitude,
-      position.coords.longitude,
+      position.latitude,
+      position.longitude
     );
 
     const dogMarkerElement = document.createElement("div");
     dogMarkerElement.style.width = "50px";
     dogMarkerElement.style.height = "50px";
-    dogMarkerElement.style.backgroundImage = `url`;
+    dogMarkerElement.style.backgroundImage = `url(${imageUrl})`;
     dogMarkerElement.style.backgroundSize = "cover";
     dogMarkerElement.style.borderRadius = "50%";
 
@@ -123,25 +118,10 @@ const useUserMap = (appKey, dogId, keyword = "") => {
       try {
         const data = await getDogInfo(dogId);
         const dog = data.dog;
-        const markerPosition = new window.kakao.maps.LatLng(
-          currentLocation.latitude,
-          currentLocation.longitude,
-        );
-
-        const dogMarkerElement = document.createElement("div");
-        dogMarkerElement.style.width = "50px";
-        dogMarkerElement.style.height = "50px";
-        dogMarkerElement.style.backgroundImage = `url(${dog.image})`;
-        dogMarkerElement.style.backgroundSize = "cover";
-        dogMarkerElement.style.borderRadius = "50%";
-
-        const customOverlay = new window.kakao.maps.CustomOverlay({
-          position: markerPosition,
-          content: dogMarkerElement,
-          map: map,
-        });
-
-        setDogMarker(customOverlay);
+        if (!initialDogMarkerSet.current && currentLocation) {
+          addDogMarker(currentLocation, dog.image);
+          initialDogMarkerSet.current = true; // 처음 마커 설정 후 플래그 설정
+        }
       } catch (error) {
         console.error("Error fetching dog info:", error);
       }
@@ -165,7 +145,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
           data.forEach((place) => {
             const markerPosition = new window.kakao.maps.LatLng(
               place.y,
-              place.x,
+              place.x
             );
             const marker = new window.kakao.maps.Marker({
               position: markerPosition,
@@ -176,7 +156,7 @@ const useUserMap = (appKey, dogId, keyword = "") => {
 
             window.kakao.maps.event.addListener(marker, "click", () => {
               infowindow.current.setContent(
-                `<div style="padding:5px;font-size:12px;">${place.place_name}</div>`,
+                `<div style="padding:5px;font-size:12px;">${place.place_name}</div>`
               );
               infowindow.current.open(map, marker);
             });
@@ -199,7 +179,6 @@ const useUserMap = (appKey, dogId, keyword = "") => {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-          updateDogMarker(position); // 강아지 마커 업데이트
         });
       }, 5000);
 
