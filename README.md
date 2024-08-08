@@ -269,14 +269,14 @@
 ├─ README.md
 ├─ setting.json
 ├─ src
-│  ├─ :렌치:apis
+│  ├─ 🧾apis
 │  ├─ App.css
 │  ├─ App.jsx
-│  ├─ :액자에_담긴_그림:assets
+│  ├─ 🖼️assets
 │  │  ├─ fonts
 │  │  ├─ icons
 │  │  └─ images
-│  ├─ :반짝임:components
+│  ├─ ✨components
 │  │  ├─ Achievement
 │  │  ├─ Button
 │  │  ├─ Calendar
@@ -297,13 +297,13 @@
 │  │  ├─ Tag
 │  │  ├─ Trail
 │  │  └─ Walk
-│  ├─ :영수증:hooks
+│  ├─ 💾hooks
 │  │  ├─ useForm.js
 │  │  ├─ useKakaoMap.js
 │  │  └─ useUserMap.js
 │  ├─ index.css
 │  ├─ index.js
-│  ├─ :카드_인덱스_칸막이:pages
+│  ├─ 🗂️pages
 │  │  ├─ Chat
 │  │  │  ├─ ChatList.jsx
 │  │  │  └─ ChatRoom.jsx
@@ -338,7 +338,7 @@
 │  │  ├─ TopUp.jsx
 │  │  └─ Walk
 │  ├─ reset.css
-│  └─ :플로피_디스크:utils
+│  └─ 🥪utils
 └─ webpack.config.js
 ```
 
