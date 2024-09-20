@@ -306,10 +306,12 @@
 
 ![팀 소개 페이지](./public/readme/team.png)
 
-| 김시원                                   | 김애리                               | 백세희                                 | 유승인                                           | 이영주                                 |
-| ---------------------------------------- | ------------------------------------ | -------------------------------------- | ------------------------------------------------ | -------------------------------------- |
-| BE                                       | FE                                   | BE                                     | FE                                               | FE                                     |
+| 김시원 | 김애리 | 백세희 | 유승인 | 이영주 |
+| ------ | ------ |------| ------ | ------ |
+| ![profile](https://avatars.githubusercontent.com/u/121426422?v=4) | ![profile](https://avatars.githubusercontent.com/u/163821598?v=4) |![profile](https://avatars.githubusercontent.com/u/132613722?v=4)| ![profile](https://avatars.githubusercontent.com/u/144124353?v=4) | ![profile](https://avatars.githubusercontent.com/u/77565980?v=4) |
+| BE | FE | BE | FE | FE |
 | [@seaniiio](https://github.com/seaniiio) | [@aeli22](https://github.com/aeli22) | [@sae2say](https://github.com/sae2say) | [@seung-in-Yoo](https://github.com/seung-in-Yoo) | [@abyss-s](https://github.com/abyss-s) |
+
 
 <br>
 
